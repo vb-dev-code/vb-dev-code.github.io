@@ -1,0 +1,8 @@
+.DS_Store
+.superpowers/
+node_modules/
+# Contains the literal banned tokens (name/phone/email) check-site.mjs scans
+# for. Keeping it out of the repo means those tokens are never committed —
+# see tools/check-site.mjs for how it's read and why a missing file fails loudly.
+tools/banned-patterns.json
+docs/

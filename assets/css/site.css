@@ -1,0 +1,371 @@
+/* ─── tokens ─────────────────────────────────────────────────────────── */
+:root {
+  --bg:      #FAF9F7;
+  --surface: #FFFFFF;
+  --ink:     #16150F;
+  --muted:   #6B6862;
+  --line:    #E4E1DA;
+  --accent:  #B23A0C;
+  --live:    #15803D;
+  --live-bg: rgba(21, 128, 61, .10);
+
+  --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  --measure: 34rem;
+  --gap: clamp(1rem, 3vw, 2rem);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:      #131210;
+    --surface: #1B1A16;
+    --ink:     #F2EFE9;
+    --muted:   #9C978E;
+    --line:    #2B2823;
+    --accent:  #FF7A4D;
+    --live:    #4ADE80;
+    --live-bg: rgba(74, 222, 128, .12);
+  }
+}
+
+/* ─── base ───────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: inherit; }
+
+code {
+  font-family: var(--mono);
+  font-size: .9em;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: .1em .35em;
+  color: var(--ink);
+}
+
+a:focus-visible, .card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.wrap {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: clamp(3rem, 8vw, 6rem) var(--gap) 4rem;
+}
+
+/* ─── hero ───────────────────────────────────────────────────────────── */
+.hero { margin-bottom: clamp(3rem, 7vw, 5rem); }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 1rem;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 6vw, 3.1rem);
+  line-height: 1.08;
+  letter-spacing: -.025em;
+  font-weight: 620;
+  margin: 0 0 1rem;
+  max-width: 20ch;
+}
+
+.hero .lede {
+  font-size: clamp(1.02rem, 2.2vw, 1.17rem);
+  color: var(--muted);
+  max-width: var(--measure);
+  margin: 0;
+}
+
+/* ─── grid ───────────────────────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-rows: 1fr;
+  gap: var(--gap);
+  margin: 0 0 clamp(3rem, 7vw, 4.5rem);
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.grid > li {
+  display: flex;
+}
+
+.card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .15s ease, transform .15s ease;
+}
+
+.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+  .card:hover { transform: none; }
+}
+
+.card-shot {
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.card-shot img {
+  width: 62%;
+  margin-top: 7%;
+  border-radius: 12px;
+  box-shadow: 0 6px 22px rgba(0,0,0,.13);
+}
+
+/* the non-product card: type where the screenshot would be */
+.card-quote {
+  aspect-ratio: 4 / 3;
+  margin: 0;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+  border-bottom: 1px dashed var(--line);
+  font-size: 1.02rem;
+  line-height: 1.45;
+  font-style: italic;
+  color: var(--ink);
+}
+
+.card-body { padding: 1rem 1.15rem 1.2rem; }
+
+.card-body h2 {
+  font-size: 1.06rem;
+  font-weight: 620;
+  letter-spacing: -.01em;
+  margin: 0 0 .3rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.card-body p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .93rem;
+  line-height: 1.5;
+}
+
+/* ─── pills ──────────────────────────────────────────────────────────── */
+.pill {
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .18em .6em;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.pill--live {
+  color: var(--live);
+  border-color: color-mix(in srgb, var(--live) 45%, transparent);
+  background: var(--live-bg);
+}
+
+.pill--passed { border-style: dashed; }
+
+/* ─── shelf ──────────────────────────────────────────────────────────── */
+.shelf { margin: 0 0 clamp(3rem, 7vw, 4.5rem); }
+
+.shelf h2 {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  margin: 0 0 .5rem;
+}
+
+.shelf ul { list-style: none; margin: 0; padding: 0; }
+
+.shelf li {
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+  align-items: baseline;
+  padding: .7rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: .93rem;
+}
+
+.shelf li b { font-weight: 600; }
+.shelf li span { color: var(--muted); }
+
+/* ─── footer ─────────────────────────────────────────────────────────── */
+.footer {
+  border-top: 1px solid var(--line);
+  padding-top: 1.5rem;
+  display: flex;
+  gap: 1.4rem;
+  flex-wrap: wrap;
+  font-size: .93rem;
+}
+
+.footer a { color: var(--muted); text-decoration: none; }
+.footer a:hover { color: var(--accent); }
+
+/* ─── case study ─────────────────────────────────────────────────────── */
+.backlink {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 2.5rem;
+}
+
+.backlink:hover { color: var(--accent); }
+
+.case-header { margin-bottom: clamp(2.5rem, 6vw, 3.5rem); }
+
+.case-header h1 {
+  font-size: clamp(1.9rem, 5vw, 2.6rem);
+  line-height: 1.1;
+  letter-spacing: -.022em;
+  font-weight: 620;
+  margin: .3rem 0 .9rem;
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  flex-wrap: wrap;
+}
+
+.case-header p {
+  font-size: 1.08rem;
+  color: var(--muted);
+  max-width: var(--measure);
+  margin: 0 0 1rem;
+}
+
+.case-header a[href^="https://apps.apple.com"] {
+  font-size: .95rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.case-header a[href^="https://apps.apple.com"]:hover { text-decoration: underline; }
+
+.shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--gap);
+  margin: 0 0 clamp(2.5rem, 6vw, 3.5rem);
+}
+
+.shots img {
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 28px rgba(0,0,0,.12);
+}
+
+.block { margin-bottom: clamp(2.2rem, 5vw, 3rem); max-width: var(--measure); }
+
+.block h2 {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  margin: 0 0 .7rem;
+}
+
+.block p { margin: 0 0 1rem; }
+.block p:last-child { margin-bottom: 0; }
+
+.block strong { font-weight: 620; }
+
+/* the decision block carries the page — give it more presence */
+.decision { max-width: 38rem; }
+
+.decision > p:first-of-type {
+  font-size: clamp(1.2rem, 3vw, 1.42rem);
+  line-height: 1.32;
+  letter-spacing: -.015em;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 1.1rem;
+}
+
+.decision { border-left: 2px solid var(--accent); padding-left: clamp(1rem, 3vw, 1.6rem); }
+
+/* numbers block, used on the credit card advisor page */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--gap);
+  margin: 0 0 clamp(2.5rem, 6vw, 3.5rem);
+  padding: 0;
+  list-style: none;
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 1.1rem 1.2rem;
+}
+
+.stat b {
+  display: block;
+  font-size: clamp(1.5rem, 4vw, 1.9rem);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  font-weight: 620;
+  margin-bottom: .3rem;
+}
+
+.stat span { color: var(--muted); font-size: .87rem; line-height: 1.4; display: block; }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Split Decision · Varun Bhardwaj</title>
+<meta name="description" content="A daily phrase puzzle with a co-op mode. Why one shared phrase quietly destroyed the information asymmetry the co-op mechanic depended on.">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+<main class="wrap">
+
+  <a class="backlink" href="/">← All work</a>
+
+  <header class="case-header">
+    <p class="eyebrow">Beta · iOS &amp; Android · TestFlight and Play internal</p>
+    <h1>Split Decision <span class="pill">Beta</span></h1>
+    <p>A daily phrase puzzle with two ways to play. Solo, like any daily. Or in co-op, where each teammate owns a different hidden word in the same phrase and neither of you can finish alone.</p>
+  </header>
+
+  <div class="shots">
+    <img src="/assets/img/split-decision-01-solved.webp" alt="Split Decision solved screen showing the phrase TIME IS MONEY, with moves and streak stats and a prompt to start a co-op game" width="880" height="1912">
+    <img src="/assets/img/split-decision-02-puzzle.webp" alt="Idioms puzzle mid-game: TIME solved, and HONEY submitted as a guess for the five-letter second target, with O, N, E, and Y confirmed correct and H marked wrong, matching letter feedback highlighted on the keyboard" width="880" height="1912">
+    <img src="/assets/img/split-decision-03-coop.webp" alt="Co-op puzzle screen showing a teammate's row marked 'hasn't started yet' with a Nudge button" width="880" height="1912">
+  </div>
+
+  <section class="block">
+    <h2>What it is</h2>
+    <p>The category is crowded with word puzzles, so it isn't competing on puzzles. The job is giving a partner, a sibling, or a long-distance friend a lightweight reason to talk every day. Small persistent groups of two or three, not a social network.</p>
+    <p>A pnpm TypeScript monorepo: Node and Prisma on Postgres, a React PWA, and native SwiftUI and Kotlin clients, deployed on Fly. Around four hundred native and seven hundred sixty web tests.</p>
+  </section>
+
+  <section class="block decision">
+    <h2>The decision</h2>
+    <p>One global daily phrase was serving two incompatible jobs.</p>
+    <p>The single daily phrase was the identity of the solo game — exactly one puzzle a day, the same one for everyone. It was also where team puzzles came from. That worked right up until a player joined a second team. The moment they see the phrase once, the information asymmetry the entire co-op mechanic depends on is gone: they already know the answer their teammate is working toward. Decoupling team puzzles from the solo daily was the fix.</p>
+    <p>The more useful part is what pressure-testing changed. <strong>I declared my own North Star uncomputable.</strong> Anonymous per-device identity splits a returning duo into two separate players, which biases the metric downward — and it does so most severely for exactly the behavior the metric is supposed to reward. A number that is most wrong when you are most successful is worse than no number, so instance-scoped "felt-bond" proxies became the primary launch read instead.</p>
+    <p>Two smaller ones I'd defend in a review: the teams-per-user cap was derived from an actual comprehension test rather than asserted, because shipping a possibly-confusing product on untested arithmetic wasn't something I was willing to do. And when a change was described as "only two lines of code," I split the claim — the genuinely risky part, cross-surface dedupe, had been getting laundered by the cheap headline.</p>
+  </section>
+
+  <section class="block">
+    <h2>What it cost</h2>
+    <p>Bundling web assets into the native shells means giving up instant web-to-native updates. I took that trade knowingly to avoid an App Store 4.2 "web clip" rejection, and logged live-update infrastructure as deliberate debt rather than pretending it wasn't debt.</p>
+    <p>Losing the single global phrase also cost the solo game some of its identity. That was the price of the co-op mechanic working at all.</p>
+  </section>
+
+  <section class="block">
+    <h2>Status &amp; next</h2>
+    <p>iOS build 112 is in TestFlight external review; the Android bundle is on Play's internal track. Public launch is still ahead — store screenshots and listing work are the remaining path.</p>
+    <p>Account deletion hard-deletes personal data but pseudonymizes shared co-op records to "Former player," so one person leaving can't corrupt their teammate's history.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/">All work</a>
+    <a href="mailto:vbhardw@gmail.com">vbhardw@gmail.com</a>
+    <a href="https://www.linkedin.com/in/varun2">LinkedIn</a>
+  </footer>
+
+</main>
+</body>
+</html>

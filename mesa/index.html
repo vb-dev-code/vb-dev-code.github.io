@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mesa · Varun Bhardwaj</title>
+<meta name="description" content="Small-group nutrition accountability. Why I removed the progress bar on purpose.">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+<main class="wrap">
+
+  <a class="backlink" href="/">← All work</a>
+
+  <header class="case-header">
+    <p class="eyebrow">Prototype · Expo + Supabase</p>
+    <h1>Mesa <span class="pill">Prototype</span></h1>
+    <p>Declare a goal, check in daily to a private group, and let the group witness follow-through. No progress bars, no scores, no comparison to anyone else.</p>
+  </header>
+
+  <div class="shots">
+    <img src="/assets/img/mesa-01-feed.webp" alt="Mesa feed showing two check-ins: an On track post with a macro line, and a Close post with just a note" width="880" height="1912">
+    <img src="/assets/img/mesa-02-checkin.webp" alt="Check-in compose screen with group and goal selection and On track / Close / Off today / Rest day status options" width="880" height="1912">
+    <img src="/assets/img/mesa-03-goal.webp" alt="Goals screen showing weekly targets for protein, calories, and meal consistency with daily on-track markers, no progress bar" width="880" height="1912">
+  </div>
+
+  <section class="block">
+    <h2>What it is</h2>
+    <p>Most people who want to change how they eat churn out of tracking apps. Mesa is for groups of close friends rather than a social network, and it covers mixed populations — including people for whom calorie and weight fixation is actively harmful.</p>
+    <p>Expo and React Native on Supabase with row-level security. All four tabs, six-step onboarding, seven goal types, invite deep-links, and consent gating are built.</p>
+  </section>
+
+  <section class="block decision">
+    <h2>The decision</h2>
+    <p>I removed the progress bar on purpose.</p>
+    <p>Connecting goals to check-ins had five plausible designs. The two numeric ones — goal-type-specific logging, and progress-toward-target bars — are what the category expects, and I killed them on evidence rather than on cost. Showing someone a numeric target at the moment they self-report triggers the violation effect from restraint theory: miss the number and the response is abandonment, not correction. And weight goals plus numeric benchmarking plus social visibility is a documented predictor of disordered eating. Stacking all three would have been the default design.</p>
+    <p>What shipped is declaration plus a qualitative status. A check-in says "On track" or "Close," carries whatever note the person wants to write, and shows any values they chose to report — but there is <strong>no progress bar, no percentage of a target, and no comparison against anyone else</strong>. The number, when it appears at all, is something you said, not a score you are being measured against. <strong>Weight goals are architecturally isolated from the feed</strong> — not hidden behind a setting, structurally unable to reach it — and each goal type has its own rule about whether a target may be displayed at all.</p>
+    <p>The framing that made the call obvious: Mesa is betting on social witnessing, not social comparison. Those look similar in a mockup and behave nothing alike.</p>
+  </section>
+
+  <section class="block">
+    <h2>What it cost</h2>
+    <p>Numeric progress bars drive engagement. Removing them moves Mesa off MyFitnessPal's high-engagement, high-churn curve and toward the Focusmate and Strava retention tier. That is a bet, not a fact, and it costs measurable short-term engagement to make it.</p>
+    <p>The honest problem underneath: the accountability research showing one and a half to three times retention is <strong>exercise</strong> evidence, not nutrition evidence. Whether it transfers is the keystone assumption the entire model rests on, and it is unproven. I would rather write that down than discover it in month six.</p>
+  </section>
+
+  <section class="block">
+    <h2>Status &amp; next</h2>
+    <p>Runs end to end in Expo. Not wired: Apple Sign-In, push notifications, server-side EXIF stripping, and the multi-group feed. No store submission.</p>
+    <p>The next real step is testing the keystone assumption with one real group, not building more surface.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/">All work</a>
+    <a href="mailto:vbhardw@gmail.com">vbhardw@gmail.com</a>
+    <a href="https://www.linkedin.com/in/varun2">LinkedIn</a>
+  </footer>
+
+</main>
+</body>
+</html>

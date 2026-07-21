@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HomeComms · Varun Bhardwaj</title>
+<meta name="description" content="An intercom for Sonos, live on the App Store. Why I built live audio streaming and then deleted it.">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+<main class="wrap">
+
+  <a class="backlink" href="/">← All work</a>
+
+  <header class="case-header">
+    <p class="eyebrow">Shipped · iOS · Sonos, Echo, Chromecast</p>
+    <h1>HomeComms <span class="pill pill--live">Live</span></h1>
+    <p>Hold a button on your phone and your voice plays out of the speakers anywhere in the house. It replaces yelling up the stairs, which is a stronger incumbent than it sounds.</p>
+    <a href="https://apps.apple.com/app/id6776351744">View on the App Store →</a>
+  </header>
+
+  <div class="shots">
+    <img src="/assets/img/homecomms-01-home.webp" alt="Home screen: hold-to-talk button, target speaker, quick messages" width="880" height="1912">
+    <img src="/assets/img/homecomms-02-picker.webp" alt="Speaker picker showing Sonos rooms and Amazon Echo devices" width="880" height="1912">
+    <img src="/assets/img/homecomms-03-messages.webp" alt="Type-to-speak compose sheet" width="880" height="1912">
+  </div>
+
+  <section class="block">
+    <h2>What it is</h2>
+    <p>A one-way broadcast intercom for households with speakers in more than one room. Amazon and Google both ship this inside their own walled gardens; nothing equivalent existed for Sonos, which is the gap I went after.</p>
+    <p>I built all of it: the FastAPI backend on Fly, the Sonos OAuth and audio pipeline, the web UI, the Capacitor iOS shell, the home-screen widget, and the App Store submission.</p>
+  </section>
+
+  <section class="block decision">
+    <h2>The decision</h2>
+    <p>I built live audio streaming, then deleted it.</p>
+    <p>Live streaming was the obvious architecture, and I chose it for a reason: two-way intercom. Then the spike measured Sonos's playback buffer at a floor of one to two seconds — three to five times too slow for natural conversation, and not reducible, because Sonos engineered it for gapless music. Two-way was dead. <strong>Which meant the reason I'd picked live streaming no longer existed.</strong></p>
+    <p>What actually forced the rewrite was multi-tenancy. My two test households were remote, so I needed self-serve sign-up, and live streaming requires a per-user always-on relay. Recorded clips through Sonos's <code>audioClip</code> API don't.</p>
+    <p>Then the measurement surprised me. Clips came in at roughly <strong>one second end to end, against about five for streaming</strong>. The "five second floor" I'd been designing around applied to stream buffering, not to <code>audioClip</code>, which Sonos built for low-latency notifications. The cheaper, more scalable, remote-capable path also happened to be the fastest one. I had been carrying a number from the wrong context for weeks.</p>
+  </section>
+
+  <section class="block">
+    <h2>What it cost</h2>
+    <p>There is no two-way intercom, and there never will be on this architecture. That's a real ceiling on the product, not a phase-two item — two-way is a different product on different hardware.</p>
+    <p>I also pre-registered the trial's decision rule before running it, and <strong>excluded my own household from the read</strong>. My family using something I built is not evidence a market exists. That rule is the reason I still don't claim demand is proven: the honest status is shipped and unvalidated.</p>
+  </section>
+
+  <section class="block">
+    <h2>Status &amp; next</h2>
+    <p>Version 1.1 approved 2026-06-29 and live in 175 territories at $0.99. An in-app ratings prompt ships after a user's third successful broadcast. Sonos, Amazon Echo and Google Cast all work end to end for any household. Ring talk-back works too, but stays gated to my own household — it leans on an unofficial path I'm not willing to ship to strangers.</p>
+    <p>The open lever is demand, not distribution: recruit external households and read the pre-registered fourteen-day retention rule. If it fails, this stays a thing my family uses every day, which I'd already decided counts as a success.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/">All work</a>
+    <a href="mailto:vbhardw@gmail.com">vbhardw@gmail.com</a>
+    <a href="https://www.linkedin.com/in/varun2">LinkedIn</a>
+  </footer>
+
+</main>
+</body>
+</html>
