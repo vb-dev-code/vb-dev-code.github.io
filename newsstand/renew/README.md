@@ -31,10 +31,16 @@ state on every device. The workflow can also be triggered from the web
 app's "Cloud renew now" button (needs a fine-grained PAT scoped to this
 repo with Actions read/write, saved in the app's Settings).
 
-Caveats: NYT/WSJ sometimes challenge logins from datacenter IPs
-(captcha/bot checks). The browser profile is cached between runs to keep
-logins warm, but if a run fails on a challenge, fall back to running
-locally on a schedule — same script, same secrets, residential IP.
+Caveats — read before relying on this: as of Jul 2026, both publications
+hard-block the automated browser at their own login step, even headed on a
+residential IP with a human solving the challenge (NYT: DataDome refuses to
+render; WSJ: Dow Jones SSO returns "Access is temporarily restricted" after
+a correctly solved slider). The library card/PIN leg works fine — it's the
+publication logins that wall off automation, and repeated attempts escalate
+the block. Until that changes, treat this script and the workflow as
+experimental; the dependable path is the web app's one-tap deep links in
+your normal browser. If you retest, wait several days between attempts and
+never automate around a challenge.
 
 ## Setup
 

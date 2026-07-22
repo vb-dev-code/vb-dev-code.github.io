@@ -121,6 +121,7 @@
         <button id="copyPin" class="small">Copy</button>
       </div>
     </div>
+    <p class="hint">Fastest setup: save your card number + PIN as a password for <strong>rpa.sccl.org</strong> in Safari (iCloud Keychain). The library gateway then autofills natively and activation becomes two taps — no copying needed.</p>
     <div class="field inline">
       <input type="checkbox" id="autoOpen">
       <label for="autoOpen">Auto-open activation pages for expired passes when I open this app</label>
@@ -152,16 +153,16 @@ const PUBS = [
     name: "The New York Times",
     kind: "pass",
     hours: 72,
-    url: "https://sccld.org/nyt-online/",
-    note: "Click “Access Now”, enter your library card number and PIN when prompted, and the pass activates for 72 hours. Reactivate any time after it lapses."
+    url: "https://login.rpa.sccl.org/login/NYT",
+    note: "Opens the library gateway directly — enter your card number and PIN, then sign into your NYT account to redeem. Pass lasts 72 hours; reactivate any time after it lapses."
   },
   {
     id: "wsj",
     name: "The Wall Street Journal",
     kind: "pass",
     hours: 72,
-    url: "https://sccld.org/resources/newsstand/",
-    note: "Click the WSJ “Access Now” link on the newsstand page and enter your card number and PIN. Gives 3-day access to wsj.com; redeem again when it lapses."
+    url: "https://rpa.sccl.org/login?url=https://partner.wsj.com/p/1148200010/enter-redemption-code/P31117NM5FAD",
+    note: "Opens the library gateway directly — enter your card number and PIN, then sign into your WSJ account on the redemption page. Gives 3-day access; redeem again when it lapses."
   },
   {
     id: "pressreader",
@@ -200,7 +201,16 @@ const store = {
   },
   write(data) { localStorage.setItem("newsstand", JSON.stringify(data)); }
 };
-let state = Object.assign({ activations: {}, overrides: {}, card: "", pin: "", ghToken: "", autoOpen: false }, store.read());
+let state = Object.assign({ activations: {}, overrides: {}, card: "", pin: "", ghToken: "", autoOpen: false, lastUndo: null }, store.read());
+
+// The defaults used to point at library landing pages; an override that
+// still equals one of them now just masks the better built-in deep link.
+for (const [id, u] of Object.entries(state.overrides ?? {})) {
+  if (u === "https://sccld.org/nyt-online/" || u === "https://sccld.org/resources/newsstand/") {
+    delete state.overrides[id];
+    store.write(state);
+  }
+}
 
 const REPO = "vb-dev-code/vb-dev-code.github.io";
 const WORKFLOW = "newsstand-renew.yml";
@@ -238,14 +248,26 @@ function passStatus(pub) {
   const left = ts + pub.hours * 3600e3 - Date.now();
   if (left <= 0) return { cls: "bad", label: "Expired — tap Activate" };
   const h = Math.floor(left / 3600e3), m = Math.floor((left % 3600e3) / 60e3);
-  const label = h > 0 ? `Active · ${h}h ${m}m left` : `Active · ${m}m left`;
-  return { cls: left < 12 * 3600e3 ? "warn" : "ok", label };
+  const t = h > 0 ? `${h}h ${m}m left` : `${m}m left`;
+  if (left < 3 * 3600e3) return { cls: "warn", label: `Expiring soon · ${t}` };
+  return { cls: left < 12 * 3600e3 ? "warn" : "ok", label: `Active · ${t}` };
 }
 
 function activate(pub) {
   if (pub.kind === "pass") {
+    const prev = state.activations[pub.id];
     state.activations[pub.id] = Date.now();
+    // Mistap insurance: remember what this overwrote for 10 minutes.
+    state.lastUndo = { id: pub.id, prev: prev ?? null, at: Date.now() };
     store.write(state);
+  }
+  // Best-effort: drop the card number on the clipboard on the way out so the
+  // gateway form is one paste away. Must start before window.open steals
+  // focus; fails silently where clipboard access isn't granted.
+  if (state.card && navigator.clipboard) {
+    navigator.clipboard.writeText(state.card)
+      .then(() => { document.getElementById("cloudStatus").textContent = "📋 Card number copied — paste it into the gateway form."; })
+      .catch(() => {});
   }
   window.open(urlFor(pub), "_blank", "noopener");
   render();
@@ -277,6 +299,19 @@ function render() {
       clear.textContent = "Mark expired";
       clear.onclick = () => { delete state.activations[pub.id]; store.write(state); render(); };
       actions.appendChild(clear);
+    }
+    if (pub.kind === "pass" && state.lastUndo?.id === pub.id && Date.now() - state.lastUndo.at < 10 * 60e3) {
+      const undo = document.createElement("button");
+      undo.className = "small";
+      undo.textContent = "Undo activate";
+      undo.onclick = () => {
+        if (state.lastUndo.prev) state.activations[pub.id] = state.lastUndo.prev;
+        else delete state.activations[pub.id];
+        state.lastUndo = null;
+        store.write(state);
+        render();
+      };
+      actions.appendChild(undo);
     }
     root.appendChild(el);
   }
@@ -321,7 +356,7 @@ function renderSettings() {
   document.getElementById("resetBtn").onclick = () => {
     if (confirm("Clear activations, card number, PIN, GitHub token and URL overrides stored in this browser?")) {
       localStorage.removeItem("newsstand");
-      state = { activations: {}, overrides: {}, card: "", pin: "", ghToken: "", autoOpen: false };
+      state = { activations: {}, overrides: {}, card: "", pin: "", ghToken: "", autoOpen: false, lastUndo: null };
       render(); renderSettings();
     }
   };

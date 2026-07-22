@@ -33,16 +33,30 @@ access (https://sccld.org/resources/newsstand/). Three layers:
   (gitignored, `SCCLD_CARD`/`SCCLD_PIN` + optional `NYT_EMAIL`/`NYT_PASSWORD`
   `WSJ_EMAIL`/`WSJ_PASSWORD`); CI uses Actions secrets of the same names.
   `config.json`, `state/`, `shots/` are gitignored too.
-- The exact SCCLD "Access Now" deep links were never captured (sccld.org
-  blocks automated fetching); defaults point at library landing pages and
-  can be overridden per-publication in the app's Settings or in
-  `newsstand/renew/config.json`.
-- The renewal flow has been tested only against a local mock of the chain
-  (landing → EZproxy login → email/password → redeem → confirmation), not
-  against the real sccld.org/NYT/WSJ sites. Expect selector tuning after
-  the first real run; `--headless` off is the debugging mode.
-- Known risk: NYT/WSJ bot challenges on datacenter IPs in CI. Fallback is
-  running the same script locally on a schedule.
+- Real gateway URLs (captured from sccld.org/resources/newsstand/, Jul 2026,
+  now the defaults in both the app and `renew.mjs`):
+  - NYT: `https://login.rpa.sccl.org/login/NYT`
+  - WSJ: `https://rpa.sccl.org/login?url=https://partner.wsj.com/p/1148200010/enter-redemption-code/P31117NM5FAD`
+  - `rpa.sccl.org/login?url=…` is SCCLD's generic remote-patron-auth wrapper.
+- Tested against the real sites (Jul 2026): the library card/PIN leg works
+  end to end. Both publications hard-block the automated browser at their
+  own login, even headed on a residential IP with a human solving
+  challenges — NYT via DataDome (challenge won't render), WSJ via Dow Jones
+  SSO ("Access is temporarily restricted" *after* a correctly solved
+  slider). Repeated runs escalate the blocks. Do not attempt fingerprint
+  masking or challenge automation; the supported path when blocked is the
+  PWA's one-tap deep links in a normal browser.
+- Consequence: the every-3-days GitHub Actions schedule and any local
+  headless schedule will fail at the publication login until the vendors'
+  scoring changes. Retesting after a multi-day cooldown is reasonable;
+  hammering is not (risks account lockout, not just session blocks).
+- `renew.mjs` behaviors added after real-site testing: fields must be
+  editable (NYT ships a readonly decoy password input), account login also
+  runs on `authHosts` (Dow Jones SSO is off-host from wsj.com), success is
+  never declared on auth pages or without an action having happened this
+  run, same-control click loops abort the walk, credential values are
+  masked out of Playwright error logs, and headed runs wait up to 5 minutes
+  at anything unrecognized so a human can push the page forward.
 
 ### Testing
 
