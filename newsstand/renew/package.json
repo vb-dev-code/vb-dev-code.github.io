@@ -1,0 +1,12 @@
+{
+  "name": "newsstand-renew",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "renew": "node renew.mjs",
+    "renew:headless": "node renew.mjs --headless"
+  },
+  "dependencies": {
+    "playwright": "^1.45.0"
+  }
+}
