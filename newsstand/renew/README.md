@@ -1,9 +1,40 @@
 # Newsstand auto-renew
 
-Local script that renews SCCLD's 72-hour publication passes (NYT, WSJ) by
-driving the same "Access Now" → card + PIN flow you'd do by hand. It runs
-**only on your machine** — credentials live in a gitignored `.env`, and the
-browser profile it keeps (so NYT/WSJ stay logged in) is gitignored too.
+Renews SCCLD's 72-hour publication passes (NYT, WSJ) by driving the same
+"Access Now" → card + PIN flow you'd do by hand, then completing the
+publication's own account login and redeem step. Two ways to run it:
+locally (below), or fully automatic in the cloud (next section).
+Credentials live in a gitignored `.env` locally or GitHub Actions secrets
+in CI — never in the repo.
+
+## Zero-click mode (GitHub Actions)
+
+`.github/workflows/newsstand-renew.yml` runs this script every 3 days on
+GitHub's servers. Because the pass attaches to your NYT/WSJ *account*, a
+cloud renewal unlocks the NYT and WSJ apps on your phone with no action on
+your part.
+
+Setup (once, on github.com → repo → Settings → Secrets and variables →
+Actions):
+
+| Secret | Value |
+| --- | --- |
+| `SCCLD_CARD` | library card number |
+| `SCCLD_PIN` | library PIN |
+| `NYT_EMAIL` / `NYT_PASSWORD` | your free NYT account |
+| `WSJ_EMAIL` / `WSJ_PASSWORD` | your free WSJ account |
+
+Then trigger it once by hand (Actions → "Renew newsstand passes" → Run
+workflow) and check the run log and its screenshot artifact. Each run
+commits `newsstand/status.json`, which the web app reads to show live pass
+state on every device. The workflow can also be triggered from the web
+app's "Cloud renew now" button (needs a fine-grained PAT scoped to this
+repo with Actions read/write, saved in the app's Settings).
+
+Caveats: NYT/WSJ sometimes challenge logins from datacenter IPs
+(captcha/bot checks). The browser profile is cached between runs to keep
+logins warm, but if a run fails on a challenge, fall back to running
+locally on a schedule — same script, same secrets, residential IP.
 
 ## Setup
 

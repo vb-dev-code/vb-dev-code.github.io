@@ -1,5 +1,6 @@
 .env
 config.json
 state/
+shots/
 node_modules/
 package-lock.json

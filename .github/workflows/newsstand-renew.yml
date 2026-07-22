@@ -1,0 +1,64 @@
+name: Renew newsstand passes
+
+on:
+  schedule:
+    - cron: "0 15 */3 * *" # every 3 days, ~7am Pacific
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: newsstand-renew
+  cancel-in-progress: false
+
+jobs:
+  renew:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Persist the browser profile between runs so NYT/WSJ logins stick.
+      - uses: actions/cache@v4
+        with:
+          path: newsstand/renew/state
+          key: newsstand-state-${{ github.run_id }}
+          restore-keys: newsstand-state-
+
+      - name: Install
+        working-directory: newsstand/renew
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Renew passes
+        working-directory: newsstand/renew
+        env:
+          SCCLD_CARD: ${{ secrets.SCCLD_CARD }}
+          SCCLD_PIN: ${{ secrets.SCCLD_PIN }}
+          NYT_EMAIL: ${{ secrets.NYT_EMAIL }}
+          NYT_PASSWORD: ${{ secrets.NYT_PASSWORD }}
+          WSJ_EMAIL: ${{ secrets.WSJ_EMAIL }}
+          WSJ_PASSWORD: ${{ secrets.WSJ_PASSWORD }}
+        run: node renew.mjs --headless --status ../status.json --shots shots
+
+      # Publish run results so the phone app shows live pass status.
+      - name: Commit status
+        if: always()
+        run: |
+          git config user.name "newsstand-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add newsstand/status.json
+          git diff --cached --quiet || { git commit -m "Update newsstand pass status"; git push; }
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: renewal-screenshots
+          path: newsstand/renew/shots/
+          if-no-files-found: ignore
+          retention-days: 7

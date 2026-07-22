@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#101418">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Newsstand">
 <title>Newsstand · SCCLD Pass Manager</title>
 <style>
   :root {
@@ -93,8 +98,10 @@
 
   <div class="toolbar">
     <button class="primary" id="renewAll">Renew all expiring passes</button>
+    <button id="cloudBtn" title="Trigger the GitHub Actions renewal workflow now">☁️ Cloud renew now</button>
     <button id="calBtn" title="Download a recurring calendar reminder for pass renewals">Calendar auto-reminders (.ics)</button>
   </div>
+  <p class="hint" id="cloudStatus"></p>
 
   <section id="pubs"></section>
 
@@ -117,6 +124,12 @@
     <div class="field inline">
       <input type="checkbox" id="autoOpen">
       <label for="autoOpen">Auto-open activation pages for expired passes when I open this app</label>
+    </div>
+    <div class="field">
+      <label for="ghToken">GitHub token for “Cloud renew now” (fine-grained, this repo only, Actions read/write — stored only in this browser)</label>
+      <div class="cardnum">
+        <input type="password" id="ghToken" autocomplete="off" placeholder="github_pat_…">
+      </div>
     </div>
     <div id="urlOverrides"></div>
     <p class="hint">Tip: after you click through a publication's “Access Now” flow once, copy the exact activation URL from your address bar and paste it above — future activations then skip the library landing page.</p>
@@ -187,7 +200,35 @@ const store = {
   },
   write(data) { localStorage.setItem("newsstand", JSON.stringify(data)); }
 };
-let state = Object.assign({ activations: {}, overrides: {}, card: "", pin: "", autoOpen: false }, store.read());
+let state = Object.assign({ activations: {}, overrides: {}, card: "", pin: "", ghToken: "", autoOpen: false }, store.read());
+
+const REPO = "vb-dev-code/vb-dev-code.github.io";
+const WORKFLOW = "newsstand-renew.yml";
+
+// Merge cloud renewal results (written by the GitHub Actions workflow) into
+// local pass state, so the phone shows renewals that happened server-side.
+async function syncCloudStatus() {
+  try {
+    const res = await fetch("status.json", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    let changed = false;
+    for (const [id, r] of Object.entries(data.renewed ?? {})) {
+      if (r.ok && r.ts > (state.activations[id] ?? 0)) {
+        state.activations[id] = r.ts;
+        changed = true;
+      }
+    }
+    if (changed) { store.write(state); render(); }
+    const last = Object.values(data.renewed ?? {}).map(r => r.ts).sort().pop();
+    if (last) {
+      const el = document.getElementById("cloudStatus");
+      const when = new Date(last).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+      const allOk = Object.values(data.renewed).every(r => r.ok);
+      el.textContent = allOk ? `☁️ Last automatic renewal: ${when}` : `☁️ Last automatic renewal had failures (${when}) — check the Actions run.`;
+    }
+  } catch { /* offline or status not yet published */ }
+}
 
 function urlFor(pub) { return state.overrides[pub.id] || pub.url; }
 
@@ -254,6 +295,9 @@ function renderSettings() {
   document.getElementById("copyPin").onclick = async () => {
     if (state.pin) await navigator.clipboard.writeText(state.pin);
   };
+  const tok = document.getElementById("ghToken");
+  tok.value = state.ghToken;
+  tok.oninput = () => { state.ghToken = tok.value.trim(); store.write(state); };
   const auto = document.getElementById("autoOpen");
   auto.checked = state.autoOpen;
   auto.onchange = () => { state.autoOpen = auto.checked; store.write(state); };
@@ -275,13 +319,39 @@ function renderSettings() {
   }
 
   document.getElementById("resetBtn").onclick = () => {
-    if (confirm("Clear activations, card number, PIN and URL overrides stored in this browser?")) {
+    if (confirm("Clear activations, card number, PIN, GitHub token and URL overrides stored in this browser?")) {
       localStorage.removeItem("newsstand");
-      state = { activations: {}, overrides: {}, card: "", pin: "", autoOpen: false };
+      state = { activations: {}, overrides: {}, card: "", pin: "", ghToken: "", autoOpen: false };
       render(); renderSettings();
     }
   };
 }
+
+document.getElementById("cloudBtn").onclick = async () => {
+  const el = document.getElementById("cloudStatus");
+  if (!state.ghToken) {
+    el.textContent = "☁️ Add a GitHub token in Settings first (fine-grained, this repo, Actions read/write).";
+    document.querySelector("details.settings").open = true;
+    return;
+  }
+  el.textContent = "☁️ Triggering cloud renewal…";
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${state.ghToken}`,
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ref: "main" }),
+    });
+    el.textContent = res.status === 204
+      ? "☁️ Cloud renewal started — passes update in a few minutes."
+      : `☁️ Trigger failed (HTTP ${res.status}) — check the token's permissions.`;
+  } catch {
+    el.textContent = "☁️ Trigger failed — network error.";
+  }
+};
 
 document.getElementById("renewAll").onclick = () => {
   const due = PUBS.filter(p => p.kind === "pass" && passStatus(p).cls !== "ok" && passStatus(p).cls !== "warn");
@@ -320,7 +390,9 @@ document.getElementById("calBtn").onclick = () => {
 
 render();
 renderSettings();
+syncCloudStatus();
 setInterval(render, 60e3);
+setInterval(syncCloudStatus, 5 * 60e3);
 
 // Auto-open expired passes on load, if opted in. Delayed slightly so the page
 // paints first; popup blockers may limit this to one tab per visit.
