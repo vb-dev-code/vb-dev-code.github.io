@@ -13,7 +13,7 @@
   <a class="backlink" href="/">← All work</a>
 
   <header class="case-header">
-    <p class="eyebrow">Beta · iOS &amp; Android · TestFlight and Play internal</p>
+    <p class="eyebrow">Closed beta · iOS &amp; Android</p>
     <h1>Split Decision <span class="pill">Beta</span></h1>
     <p>A daily phrase puzzle with two ways to play. There's solo, which works like any daily. And there's co-op, where each of you owns a different hidden word in the same phrase, so neither one of you can finish it alone.</p>
   </header>
@@ -51,7 +51,8 @@
 
   <section class="block">
     <h2>Status &amp; next</h2>
-    <p>iOS build 112 is in TestFlight external review and the Android bundle is on Play's internal track, so public launch is gated on store assets and listing copy rather than on engineering.</p>
+    <p>Split Decision is in closed beta on both platforms, so the build is done and the open question isn't whether it works. What I'm testing before public launch is whether the co-op loop actually closes, because right now about 5% of players ever finish a co-op game and 11 of 59 teams have ever reached a second player. Until the invite flow converts, shipping wider mostly just puts more people into the solo game.</p>
+    <p>The nearest thing to a blocker is a gap at the send step: 76 invites created in a week produced 1 link preview. That's either people generating links they never send, or instrumentation that isn't firing, and I'm not launching publicly until I know which one it is.</p>
     <p>Account deletion hard-deletes personal data, but it pseudonymizes shared co-op records to "Former player," so one person leaving can't corrupt their teammate's history.</p>
   </section>
 
