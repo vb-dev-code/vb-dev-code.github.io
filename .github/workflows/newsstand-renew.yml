@@ -1,8 +1,12 @@
 name: Renew newsstand passes
 
 on:
-  schedule:
-    - cron: "0 15 */3 * *" # every 3 days, ~7am Pacific
+  # Schedule disabled Jul 2026: NYT (DataDome) and WSJ (Dow Jones SSO) both
+  # hard-block the automated login, and repeated runs escalate the block —
+  # see newsstand/renew/README.md. Re-enable only after a manual dispatch
+  # succeeds end to end.
+  # schedule:
+  #   - cron: "0 15 */3 * *" # every 3 days, ~7am Pacific
   workflow_dispatch:
 
 permissions:
