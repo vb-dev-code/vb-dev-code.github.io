@@ -34,9 +34,9 @@
   <section class="block decision">
     <h2>The decision</h2>
     <p>I built live audio streaming, then deleted it.</p>
-    <p>Live streaming was the obvious architecture, and I chose it for a reason: two-way intercom. Then the spike measured Sonos's playback buffer at a floor of one to two seconds — three to five times too slow for natural conversation, and not reducible, because Sonos engineered it for gapless music. Two-way was dead. <strong>Which meant the reason I'd picked live streaming no longer existed.</strong></p>
+    <p>Live streaming was the obvious architecture, and I chose it for a reason: two-way intercom. Then the spike measured Sonos's playback buffer at 1 to 2 seconds, against the 400 milliseconds natural conversation needs. It is not reducible, because Sonos engineered it for gapless music. Two-way was dead. <strong>Which meant the reason I'd picked live streaming no longer existed.</strong></p>
     <p>What actually forced the rewrite was multi-tenancy. My two test households were remote, so I needed self-serve sign-up, and live streaming requires a per-user always-on relay. Recorded clips through Sonos's <code>audioClip</code> API don't.</p>
-    <p>Then the measurement surprised me. Clips came in at roughly <strong>one second end to end, against about five for streaming</strong>. The "five second floor" I'd been designing around applied to stream buffering, not to <code>audioClip</code>, which Sonos built for low-latency notifications. The cheaper, more scalable, remote-capable path also happened to be the fastest one. I had been carrying a number from the wrong context for weeks.</p>
+    <p>Then the measurement surprised me. <strong>Clips measured 1 second end to end. Streaming measured 5.</strong> The 5-second floor I'd been designing around applied to stream buffering, not to <code>audioClip</code>, which Sonos built for low-latency notifications. The cheaper, more scalable, remote-capable path also happened to be the fastest one. I had been carrying a number from the wrong context for weeks.</p>
   </section>
 
   <section class="block">
@@ -47,8 +47,8 @@
 
   <section class="block">
     <h2>Status &amp; next</h2>
-    <p>Version 1.1 approved 2026-06-29 and live in 175 territories at $0.99. An in-app ratings prompt ships after a user's third successful broadcast. Sonos, Amazon Echo and Google Cast all work end to end for any household. Ring talk-back works too, but stays gated to my own household — it leans on an unofficial path I'm not willing to ship to strangers.</p>
-    <p>The open lever is demand, not distribution: recruit external households and read the pre-registered fourteen-day retention rule. If it fails, this stays a thing my family uses every day, which I'd already decided counts as a success.</p>
+    <p>Apple approved version 1.1 on 2026-06-29. It is live in 175 territories at $0.99. An in-app ratings prompt ships after a user's third successful broadcast. Sonos, Amazon Echo and Google Cast all work end to end for any household. Ring talk-back works too, but stays gated to my own household — it leans on an unofficial path I'm not willing to ship to strangers.</p>
+    <p>The open lever is demand, not distribution: recruit external households and read the pre-registered 14-day retention rule. If it fails, this stays a thing my family uses every day, which I'd already decided counts as a success.</p>
   </section>
 
   <footer class="footer">
