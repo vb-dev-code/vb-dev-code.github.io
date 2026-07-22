@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#101418">
+<title>Newsstand · SCCLD Pass Manager</title>
+<style>
+  :root {
+    --bg: #f6f4ef;
+    --card: #ffffff;
+    --ink: #1b1f24;
+    --muted: #6b7280;
+    --line: #e5e1d8;
+    --accent: #0f5c4f;
+    --accent-ink: #ffffff;
+    --ok: #0f7b4f;
+    --warn: #b0700a;
+    --bad: #b03a2e;
+    --chip: #eef2ee;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101418;
+      --card: #1a2027;
+      --ink: #e8e6e1;
+      --muted: #9aa3ad;
+      --line: #2a323b;
+      --accent: #3ba58f;
+      --accent-ink: #0c1210;
+      --ok: #4cc38a;
+      --warn: #e0a83a;
+      --bad: #e5695c;
+      --chip: #232b33;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 64px; }
+  header h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  header p { color: var(--muted); margin: 0 0 8px; }
+  header a { color: var(--accent); }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 20px; }
+  button, .btn {
+    font: inherit; cursor: pointer; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 8px 14px; text-decoration: none; display: inline-block;
+  }
+  button.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 600; }
+  button:active { transform: translateY(1px); }
+  .pub {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px; margin-bottom: 12px;
+  }
+  .pub-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .pub h2 { font-size: 1.05rem; margin: 0; }
+  .pub .note { color: var(--muted); font-size: .88rem; margin: 6px 0 10px; }
+  .status { font-size: .82rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--chip); white-space: nowrap; }
+  .status.ok { color: var(--ok); }
+  .status.warn { color: var(--warn); }
+  .status.bad { color: var(--bad); }
+  .status.always { color: var(--muted); font-weight: 500; }
+  .pub-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .pub-actions .small { font-size: .85rem; padding: 6px 10px; }
+  details.settings { margin-top: 28px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; }
+  details.settings summary { cursor: pointer; font-weight: 600; }
+  .field { margin: 12px 0; }
+  .field label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: 4px; }
+  .field input[type=text], .field input[type=url] {
+    width: 100%; font: inherit; padding: 8px 10px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  }
+  .field.inline { display: flex; align-items: center; gap: 8px; }
+  .field.inline label { margin: 0; color: var(--ink); font-size: .95rem; }
+  .hint { font-size: .8rem; color: var(--muted); }
+  .cardnum { display: flex; gap: 8px; }
+  .cardnum input { flex: 1; }
+  footer { margin-top: 28px; font-size: .8rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>📰 Newsstand</h1>
+    <p>One-tap activation for <a href="https://sccld.org/resources/newsstand/" target="_blank" rel="noopener">SCCLD</a> publication access. Passes (NYT, WSJ) last ~72 hours and are tracked below; everything else just needs your library card.</p>
+  </header>
+
+  <div class="toolbar">
+    <button class="primary" id="renewAll">Renew all expiring passes</button>
+    <button id="calBtn" title="Download a recurring calendar reminder for pass renewals">Calendar auto-reminders (.ics)</button>
+  </div>
+
+  <section id="pubs"></section>
+
+  <details class="settings">
+    <summary>Settings</summary>
+    <div class="field">
+      <label for="card">Library card number (stored only in this browser, for quick copy into the login form)</label>
+      <div class="cardnum">
+        <input type="text" id="card" inputmode="numeric" autocomplete="off" placeholder="e.g. 29043…">
+        <button id="copyCard" class="small">Copy</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="pin">PIN (optional — also stored only in this browser)</label>
+      <div class="cardnum">
+        <input type="password" id="pin" autocomplete="off" placeholder="••••">
+        <button id="copyPin" class="small">Copy</button>
+      </div>
+    </div>
+    <div class="field inline">
+      <input type="checkbox" id="autoOpen">
+      <label for="autoOpen">Auto-open activation pages for expired passes when I open this app</label>
+    </div>
+    <div id="urlOverrides"></div>
+    <p class="hint">Tip: after you click through a publication's “Access Now” flow once, copy the exact activation URL from your address bar and paste it above — future activations then skip the library landing page.</p>
+    <div class="field">
+      <button id="resetBtn" class="small">Reset all data</button>
+    </div>
+  </details>
+
+  <footer>
+    Access is provided by the Santa Clara County Library District to cardholders. This page stores everything locally in your browser — nothing is sent anywhere.
+  </footer>
+</main>
+
+<script>
+"use strict";
+
+const PUBS = [
+  {
+    id: "nyt",
+    name: "The New York Times",
+    kind: "pass",
+    hours: 72,
+    url: "https://sccld.org/nyt-online/",
+    note: "Click “Access Now”, enter your library card number and PIN when prompted, and the pass activates for 72 hours. Reactivate any time after it lapses."
+  },
+  {
+    id: "wsj",
+    name: "The Wall Street Journal",
+    kind: "pass",
+    hours: 72,
+    url: "https://sccld.org/resources/newsstand/",
+    note: "Click the WSJ “Access Now” link on the newsstand page and enter your card number and PIN. Gives 3-day access to wsj.com; redeem again when it lapses."
+  },
+  {
+    id: "pressreader",
+    name: "PressReader (7,000+ papers & magazines)",
+    kind: "always",
+    url: "https://www.pressreader.com/catalog",
+    note: "Click through from the newsstand page and enter your card number and PIN. Includes The Guardian, USA Today, The Economist and many international titles."
+  },
+  {
+    id: "libby",
+    name: "Libby eMagazines",
+    kind: "always",
+    url: "https://libbyapp.com/library/sccl",
+    note: "People, TIME, Consumer Reports and hundreds more. Sign in once with your card; access doesn't expire."
+  },
+  {
+    id: "mercury",
+    name: "San Jose Mercury News",
+    kind: "always",
+    url: "https://sccld.org/resources/newsstand/",
+    note: "Full-text articles via the library's database link (log in with card number + PIN)."
+  },
+  {
+    id: "flipster",
+    name: "Flipster (kids' magazines)",
+    kind: "always",
+    url: "https://sccld.org/resources/newsstand/",
+    note: "Ranger Rick, Zoobooks, Sports Illustrated Kids."
+  }
+];
+
+const store = {
+  read() {
+    try { return JSON.parse(localStorage.getItem("newsstand") || "{}"); }
+    catch { return {}; }
+  },
+  write(data) { localStorage.setItem("newsstand", JSON.stringify(data)); }
+};
+let state = Object.assign({ activations: {}, overrides: {}, card: "", pin: "", autoOpen: false }, store.read());
+
+function urlFor(pub) { return state.overrides[pub.id] || pub.url; }
+
+function passStatus(pub) {
+  const ts = state.activations[pub.id];
+  if (!ts) return { cls: "bad", label: "Not active — tap Activate" };
+  const left = ts + pub.hours * 3600e3 - Date.now();
+  if (left <= 0) return { cls: "bad", label: "Expired — tap Activate" };
+  const h = Math.floor(left / 3600e3), m = Math.floor((left % 3600e3) / 60e3);
+  const label = h > 0 ? `Active · ${h}h ${m}m left` : `Active · ${m}m left`;
+  return { cls: left < 12 * 3600e3 ? "warn" : "ok", label };
+}
+
+function activate(pub) {
+  if (pub.kind === "pass") {
+    state.activations[pub.id] = Date.now();
+    store.write(state);
+  }
+  window.open(urlFor(pub), "_blank", "noopener");
+  render();
+}
+
+function render() {
+  const root = document.getElementById("pubs");
+  root.innerHTML = "";
+  for (const pub of PUBS) {
+    const el = document.createElement("div");
+    el.className = "pub";
+    const st = pub.kind === "pass" ? passStatus(pub) : { cls: "always", label: "Always on with card" };
+    el.innerHTML = `
+      <div class="pub-head">
+        <h2>${pub.name}</h2>
+        <span class="status ${st.cls}">${st.label}</span>
+      </div>
+      <p class="note">${pub.note}</p>
+      <div class="pub-actions"></div>`;
+    const actions = el.querySelector(".pub-actions");
+    const go = document.createElement("button");
+    go.className = "primary";
+    go.textContent = pub.kind === "pass" ? "Activate" : "Open";
+    go.onclick = () => activate(pub);
+    actions.appendChild(go);
+    if (pub.kind === "pass" && state.activations[pub.id]) {
+      const clear = document.createElement("button");
+      clear.className = "small";
+      clear.textContent = "Mark expired";
+      clear.onclick = () => { delete state.activations[pub.id]; store.write(state); render(); };
+      actions.appendChild(clear);
+    }
+    root.appendChild(el);
+  }
+}
+
+function renderSettings() {
+  const card = document.getElementById("card");
+  card.value = state.card;
+  card.oninput = () => { state.card = card.value.trim(); store.write(state); };
+  document.getElementById("copyCard").onclick = async () => {
+    if (state.card) await navigator.clipboard.writeText(state.card);
+  };
+  const pin = document.getElementById("pin");
+  pin.value = state.pin;
+  pin.oninput = () => { state.pin = pin.value.trim(); store.write(state); };
+  document.getElementById("copyPin").onclick = async () => {
+    if (state.pin) await navigator.clipboard.writeText(state.pin);
+  };
+  const auto = document.getElementById("autoOpen");
+  auto.checked = state.autoOpen;
+  auto.onchange = () => { state.autoOpen = auto.checked; store.write(state); };
+
+  const ov = document.getElementById("urlOverrides");
+  ov.innerHTML = "";
+  for (const pub of PUBS) {
+    const f = document.createElement("div");
+    f.className = "field";
+    f.innerHTML = `<label>Activation URL · ${pub.name}</label>
+      <input type="url" placeholder="${pub.url}" value="${state.overrides[pub.id] || ""}">`;
+    const input = f.querySelector("input");
+    input.onchange = () => {
+      const v = input.value.trim();
+      if (v) state.overrides[pub.id] = v; else delete state.overrides[pub.id];
+      store.write(state);
+    };
+    ov.appendChild(f);
+  }
+
+  document.getElementById("resetBtn").onclick = () => {
+    if (confirm("Clear activations, card number, PIN and URL overrides stored in this browser?")) {
+      localStorage.removeItem("newsstand");
+      state = { activations: {}, overrides: {}, card: "", pin: "", autoOpen: false };
+      render(); renderSettings();
+    }
+  };
+}
+
+document.getElementById("renewAll").onclick = () => {
+  const due = PUBS.filter(p => p.kind === "pass" && passStatus(p).cls !== "ok" && passStatus(p).cls !== "warn");
+  const targets = due.length ? due : PUBS.filter(p => p.kind === "pass");
+  targets.forEach(p => activate(p));
+};
+
+// Recurring calendar reminders: one event per pass publication, every 3 days,
+// with the activation link in the description. Subscribing/importing this into
+// Google/Apple Calendar is the "automatic" path a static page can offer.
+document.getElementById("calBtn").onclick = () => {
+  const pad = n => String(n).padStart(2, "0");
+  const fmt = d => `${d.getUTCFullYear()}${pad(d.getUTCMonth()+1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
+  const now = new Date();
+  const events = PUBS.filter(p => p.kind === "pass").map(p => {
+    const base = state.activations[p.id] ? new Date(state.activations[p.id] + p.hours * 3600e3) : now;
+    return [
+      "BEGIN:VEVENT",
+      `UID:newsstand-${p.id}@vb-dev-code.github.io`,
+      `DTSTAMP:${fmt(now)}`,
+      `DTSTART:${fmt(base)}`,
+      "RRULE:FREQ=DAILY;INTERVAL=3",
+      `SUMMARY:Renew ${p.name} library pass`,
+      `DESCRIPTION:Open ${urlFor(p)} and click Access Now. Tracker: https://vb-dev-code.github.io/newsstand/`,
+      "BEGIN:VALARM","TRIGGER:PT0S","ACTION:DISPLAY",`DESCRIPTION:Renew ${p.name}`,"END:VALARM",
+      "END:VEVENT"
+    ].join("\r\n");
+  });
+  const ics = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//newsstand//EN", ...events, "END:VCALENDAR"].join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
+  a.download = "newsstand-renewals.ics";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+render();
+renderSettings();
+setInterval(render, 60e3);
+
+// Auto-open expired passes on load, if opted in. Delayed slightly so the page
+// paints first; popup blockers may limit this to one tab per visit.
+if (state.autoOpen) {
+  const expired = PUBS.filter(p => p.kind === "pass" && passStatus(p).cls === "bad" && state.activations[p.id]);
+  if (expired.length) setTimeout(() => expired.forEach(p => activate(p)), 800);
+}
+</script>
+</body>
+</html>
