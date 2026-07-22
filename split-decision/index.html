@@ -15,7 +15,7 @@
   <header class="case-header">
     <p class="eyebrow">Beta · iOS &amp; Android · TestFlight and Play internal</p>
     <h1>Split Decision <span class="pill">Beta</span></h1>
-    <p>A daily phrase puzzle with two ways to play. Solo, like any daily. Or in co-op, where each teammate owns a different hidden word in the same phrase and neither of you can finish alone.</p>
+    <p>A daily phrase puzzle with two ways to play. There's solo, which works like any daily. And there's co-op, where each of you owns a different hidden word in the same phrase, so neither one of you can finish it alone.</p>
   </header>
 
   <div class="shots">
@@ -26,28 +26,30 @@
 
   <section class="block">
     <h2>What it is</h2>
-    <p>The category is crowded with word puzzles, so it isn't competing on puzzles. The job is giving a partner, a sibling, or a long-distance friend a lightweight reason to talk every day. Small persistent groups of two or three, not a social network.</p>
-    <p>A pnpm TypeScript monorepo: Node and Prisma on Postgres, a React PWA, and native SwiftUI and Kotlin clients, deployed on Fly. More than 1,100 tests across web and native.</p>
+    <p>The category is crowded with word puzzles, so it isn't really competing on puzzles. The job it does is giving a partner or a sibling or a long-distance friend a lightweight reason to talk every day, which is why it's built for persistent groups of two or three rather than for a social network.</p>
+    <p>It's a TypeScript monorepo with Node and Prisma on Postgres, a React web app, and native SwiftUI and Kotlin clients, all deployed on Fly, with more than 1,100 tests across web and native.</p>
   </section>
 
   <section class="block decision">
     <h2>The decision</h2>
     <p>One global daily phrase was serving two incompatible jobs.</p>
-    <p>The single daily phrase was the identity of the solo game — exactly one puzzle a day, the same one for everyone. It was also where team puzzles came from. That worked right up until a player joined a second team. The moment they see the phrase once, the information asymmetry the entire co-op mechanic depends on is gone: they already know the answer their teammate is working toward. Decoupling team puzzles from the solo daily was the fix.</p>
-    <p>The more useful part is what pressure-testing changed. <strong>I declared my own North Star uncomputable.</strong> Anonymous per-device identity splits a returning duo into two separate players, which biases the metric downward — and it does so most severely for exactly the behavior the metric is supposed to reward. A number that is most wrong when you are most successful is worse than no number, So I replaced it at launch with per-game proxies for whether the pair actually felt connected — measurable inside a single game, where identity is reliable.</p>
-    <p>Two smaller ones. I derived the teams-per-user cap from a comprehension test instead of asserting it, because I wasn't going to ship a confusing product on untested arithmetic. And when I caught myself calling a change "only two lines of code," I split the claim — the genuinely risky part, cross-surface dedupe, had been getting laundered by the cheap headline.</p>
+    <p>The single daily phrase was the identity of the solo game, where there's exactly one puzzle a day and everybody gets the same one. It was also where team puzzles came from. That worked right up until somebody joined a second team, because the moment they've seen the phrase once, the information asymmetry the whole co-op mechanic runs on is gone: they already know the answer their teammate is working toward. So I decoupled team puzzles from the solo daily.</p>
+    <p>On metrics, the more useful part is what pressure-testing changed. My North Star was <strong>Recurring Co-op Duo-Days</strong>, which counted every team-day where both members played their assigned word. On paper it's the right metric, because it only moves when co-op actually delivers.</p>
+    <p>The problem is that computing it means recognizing the same two people tomorrow, and identity in the app is per-device with no recovery. Somebody clears their data or picks up a second phone or reinstalls, and they come back as a new player, which quietly splits a returning duo into two identities. The bias runs downward, it runs hardest on the engaged pairs the metric exists to reward, and it's invisible, because you can't tell "this duo churned" from "this person got a new phone." <strong>A number that's most wrong exactly when you're most successful is worse than no number</strong>, so I declared it uncomputable until identity recovery ships.</p>
+    <p>What I put in its place for launch were two things I could measure inside a single game: how often a player spends a Signal on their teammate's word, and how often a Rescue gets claimed when someone is stuck. Both of those need both people present and paying attention in the same session, which is exactly why they survive the identity churn that broke Duo-Days.</p>
+    <p>Two smaller ones. I derived the teams-per-user cap from an actual comprehension test instead of asserting it, because I wasn't willing to ship a possibly-confusing product on arithmetic nobody had run. And when I caught myself describing a change as "only two lines of code," I split the claim in two, because the genuinely risky part, which was cross-surface dedupe, had been getting laundered by the cheap headline.</p>
   </section>
 
   <section class="block">
     <h2>What it cost</h2>
-    <p>Bundling web assets into the native shells means giving up instant web-to-native updates. I took that trade knowingly to avoid a rejection under App Store guideline 4.2, which bars apps that are thin wrappers around a website, and logged live-update infrastructure as deliberate debt rather than pretending it wasn't debt.</p>
-    <p>Losing the single global phrase also cost the solo game some of its identity. That was the price of the co-op mechanic working at all.</p>
+    <p>Bundling web assets into the native shells means giving up instant web-to-native updates. I took that trade knowingly, to avoid a rejection under App Store guideline 4.2, which bars apps that are thin wrappers around a website, and I logged live-update infrastructure as deliberate debt rather than pretending it wasn't debt.</p>
+    <p>Losing the single global phrase also cost the solo game some of its identity, and that was the price of the co-op mechanic working at all.</p>
   </section>
 
   <section class="block">
     <h2>Status &amp; next</h2>
-    <p>iOS build 112 is in TestFlight external review; the Android bundle is on Play's internal track. Public launch is gated on store assets and listing copy, not on engineering.</p>
-    <p>Account deletion hard-deletes personal data but pseudonymizes shared co-op records to "Former player," so one person leaving can't corrupt their teammate's history.</p>
+    <p>iOS build 112 is in TestFlight external review and the Android bundle is on Play's internal track, so public launch is gated on store assets and listing copy rather than on engineering.</p>
+    <p>Account deletion hard-deletes personal data, but it pseudonymizes shared co-op records to "Former player," so one person leaving can't corrupt their teammate's history.</p>
   </section>
 
   <footer class="footer">

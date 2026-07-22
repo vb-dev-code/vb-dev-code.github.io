@@ -15,7 +15,7 @@
   <header class="case-header">
     <p class="eyebrow">Shipped · iOS · Sonos, Echo, Chromecast</p>
     <h1>HomeComms <span class="pill pill--live">Live</span></h1>
-    <p>Hold a button on your phone and your voice plays out of the speakers anywhere in the house. It replaces yelling up the stairs, which is a stronger incumbent than it sounds.</p>
+    <p>You hold a button on your phone and your voice plays out of the speakers anywhere in the house. It's replacing yelling up the stairs, which is a much stronger incumbent than it sounds.</p>
     <a href="https://apps.apple.com/app/id6776351744">View on the App Store →</a>
   </header>
 
@@ -27,28 +27,28 @@
 
   <section class="block">
     <h2>What it is</h2>
-    <p>A one-way broadcast intercom for households with speakers in more than one room. Amazon and Google both ship this inside their own walled gardens; nothing equivalent existed for Sonos, which is the gap I went after.</p>
-    <p>I built all of it: the FastAPI backend on Fly, the Sonos OAuth and audio pipeline, the web UI, the Capacitor iOS shell, the home-screen widget, and the App Store submission.</p>
+    <p>It's a one-way broadcast intercom for households that have speakers in more than one room. Amazon and Google both ship something like this, but only inside their own walled gardens, so there was nothing equivalent for Sonos, which is exactly the gap I went after.</p>
+    <p>I built all of it myself: the FastAPI backend on Fly, the Sonos OAuth and the audio pipeline, the web UI, the Capacitor iOS shell, the home-screen widget, and the App Store submission.</p>
   </section>
 
   <section class="block decision">
     <h2>The decision</h2>
-    <p>I built live audio streaming, then deleted it.</p>
-    <p>Live streaming was the obvious architecture, and I chose it for a reason: two-way intercom. Then the spike measured Sonos's playback buffer at 1 to 2 seconds, against the 400 milliseconds natural conversation needs. It is not reducible, because Sonos engineered it for gapless music. Two-way was dead. <strong>Which meant the reason I'd picked live streaming no longer existed.</strong></p>
-    <p>What actually forced the rewrite was multi-tenancy. My two test households were remote, so I needed self-serve sign-up, and live streaming requires a per-user always-on relay. Recorded clips through Sonos's <code>audioClip</code> API don't.</p>
-    <p>Then the measurement surprised me. <strong>Clips measured 1 second end to end. Streaming measured 5.</strong> The 5-second floor I'd been designing around applied to stream buffering, not to <code>audioClip</code>, which Sonos built for low-latency notifications. The cheaper, more scalable, remote-capable path also happened to be the fastest one. I had been carrying a number from the wrong context for weeks.</p>
+    <p>I built live audio streaming first, and then I deleted it.</p>
+    <p>Streaming was the obvious architecture and I'd picked it for exactly one reason, which was two-way intercom. Then the spike came back: Sonos buffers playback for 1 to 2 seconds, against the 400 milliseconds a natural conversation needs, and that buffer isn't reducible because Sonos engineered it for gapless music. <strong>So two-way was dead, and the reason I'd chosen streaming died with it.</strong></p>
+    <p>What actually forced the rewrite was multi-tenancy. Both of my test households were remote, so I needed self-serve sign-up, and streaming wants a per-user always-on relay, where recorded clips through Sonos's <code>audioClip</code> API don't need one at all.</p>
+    <p>Then the measurement surprised me. <strong>Clips came in at 1 second end to end, where streaming was 5.</strong> The 5-second floor I'd spent weeks designing around applied to stream buffering and not to <code>audioClip</code>, which Sonos built for low-latency notifications, so the cheaper and more scalable path turned out to be the fast one too. The way I'd put it is that I'd been carrying a number from the wrong context and never went back to check it.</p>
   </section>
 
   <section class="block">
     <h2>What it cost</h2>
-    <p>There is no two-way intercom, and there never will be on this architecture. That's a real ceiling on the product, not a phase-two item — two-way is a different product on different hardware.</p>
-    <p>I also pre-registered the trial's decision rule before running it, and <strong>excluded my own household from the read</strong>. My family using something I built is not evidence a market exists. That rule is the reason I still don't claim demand is proven: the honest status is shipped and unvalidated.</p>
+    <p>There's no two-way intercom, and there won't be one on this architecture. I want to be clear that's a real ceiling on the product and not a phase-two item, because two-way is a different product on different hardware.</p>
+    <p>I also pre-registered the trial's decision rule before I ran it, and I <strong>excluded my own household from the read</strong>, because my family using something I built isn't evidence that a market exists. That rule is why I still won't claim demand is proven. The honest status is shipped and unvalidated.</p>
   </section>
 
   <section class="block">
     <h2>Status &amp; next</h2>
-    <p>Apple approved version 1.1 on 2026-06-29. It is live in 175 territories at $0.99. An in-app ratings prompt ships after a user's third successful broadcast. Sonos, Amazon Echo and Google Cast all work end to end for any household. Ring talk-back works too, but stays gated to my own household — it leans on an unofficial path I'm not willing to ship to strangers.</p>
-    <p>The open lever is demand, not distribution: recruit external households and read the pre-registered 14-day retention rule. If it fails, this stays a thing my family uses every day, which I'd already decided counts as a success.</p>
+    <p>Apple approved version 1.1 on 2026-06-29, and it's live in 175 territories at $0.99, with an in-app ratings prompt that fires after someone's third successful broadcast. Sonos, Amazon Echo and Google Cast all work end to end for any household. Ring talk-back works too, but I've kept it gated to my own household, because it leans on an unofficial path I'm not willing to ship to strangers.</p>
+    <p>The open lever now is demand and not distribution, so the next step is recruiting external households and reading the pre-registered 14-day rule. If that fails, this stays a thing my family uses every day, which I'd already decided counts as a success.</p>
   </section>
 
   <footer class="footer">
