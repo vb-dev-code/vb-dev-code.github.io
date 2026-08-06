@@ -1,0 +1,221 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Direction A — structured editing</title>
+<link rel="stylesheet" href="../typeface-ds.css?v=72"><script src="_shell.js?v=72"></script>
+<style>
+ .work{display:grid;grid-template-columns:216px 1fr 292px;gap:var(--tf-5);align-items:start}
+ .work>*{min-width:0}
+ @media(max-width:1180px){.work{grid-template-columns:1fr}}
+ .stage{background:var(--tf-surface-2);border:1px solid var(--tf-line);border-radius:var(--tf-r);
+        padding:var(--tf-6);display:grid;place-items:center}
+ .board{width:100%;max-width:330px}
+ .tool{display:flex;align-items:center;gap:var(--tf-2);flex-wrap:wrap;margin-bottom:var(--tf-3)}
+ .tool .sep{width:1px;height:18px;background:var(--tf-line-strong)}
+</style></head>
+<body data-nav="Projects" data-title="Peak 2 launch · Direction A" data-status='<span class="tf-status tf-status--review">Needs review</span>'>
+<main class="tf-main">
+
+  <div class="tf-lineage" style="margin-bottom:var(--tf-4)">
+    <span class="node">Brief</span><span class="arw">→</span>
+    <span class="node node--master">Direction A · key visual</span><span class="arw">→</span>
+    <span class="node">social</span><span class="node">banner</span><span class="node">flyer</span>
+    <span class="tf-spacer"></span>
+    <span class="tf-mono" style="font-size:11px">doc_9F1 · meridian@3.8.0 · editing social</span>
+  </div>
+
+  <div class="work">
+
+    <!-- ============ STRUCTURE ============ -->
+    <aside class="tf-card">
+      <div class="tf-sectionhead"><h2>Structure</h2><p>objects, not pixels</p></div>
+      <div class="tf-layers">
+        <div class="tf-layer"><span class="ic">▣</span>
+          <span class="nm">social · 1080×1080<span class="role">root</span></span><span class="tf-lock">—</span></div>
+        <div class="tf-layer tf-layer--child"><span class="ic">◈</span>
+          <span class="nm">Meridian mark<span class="role">logo.primary</span></span><span class="tf-lock tf-lock--on">🔒</span></div>
+        <div class="tf-layer tf-layer--child" aria-selected="true"><span class="ic">T</span>
+          <span class="nm">Own the second half<span class="role">headline</span></span><span class="tf-lock">—</span></div>
+        <div class="tf-layer tf-layer--child"><span class="ic">T</span>
+          <span class="nm">All-weather grip…<span class="role">body</span></span><span class="tf-lock">—</span></div>
+        <div class="tf-layer tf-layer--child"><span class="ic">▤</span>
+          <span class="nm">Peak 2 render<span class="role">product.asset</span></span><span class="tf-lock tf-lock--on">🔒</span></div>
+        <div class="tf-layer tf-layer--child"><span class="ic">▦</span>
+          <span class="nm">Background<span class="role">fill.generated</span></span><span class="tf-lock">—</span></div>
+        <div class="tf-layer tf-layer--child"><span class="ic">▭</span>
+          <span class="nm">Shop the Peak 2<span class="role">cta.primary.v5</span></span><span class="tf-lock">—</span></div>
+        <div class="tf-layer tf-layer--child"><span class="ic">¶</span>
+          <span class="nm">Recycled claim<span class="role">legal.disclosure</span></span><span class="tf-lock tf-lock--on">🔒</span></div>
+      </div>
+      <p class="tf-cap">Three objects locked by the brief's creative policy. Every node carries a semantic role, so an edit is an operation on the document rather than a regeneration.</p>
+    </aside>
+
+    <!-- ============ CANVAS ============ -->
+    <div>
+      <div class="tool">
+        <button class="tf-btn tf-btn--sm">Select</button>
+        <button class="tf-btn tf-btn--sm">Text</button>
+        <button class="tf-btn tf-btn--sm">Replace asset</button>
+        <span class="sep"></span>
+        <button class="tf-btn tf-btn--sm">Lock</button>
+        <button class="tf-btn tf-btn--sm">Regenerate region</button>
+        <span class="tf-spacer"></span>
+        <span class="tf-chip">social</span>
+      </div>
+
+      <div class="stage">
+        <div class="board">
+          <div class="tf-fmt-label">social <span class="dim">1080×1080</span></div>
+          <div class="tf-fmt tf-fmt--square"><div class="tf-artboard tf-artboard--objects">
+            <div class="ab-logo" data-role="logo.primary">Meridian</div>
+            <div class="ab-h tf-sel" data-role="headline">Own the second half<i class="h bl"></i><i class="h br"></i></div>
+            <div class="ab-b" data-role="body">All-weather grip. Recycled upper. Built for hour three.</div>
+            <div class="ab-fill" data-role="fill.generated"></div>
+            <div class="ab-cta" data-role="cta.primary.v5">Shop the Peak 2</div>
+            <div class="ab-legal" data-role="legal.disclosure">Recycled content verified to GRS 4.0. Peak 2 upper is 62% recycled polyester.</div>
+          </div></div>
+          <details class="tf-lin"><summary>lineage · <b>grid.social.center-stack</b></summary><div class="tf-composed">composed from <b>grid.social.center-stack</b> · <b>component.cta.primary.v5</b> · type.display/1 + type.body/1 · 4 colour tokens · <span class="ds">figma://meridian/ds</span></div></details>
+          <p class="tf-cap">Headline selected. It is live text in Meridian Display, not a rendered bitmap, so it can be retyped, restyled, localized and contrast-checked in place.</p>
+        </div>
+      </div>
+
+      <div class="tf-card" style="background:var(--tf-agent-bg);border-color:transparent;margin-top:var(--tf-4)">
+        <div class="tf-row" style="align-items:flex-start;gap:10px">
+          <span class="tf-status tf-status--agent">Patch</span>
+          <div style="font-size:13.5px;line-height:1.55;min-width:0">
+            "Make the headline tighter" resolved to a single operation, not a regeneration:
+            <div class="tf-mono" style="font-size:11.5px;background:var(--tf-surface);border-radius:var(--tf-r-sm);padding:9px 12px;margin:8px 0;overflow-x:auto">
+              set_property · node.headline · tracking −0.01em, size 34→31
+            </div>
+            <div class="tf-row" style="gap:8px">
+              <button class="tf-btn tf-btn--sm tf-btn--primary" id="applypatch" data-wired>Apply</button>
+              <button class="tf-btn tf-btn--sm" id="showdiff" data-wired>Show diff</button>
+              <span class="tf-cap" style="margin:0" id="patchnote">2 other nodes unchanged</span>
+            </div>
+            <div class="tf-mono" id="diffblock" style="display:none;font-size:11px;background:var(--tf-surface);border-radius:var(--tf-r-sm);padding:9px 12px;margin-top:8px;line-height:1.6"><span style="color:var(--tf-risk)">− tracking 0 · size 34/34</span><br><span style="color:var(--tf-ok)">+ tracking −0.01em · size 31/34</span><br><span class="tf-muted">headline only · logo, body, fill, CTA, legal untouched</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tf-composer" style="margin-top:var(--tf-4)">
+        <textarea>Make the headline tighter and move the CTA up.</textarea>
+        <div class="row">
+          <span class="tf-chip">Editing: node.headline</span>
+          <div class="spacer"></div>
+          <button class="tf-btn tf-btn--sm" id="undopatch" data-wired>Undo</button>
+          <button class="tf-btn tf-btn--sm tf-btn--primary" id="composerapply" data-wired>Apply patch</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ INSPECTOR ============ -->
+    <aside class="tf-stack">
+      <div class="tf-card">
+        <div class="tf-sectionhead"><h2>Selected object</h2></div>
+        <div class="tf-insp">
+          <div class="row"><span class="k">Role</span><span class="v"><span class="tf-mono">headline</span></span></div>
+          <div class="row"><span class="k">Content</span><span class="v">Own the second half<span class="src">from brief · approved copy</span></span></div>
+          <div class="row"><span class="k">Type style</span><span class="v">Display 34/34<span class="src">MeridianDisplay.zip · licensed</span></span></div>
+          <div class="row"><span class="k">Colour</span><span class="v">Primary<span class="src">token color.primary.500</span></span></div>
+          <div class="row"><span class="k">Provenance</span><span class="v"><span class="tf-prov tf-prov--approved">approved</span></span></div>
+          <div class="row"><span class="k">Zone</span><span class="v"><span class="tf-zone tf-zone--bounded">Bounded</span></span></div>
+          <div class="row"><span class="k">Edits</span><span class="v">2 human · 1 auto-repair<span class="src">last by Varun · 1m ago</span></span></div>
+        </div>
+      </div>
+
+      <div class="tf-card">
+        <div class="tf-sectionhead"><h2>Constraints in force</h2><p>on this object</p></div>
+        <div class="tf-cons"><code>contrast ≥ 4.5:1</code><span class="spacer"></span><span class="tf-status tf-status--ok">8.1:1</span></div>
+        <div class="tf-cons"><code>type.display only</code><span class="spacer"></span><span class="tf-status tf-status--ok">Pass</span></div>
+        <div class="tf-cons"><code>max 3 lines</code><span class="spacer"></span><span class="tf-status tf-status--ok">2</span></div>
+        <div class="tf-cons"><code>rule.words.avoid</code><span class="spacer"></span><span class="tf-status tf-status--ok">Clean</span></div>
+        <p class="tf-cap">Constraints re-check on the edited node only, which is why a rerender lands in under 2s.</p>
+      </div>
+
+      <div class="tf-card">
+        <div class="tf-sectionhead"><h2>Locked here</h2><p>set at the brief</p></div>
+        <div class="tf-col" style="gap:7px;font-size:12.5px">
+          <div class="tf-row"><span>Meridian mark</span><span class="tf-spacer"></span><span class="tf-zone tf-zone--locked">Locked</span></div>
+          <div class="tf-row"><span>Peak 2 render</span><span class="tf-spacer"></span><span class="tf-zone tf-zone--locked">Locked</span></div>
+          <div class="tf-row"><span>Recycled claim</span><span class="tf-spacer"></span><span class="tf-zone tf-zone--locked">Locked</span></div>
+        </div>
+        <p class="tf-cap">A locked object can't be moved, restyled or replaced without a brand owner changing the policy.</p>
+      </div>
+
+      <div class="tf-row" style="gap:var(--tf-2)">
+        <a class="tf-btn tf-btn--sm" href="32-concept.html">Back to kit</a>
+        <a class="tf-btn tf-btn--sm tf-btn--primary" href="34-approve.html" style="flex:1">Submit for approval</a>
+      </div>
+    </aside>
+  </div>
+</main>
+<script>
+/* Same affordance grammar as the Visual Kit: hover shows what each object
+   allows, locked objects say why in the tag, and clicking syncs the canvas
+   with the structure tree. */
+(() => {
+  const LOCKED = {
+    'logo.primary':     'locked at the brief — brand owner only',
+    'legal.disclosure': 'locked — legal owns this copy',
+  };
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.tf-artboard--objects [data-role]').forEach(n => {
+      const r = n.dataset.role;
+      if (LOCKED[r]) { n.classList.add('obj-locked'); n.dataset.tip = '🔒 ' + r + ' · ' + LOCKED[r]; }
+      else { n.classList.add('obj-editable'); n.dataset.tip = r + ' · click to select'; }
+      n.addEventListener('click', e => {
+        e.stopPropagation();
+        document.querySelectorAll('.tf-artboard--objects [data-role]').forEach(x => x.classList.toggle('sel', x === n));
+        document.querySelectorAll('.tf-layers .tf-layer').forEach(row => {
+          const role = row.querySelector('.role');
+          row.toggleAttribute('aria-selected', !!role && role.textContent.trim() === r);
+        });
+        if (typeof toast === 'function' && r !== 'headline')
+          toast('The full inspector is wired for the headline in this prototype');
+      });
+    });
+  });
+})();
+
+/* The page's one argument, made operable: Apply executes the patch on the
+   headline alone, Show diff shows exactly what changes, Undo reverts it —
+   document operations, not regeneration. */
+(() => {
+  let applied = false;
+  const h = () => document.querySelector('[data-role="headline"]');
+  function apply() {
+    if (applied) return;
+    applied = true;
+    const n = h();
+    n.style.transition = 'letter-spacing .4s ease, font-size .4s ease';
+    n.style.letterSpacing = '-0.01em';
+    n.style.fontSize = 'clamp(16px, 8.2cqw, 31px)';
+    const a = document.getElementById('applypatch');
+    a.textContent = '✓ Applied'; a.disabled = true;
+    document.getElementById('composerapply').textContent = '✓ Applied';
+    document.getElementById('patchnote').textContent = 'headline re-checked: contrast 8.3:1 · 2 lines · pass — 2 other nodes untouched';
+    const edits = [...document.querySelectorAll('.tf-insp .row')].find(r => r.textContent.includes('Edits'));
+    if (edits) edits.querySelector('.v').innerHTML = '3 human · 1 auto-repair<span class="src">last by you · just now</span>';
+  }
+  function undo() {
+    if (!applied) return;
+    applied = false;
+    const n = h();
+    n.style.letterSpacing = ''; n.style.fontSize = '';
+    const a = document.getElementById('applypatch');
+    a.textContent = 'Apply'; a.disabled = false;
+    document.getElementById('composerapply').textContent = 'Apply patch';
+    document.getElementById('patchnote').textContent = '2 other nodes unchanged';
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('applypatch').addEventListener('click', apply);
+    document.getElementById('composerapply').addEventListener('click', apply);
+    document.getElementById('undopatch').addEventListener('click', undo);
+    document.getElementById('showdiff').addEventListener('click', () => {
+      const d = document.getElementById('diffblock');
+      d.style.display = d.style.display === 'none' ? '' : 'none';
+    });
+  });
+})();
+</script>
+</body></html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Typeface Design Agent — interactive prototype</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="../typeface-ds.css?v=72">
+<style>
+  body { padding: 44px 28px 80px; }
+  .w { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 28px; font-weight: 650; letter-spacing: -.02em; margin-bottom: 6px; }
+  .lede { color: var(--tf-ink-2); max-width: 620px; margin-bottom: 30px; }
+  h2 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
+       color: var(--tf-ink-3); border-bottom: 1px solid var(--tf-line); padding-bottom: 8px;
+       margin: 34px 0 16px; }
+  .flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .flow a { text-decoration: none; }
+  .flow .arw { color: var(--tf-ink-3); font-size: 13px; }
+  .note { font-size: 13px; color: var(--tf-ink-3); margin: 4px 0 18px; }
+  .pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap: 12px; }
+  .pages > * { min-width: 0; }
+  .p { display: block; background: var(--tf-surface); border: 1px solid var(--tf-line);
+       border-radius: var(--tf-r); padding: 14px 16px; text-decoration: none; color: inherit; }
+  .p:hover { box-shadow: var(--tf-sh); }
+  .p b { font-size: 14px; font-weight: 550; display: block; }
+  .p span { font-size: 12.5px; color: var(--tf-ink-3); }
+  .p .src { font-family: var(--tf-mono); font-size: 10.5px; color: var(--tf-ink-3); margin-top: 6px; display:block; }
+</style>
+</head>
+<body>
+<div class="w">
+  <h1>Typeface Design Agent — interactive prototype</h1>
+  <p class="lede">
+    Built by <b>Varun Bhardwaj</b> for the Typeface Staff PM exercise, as the companion to the
+    2-page PRD. Every page is walkable and the left nav is live throughout. The information
+    architecture and visual system are modeled on the current product (mid-2026); the tenant,
+    <b>Meridian Athletics</b>, is a fictional brand and all data shown is illustrative.
+  </p>
+
+  <h2>The marketer journey · guided</h2>
+  <div class="flow" style="margin-bottom:10px">
+    <a class="tf-btn tf-btn--primary" href="00-home.html?tour=1" id="tourstart">▶ Start the guided tour</a>
+    <a class="tf-btn" href="#" id="tourresume" style="display:none"></a>
+    <span class="note" style="margin:0">9 stops, from a PDF brief to shipped assets · or go unguided: open <a href="00-home.html">Home</a> and click the prompt</span>
+  </div>
+  <div class="flow">
+    <a class="tf-btn tf-btn--sm tf-btn--primary" href="05-scope.html">Release scope</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="32-concept.html">Visual Kit + scorecard</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="35-edit.html">Structured editing</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="33-blocked.html">Blocked state</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="34-approve.html">Approve</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="36-infographic.html">P1 flow</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="37-brochure.html">P2 flow</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="01-brief.html">Brief &amp; grounding</a>
+  </div>
+  <p class="note">The same path as the 4-minute video walkthrough. On the <b>Visual Kit</b> page,
+  click any object on the key visual to filter the scorecard to the checks that judged it and edit
+  it in place.</p>
+
+  <h2>Flows in depth</h2>
+
+  <div class="flow">
+    <a class="tf-btn tf-btn--sm" href="30-compile.html">Authority Registry</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm tf-btn--primary" href="01-brief.html">Brief &amp; plan</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="32-concept.html">Workspace</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="35-edit.html">Structured editing</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="34-approve.html">Approve &amp; export</a>
+  </div>
+  <p class="note"><b>Typeface Design Agent — P0 Campaign Visual Kit.</b> The Authority Registry keeps
+  customer systems authoritative and compiles a versioned Brand Design Package; uploads stay
+  supplemental until promoted. Context preflight returns <em>Ready / Warning / Missing / Conflicted /
+  Stale</em> and blocks only on the last three. The agent then recommends a creation mode —
+  <b>reuse, adapt, or generate-new</b> — and explains why, before you approve the Composition Plan.
+  One direction is recomposed, not resized, into social, banner and flyer. The 12-state job machine
+  is visible throughout.</p>
+
+  <div class="flow">
+    <a class="tf-btn tf-btn--sm" href="33-blocked.html">Blocked state</a>
+  </div>
+  <p class="note"><b>The failure contract.</b> <span class="tf-mono">UNSATISFIABLE_CRITICAL_CONSTRAINTS</span> —
+  the agent withholds an asset rather than silently dropping a required disclosure, and offers named
+  resolutions. Reachable from Concept C.</p>
+
+  <div class="flow">
+    <a class="tf-btn tf-btn--sm tf-btn--primary" href="10-projects.html">Projects</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="20-arc-canvas.html">Arc canvas</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="32-concept.html">Visual Kit</a>
+  </div>
+  <p class="note"><b>Campaign view.</b> An Arc with Curate / Create / Pulse tabs and one lane per
+  agent — the Design Agent sitting beside the Email Agent as a peer.</p>
+
+  <div class="flow">
+    <a class="tf-btn tf-btn--sm tf-btn--primary" href="03-brand-foundations.html">Brand Foundations</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="04-connections.html">Connected sources</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="12-assets.html">Assets</a><span class="arw">→</span>
+    <a class="tf-btn tf-btn--sm" href="13-audiences.html">Audiences</a>
+  </div>
+  <p class="note"><b>Grounding.</b> What the agent composes against — logos, palettes, text styles,
+  fonts, trained assets, audience definitions.</p>
+
+  <h2>All pages</h2>
+  <div class="pages">
+    <a class="p" href="00-home.html"><b>Home</b><span>Hero, Start creating, Recent projects</span><span class="src">captured product footage</span></a>
+    <a class="p" href="10-projects.html"><b>Projects</b><span>Arc Spaces · project grid</span><span class="src">inferred</span></a>
+    <a class="p" href="11-my-tasks.html"><b>My Tasks</b><span>Review queue across projects</span><span class="src">inferred</span></a>
+    <a class="p" href="12-assets.html"><b>Assets</b><span>Arc Graph · asset library</span><span class="src">captured product footage</span></a>
+    <a class="p" href="03-brand-foundations.html"><b>Brands</b><span>Design Guidelines, values/tones/rules</span><span class="src">captured product footage</span></a>
+    <a class="p" href="04-connections.html"><b>Connected sources</b><span>what each connector extracted, conflicts, gaps</span><span class="src">inferred</span></a>
+    <a class="p" href="05-scope.html"><b>Release scope</b><span>the phase plan at a glance, with drill-downs</span><span class="src">inferred</span></a>
+    <a class="p" href="36-infographic.html"><b>Infographic flow · P1</b><span>data contract, viz planner, withheld modules</span><span class="src">roadmap</span></a>
+    <a class="p" href="37-brochure.html"><b>Brochure flow · P2</b><span>pagination, reflow, CMYK and imposition</span><span class="src">roadmap</span></a>
+    <a class="p" href="13-audiences.html"><b>Audiences</b><span>Segment table with summaries</span><span class="src">captured product footage</span></a>
+    <a class="p" href="14-templates.html"><b>Templates</b><span>Arc templates</span><span class="src">captured product footage</span></a>
+    <a class="p" href="21-agents.html"><b>Agents</b><span>Roster + create your own</span><span class="src">captured product footage</span></a>
+    <a class="p" href="20-arc-canvas.html"><b>Arc canvas</b><span>Curate/Create/Pulse, agent lanes</span><span class="src">captured product footage</span></a>
+    <a class="p" href="30-compile.html"><b>Authority Registry</b><span>Sources of truth, preflight, 10-level precedence</span><span class="src">PRD §4</span></a>
+    <a class="p" href="01-brief.html"><b>Readiness &amp; plan</b><span>5-state context, creation mode, Composition Plan</span><span class="src">PRD §3.4</span></a>
+    <a class="p" href="32-concept.html"><b>Kit workspace</b><span>Key visual + 3 formats, scorecard, evidence</span><span class="src">PRD — P0</span></a>
+    <a class="p" href="35-edit.html"><b>Structured editing</b><span>Object tree, selection, inspector, patch</span><span class="src">PRD §3 — new</span></a>
+    <a class="p" href="33-blocked.html"><b>Blocked</b><span>Unsatisfiable constraints + resolutions</span><span class="src">PRD — failure contract</span></a>
+    <a class="p" href="34-approve.html"><b>Approve &amp; export</b><span>Role routing, lineage, provenance</span><span class="src">PRD — P0</span></a>
+    <a class="p" href="../gallery.html"><b>Component gallery</b><span>Every class, rendered</span><span class="src">reference</span></a>
+  </div>
+
+  <h2>What's inferred vs observed</h2>
+  <p class="note">
+    Pages marked with a source in the card are grounded in a captured product screen. Projects and
+    My Tasks are <b>inferred</b> — the nav items exist but no public footage shows those pages, so
+    the layout is a reasonable reconstruction from sibling pages, not evidence. The Brand Design
+    Agent pages are deliberately new — they are the proposal, built to the PRD's P0: one master
+    key visual recomposed into <b>social, banner and flyer</b>. Infographics (P1) and brochures (P2)
+    appear as explicit deferred slots with the reason, rather than being left out.
+  </p>
+</div>
+<script>
+(() => {
+  try {
+    const pos = JSON.parse(localStorage.getItem('tfTourPos') || 'null');
+    if (pos && (pos.step > 1 || pos.scene > 0)) {
+      const r = document.getElementById('tourresume');
+      r.style.display = '';
+      r.textContent = `Resume at stop ${pos.step}/9 →`;
+      r.href = `${pos.page}?tour=${pos.step}&s=${pos.scene}`;
+    }
+    document.getElementById('tourstart').addEventListener('click', () => {
+      try { localStorage.removeItem('tfTourPos'); } catch (e) {}
+    });
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

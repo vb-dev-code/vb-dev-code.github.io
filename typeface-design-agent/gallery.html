@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Design system — component gallery</title>
+<link rel="stylesheet" href="typeface-ds.css">
+<style>
+  body { padding: 0; }
+  .gal { max-width: 1080px; margin: 0 auto; padding: 40px 24px 80px; }
+  .gal h1 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 6px; }
+  .gal > p.lede { color: var(--tf-ink-2); font-size: 15px; max-width: 640px; margin-bottom: 8px; }
+  .gal > p.prov { font-family: var(--tf-mono); font-size: 11px; color: var(--tf-ink-3); margin-bottom: 36px; }
+  .blk { margin-bottom: 44px; }
+  .blk > h2 {
+    font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--tf-ink-3); padding-bottom: 8px; margin-bottom: 18px;
+    border-bottom: 1px solid var(--tf-line);
+  }
+  .blk > h2 em { font-style: normal; color: var(--tf-brand); }
+  .demo { background: var(--tf-surface); border: 1px solid var(--tf-line);
+          border-radius: var(--tf-r); padding: 22px; margin-bottom: 12px; }
+  .demo.on-canvas { background: var(--tf-canvas); }
+  .cap { font-family: var(--tf-mono); font-size: 11px; color: var(--tf-ink-3); margin-bottom: 20px; }
+  .shell-frame { height: 420px; border: 1px solid var(--tf-line); border-radius: var(--tf-r);
+                 overflow: hidden; box-shadow: var(--tf-sh-sm); }
+  .shell-frame .tf-app { height: 100%; }
+</style>
+</head>
+<body>
+<div class="gal">
+
+  <h1>Component gallery</h1>
+  <p class="lede">
+    Everything available in <span class="tf-mono">typeface-ds.css</span>. Product chrome is
+    <strong>fixed</strong>; the tenant brand layer is <strong>swappable</strong> — and anything a
+    generated artifact renders with must come from the tenant layer.
+  </p>
+  <p class="prov">chrome sampled from typeface product footage · --tf-brand #FD243E from typeface.ai · tenant demo: Meridian Athletics</p>
+
+  <!-- ── tokens ─────────────────────────────────────────────── -->
+  <div class="blk">
+    <h2>1 · Two token layers <em>— the core idea</em></h2>
+    <div class="demo">
+      <div class="tf-sectionhead"><h2>Layer 1 — product chrome <span class="tf-mono tf-muted">--tf-*</span></h2></div>
+      <div class="tf-palette tf-palette--labelled">
+        <div class="tf-sw" data-hex="#FD243E" style="background:#FD243E"></div>
+        <div class="tf-sw" data-hex="#EAEAF0" style="background:#EAEAF0"></div>
+        <div class="tf-sw" data-hex="#FCFCFC" style="background:#FCFCFC"></div>
+        <div class="tf-sw" data-hex="#F6F6F6" style="background:#F6F6F6"></div>
+        <div class="tf-sw" data-hex="#E4E4E7" style="background:#E4E4E7"></div>
+        <div class="tf-sw" data-hex="#1E1E1E" style="background:#1E1E1E"></div>
+        <div class="tf-sw" data-hex="#A8A8AE" style="background:#A8A8AE"></div>
+      </div>
+      <div class="tf-sectionhead" style="margin-top:26px"><h2>Layer 2 — tenant brand kit <span class="tf-mono tf-muted">--brand-*</span></h2></div>
+      <div class="tf-palette tf-palette--labelled">
+        <div class="tf-sw" data-hex="#0E1B33" style="background:#0E1B33"></div>
+        <div class="tf-sw" data-hex="#FF5A1F" style="background:#FF5A1F"></div>
+        <div class="tf-sw" data-hex="#F6F3EE" style="background:#F6F3EE"></div>
+        <div class="tf-sw" data-hex="#2E5D8C" style="background:#2E5D8C"></div>
+      </div>
+    </div>
+    <p class="cap">swap the --brand-* block → every artboard re-skins at once</p>
+  </div>
+
+  <!-- ── shell ──────────────────────────────────────────────── -->
+  <div class="blk">
+    <h2>2 · App shell</h2>
+    <div class="shell-frame">
+      <div class="tf-app">
+        <nav class="tf-nav">
+          <div class="tf-brandmark"><i>T</i> Typeface</div>
+          <div class="tf-workspace">
+            <div class="av">MA</div>
+            <div><b>Marketing team</b><span>Meridian Athletics</span></div>
+          </div>
+          <a class="tf-navitem" aria-current="page"><span class="ic">⌂</span> Home</a>
+          <div class="tf-navgroup">Arc Spaces</div>
+          <a class="tf-navitem"><span class="ic">▣</span> Projects</a>
+          <a class="tf-navitem"><span class="ic">☑</span> My Tasks</a>
+          <div class="tf-navgroup">Arc Graph</div>
+          <a class="tf-navitem"><span class="ic">▤</span> Assets</a>
+          <a class="tf-navitem"><span class="ic">◈</span> Brands</a>
+          <a class="tf-navitem"><span class="ic">◔</span> Audiences</a>
+          <a class="tf-navitem"><span class="ic">▥</span> Templates</a>
+          <div class="tf-navfoot">
+            <div class="tf-workspace" style="margin:0">
+              <div class="av">VB</div>
+              <div><b>Varun</b><span>varun@meridian.com</span></div>
+            </div>
+          </div>
+        </nav>
+        <header class="tf-top">
+          <h1>Spring Trail Campaign</h1>
+          <span class="tf-status tf-status--review">Needs review</span>
+          <div class="spacer"></div>
+          <button class="tf-btn tf-btn--sm">Optimize</button>
+          <button class="tf-btn tf-btn--sm">Share</button>
+          <button class="tf-btn tf-btn--sm tf-btn--primary">Publish</button>
+        </header>
+        <main class="tf-main">
+          <div class="tf-sectionhead"><h2>Design Guidelines</h2><p>Brand Foundations</p></div>
+          <div class="tf-card">
+            <div class="tf-sectionhead"><h2>Logos</h2><p>Upload and store various logos for your designs.</p></div>
+            <div class="tf-logogrid">
+              <div class="tf-logotile tf-logotile--upload">+ Upload</div>
+              <div class="tf-logotile" style="font-family:var(--brand-display);font-weight:800;color:var(--brand-primary)">MERIDIAN</div>
+              <div class="tf-logotile tf-logotile--dark" style="font-family:var(--brand-display);font-weight:800">MERIDIAN</div>
+              <div class="tf-logotile" style="color:var(--brand-accent);font-weight:800">M</div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <p class="cap">.tf-app · .tf-nav · .tf-navgroup (Arc Spaces / Arc Graph) · .tf-top · .tf-main</p>
+  </div>
+
+  <!-- ── primitives ─────────────────────────────────────────── -->
+  <div class="blk">
+    <h2>3 · Primitives</h2>
+    <div class="demo">
+      <div class="tf-row tf-row--wrap" style="margin-bottom:18px">
+        <button class="tf-btn tf-btn--primary">Generate</button>
+        <button class="tf-btn">Save draft</button>
+        <button class="tf-btn tf-btn--ghost">Cancel</button>
+        <button class="tf-btn tf-btn--sm">Small</button>
+        <button class="tf-btn" disabled>Disabled</button>
+      </div>
+      <div class="tf-row tf-row--wrap" style="margin-bottom:18px">
+        <span class="tf-chip">Audiences · 3</span>
+        <span class="tf-chip tf-chip--brand">◈ Meridian Brand Kit</span>
+        <span class="tf-chip tf-chip--file">spring-brief.pdf</span>
+        <span class="tf-chip tf-chip--file">Poppins.zip</span>
+      </div>
+      <div class="tf-row tf-row--wrap">
+        <span class="tf-status tf-status--ok">Style trained</span>
+        <span class="tf-status tf-status--review">Needs review</span>
+        <span class="tf-status tf-status--agent">Agent draft</span>
+        <span class="tf-status tf-status--risk">Off-brand</span>
+        <span class="tf-status tf-status--info">Active</span>
+        <span class="tf-status tf-status--idle">Queued</span>
+      </div>
+    </div>
+    <p class="cap">.tf-btn · .tf-chip · .tf-status</p>
+  </div>
+
+  <!-- ── agents ─────────────────────────────────────────────── -->
+  <div class="blk">
+    <h2>4 · Agents</h2>
+    <div class="demo on-canvas">
+      <div class="tf-grid tf-grid--3" style="margin-bottom:20px">
+        <div class="tf-agentcard"><div class="ic">✉</div><b>Email Agent</b><p>Campaigns and lifecycle sends.</p></div>
+        <div class="tf-agentcard"><div class="ic">◈</div><b>Brand Agent</b><p>Builds and enforces the brand kit.</p></div>
+        <div class="tf-agentcard tf-agentcard--active"><div class="ic">✎</div><b>Design Agent</b><p>Composes graphical assets — posters, one-pagers, infographics.</p><span class="tf-status tf-status--agent" style="align-self:flex-start">Proposed</span></div>
+        <div class="tf-agentcard tf-agentcard--new"><b>+ Create your own agent</b></div>
+      </div>
+
+      <div class="tf-card" style="margin-bottom:20px">
+        <div class="tf-sectionhead"><h2>Brand Agent</h2><p>working</p></div>
+        <ul class="tf-steps">
+          <li class="tf-step" data-state="done">Analyzing your request</li>
+          <li class="tf-step" data-state="done">Analyzing your brief</li>
+          <li class="tf-step" data-state="running">Pulling your company data</li>
+          <li class="tf-step">Creating your brand kit</li>
+        </ul>
+      </div>
+
+      <div class="tf-composer">
+        <textarea placeholder="Describe what you want to create…">Create a spring trail-running campaign: one-pager, three social banners, and an infographic from the Q1 performance data.</textarea>
+        <div class="row">
+          <span class="tf-chip tf-chip--file">spring-brief.pdf</span>
+          <span class="tf-chip tf-chip--brand">◈ Meridian Brand Kit</span>
+          <div class="spacer"></div>
+          <button class="tf-btn tf-btn--sm tf-btn--primary">Generate</button>
+        </div>
+      </div>
+    </div>
+    <p class="cap">.tf-agentcard · .tf-steps[data-state] · .tf-composer</p>
+  </div>
+
+  <!-- ── brand foundations ──────────────────────────────────── -->
+  <div class="blk">
+    <h2>5 · Brand foundations</h2>
+    <div class="demo">
+      <div class="tf-sectionhead"><h2>Text Styles</h2><p>real font files from the kit</p></div>
+      <div class="tf-typerow">
+        <span class="role">Display</span>
+        <span style="font-family:var(--brand-display);font-weight:800;font-size:26px;color:var(--brand-primary)">Own the trail</span>
+        <span class="spec">800 · 26/26</span>
+      </div>
+      <div class="tf-typerow">
+        <span class="role">Body</span>
+        <span style="font-family:var(--brand-body);font-size:14px;color:var(--brand-ink-soft)">Built for long distance and bad weather.</span>
+        <span class="spec">400 · 14/21</span>
+      </div>
+
+      <div class="tf-sectionhead" style="margin-top:28px"><h2>Values</h2><p>max 5 · 1–2 sentences each</p></div>
+      <dl>
+        <div class="tf-defrow"><dt>Endurance</dt><dd>We make gear for the second half of the run, not the first. Everything is judged on how it holds up at hour three.</dd></div>
+        <div class="tf-defrow"><dt>Sustainability</dt><dd>Recycled materials wherever they perform. We say what a product is made of, plainly.</dd></div>
+      </dl>
+      <p class="tf-cap">2 / 5 values used</p>
+
+      <div class="tf-sectionhead" style="margin-top:28px"><h2>Rules</h2><p>deterministic, checkable constraints</p></div>
+      <div class="tf-col">
+        <span class="tf-rule">Replace <s>cheap</s> with <b>accessible</b></span>
+        <span class="tf-rule">Avoid <s>guys</s> → <b>everyone</b></span>
+      </div>
+    </div>
+    <p class="cap">.tf-typerow · .tf-defrow · .tf-rule · .tf-cap</p>
+  </div>
+
+  <!-- ── design agent surfaces ──────────────────────────────── -->
+  <div class="blk">
+    <h2>6 · Design-agent surfaces <em>— new in your PRD</em></h2>
+
+    <div class="demo">
+      <div class="tf-sectionhead"><h2>Format</h2><p>what to compose</p></div>
+      <div class="tf-formats" style="margin-bottom:26px">
+        <button class="tf-format" aria-pressed="true"><span class="thumb"><i style="width:34px;height:46px"></i></span><b>One-pager</b><span>8.5×11</span></button>
+        <button class="tf-format"><span class="thumb"><i style="width:52px;height:30px"></i></span><b>Banner</b><span>1200×628</span></button>
+        <button class="tf-format"><span class="thumb"><i style="width:40px;height:40px"></i></span><b>Social</b><span>1080×1080</span></button>
+        <button class="tf-format"><span class="thumb"><i style="width:30px;height:48px"></i></span><b>Infographic</b><span>1080×1920</span></button>
+      </div>
+
+      <div class="tf-sectionhead"><h2>Data binding</h2><p>for chart-bearing output</p></div>
+      <div class="tf-bind" style="margin-bottom:26px">
+        <span>Q1 regional sales</span>
+        <span class="src">bigquery://meridian.sales.q1_by_region</span>
+        <div class="spacer"></div>
+        <span class="tf-status tf-status--ok">Bound</span>
+      </div>
+
+      <div class="tf-sectionhead"><h2>Layout candidates</h2><p>text is real DOM type in the brand font — never a generated bitmap</p></div>
+      <div class="tf-candidates">
+        <div class="tf-candidate" aria-selected="true">
+          <div class="art">
+            <div class="tf-artboard">
+              <div class="ab-logo">Meridian</div>
+              <div class="ab-h">Own the second half</div>
+              <div class="ab-b">Trail shoes built for hour three.</div>
+              <div class="ab-fill"></div>
+              <div class="ab-cta">Shop the range</div>
+            </div>
+          </div>
+          <div class="foot">Variant A <div class="spacer"></div><span class="tf-status tf-status--ok">On-brand</span></div>
+        </div>
+        <div class="tf-candidate">
+          <div class="art">
+            <div class="tf-artboard" style="--brand-paper:#0E1B33;--brand-ink-soft:#9FB0C4">
+              <div class="ab-logo" style="color:#fff">Meridian</div>
+              <div class="ab-fill"></div>
+              <div class="ab-h" style="color:#fff">Own the second half</div>
+              <div class="ab-b">Trail shoes built for hour three.</div>
+              <div class="ab-cta">Shop the range</div>
+            </div>
+          </div>
+          <div class="foot">Variant B <div class="spacer"></div><span class="tf-status tf-status--ok">On-brand</span></div>
+        </div>
+        <div class="tf-candidate">
+          <div class="art">
+            <div class="tf-artboard" style="--brand-paper:#fff">
+              <div class="ab-logo">Meridian</div>
+              <div class="ab-h" style="color:var(--brand-accent)">Own the second half</div>
+              <div class="ab-b">Trail shoes built for hour three.</div>
+              <div class="ab-fill" style="background:var(--brand-accent)"></div>
+              <div class="ab-cta" style="background:var(--brand-primary)">Shop the range</div>
+            </div>
+          </div>
+          <div class="foot">Variant C <div class="spacer"></div><span class="tf-status tf-status--risk">Off-brand</span></div>
+        </div>
+      </div>
+
+      <div class="tf-violation" style="margin-top:16px">
+        <div>
+          <div class="rule">colour.accent-on-accent</div>
+          <div class="fix">Variant C places accent type on an accent fill — below the 4.5:1 contrast rule in the brand kit. <b>Suggested fix:</b> use <span class="tf-mono">--brand-primary</span> for the headline.</div>
+        </div>
+      </div>
+    </div>
+    <p class="cap">.tf-format · .tf-bind · .tf-candidate · .tf-artboard · .tf-violation</p>
+  </div>
+
+  <!-- ── scale & governance ─────────────────────────────────── -->
+  <div class="blk">
+    <h2>7 · Scale &amp; governance</h2>
+    <div class="demo">
+      <div class="tf-varcount" style="margin-bottom:14px">
+        <div>
+          <div>Total variations to generate</div>
+          <div class="tf-varmath">4 formats × 3 audiences × 2 languages</div>
+        </div>
+        <b>24</b>
+      </div>
+
+      <div class="tf-job" style="margin-bottom:14px">
+        <span>Composing 24 assets…</span>
+        <div class="tf-progress"><i style="width:38%"></i></div>
+        <span class="tf-mono" style="font-size:11px">~4 min · we'll email you</span>
+      </div>
+
+      <div class="tf-audit"><span>◷</span> <b>Jordan Tate</b> moved Spring Trail Campaign to <b>Needs review</b> · 2m ago</div>
+
+      <div class="tf-publishbar" style="margin-top:18px">
+        <button class="tf-btn tf-btn--sm">Export PNG</button>
+        <button class="tf-btn tf-btn--sm">Export PDF</button>
+        <button class="tf-btn tf-btn--sm">Export HTML</button>
+        <div class="spacer"></div>
+        <span class="tf-chip">Salesforce Marketing Cloud</span>
+        <button class="tf-btn tf-btn--sm tf-btn--primary">Publish via connector</button>
+      </div>
+    </div>
+    <p class="cap">.tf-varcount · .tf-job · .tf-audit · .tf-publishbar</p>
+  </div>
+
+  <!-- ── board ──────────────────────────────────────────────── -->
+  <div class="blk">
+    <h2>8 · Spaces board</h2>
+    <div class="demo on-canvas">
+      <div class="tf-board">
+        <div class="tf-column">
+          <h3>Trail runners <span class="tf-status tf-status--ok">Approved</span></h3>
+          <div class="tf-candidate"><div class="art"><div class="tf-artboard"><div class="ab-logo">Meridian</div><div class="ab-h">Hour three</div><div class="ab-fill"></div><div class="ab-cta">Shop</div></div></div></div>
+        </div>
+        <div class="tf-column">
+          <h3>Urban athletes <span class="tf-status tf-status--review">Needs review</span></h3>
+          <div class="tf-candidate"><div class="art"><div class="tf-artboard" style="--brand-paper:#fff"><div class="ab-logo">Meridian</div><div class="ab-h">City to trail</div><div class="ab-fill"></div><div class="ab-cta">Shop</div></div></div></div>
+        </div>
+        <div class="tf-column">
+          <h3>Retirees <span class="tf-status tf-status--idle">Queued</span></h3>
+          <div class="tf-card tf-card--flat" style="display:grid;place-items:center;aspect-ratio:4/5;color:var(--tf-ink-3);font-size:12px">Not yet generated</div>
+        </div>
+      </div>
+    </div>
+    <p class="cap">.tf-board · .tf-column</p>
+  </div>
+
+</div>
+</body>
+</html>
