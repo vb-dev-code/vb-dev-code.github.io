@@ -639,8 +639,8 @@ function initTourChrome() {
   if (!valid) {
     const chip = document.createElement('a');
     chip.className = 'tf-protochip';
-    chip.href = 'index.html';
-    chip.textContent = '⌂ prototype index';
+    chip.href = 'details.html';
+    chip.textContent = '⌂ prototype details';
     document.body.appendChild(chip);
     // The journey is self-startable: clicking the home prompt begins the
     // same simulation without the tour narration.
@@ -663,7 +663,7 @@ function initTourChrome() {
   if (_selfGuided) {
     const chip = document.createElement('a');
     chip.className = 'tf-protochip';
-    chip.href = 'index.html';
+    chip.href = 'details.html';
     chip.textContent = '⌂ exit walkthrough';
     document.body.appendChild(chip);
   } else {
@@ -693,7 +693,7 @@ function initTourChrome() {
     const a = e.target.closest('a[href]');
     if (!a || !a.href.includes('.html') || a.closest('.tf-tourbar')) return;
     const file = a.getAttribute('href').split('?')[0].split('#')[0];
-    if (file === 'index.html' || file.startsWith('http')) return;
+    if (file === 'index.html' || file === 'details.html' || file.startsWith('http')) return;
     const idx = TOUR.findIndex(s => s.page === file);
     if (idx === -1) return;
     e.preventDefault();
