@@ -47,7 +47,7 @@
         <div class="tf-layer tf-layer--child"><span class="ic">¶</span>
           <span class="nm">Recycled claim<span class="role">legal.disclosure</span></span><span class="tf-lock tf-lock--on">🔒</span></div>
       </div>
-      <p class="tf-cap">Three objects locked by the brief's creative policy. Every node carries a semantic role, so an edit is an operation on the document rather than a regeneration.</p>
+      <p class="tf-cap">Three objects are locked by the brief's creative policy.</p>
     </aside>
 
     <!-- ============ CANVAS ============ -->
@@ -75,7 +75,7 @@
             <div class="ab-legal" data-role="legal.disclosure">Recycled content verified to GRS 4.0. Peak 2 upper is 62% recycled polyester.</div>
           </div></div>
           <details class="tf-lin"><summary>lineage · <b>grid.social.center-stack</b></summary><div class="tf-composed">composed from <b>grid.social.center-stack</b> · <b>component.cta.primary.v5</b> · type.display/1 + type.body/1 · 4 colour tokens · <span class="ds">figma://meridian/ds</span></div></details>
-          <p class="tf-cap">Headline selected. It is live text in Meridian Display, not a rendered bitmap, so it can be retyped, restyled, localized and contrast-checked in place.</p>
+          <p class="tf-cap">Headline · live text in Meridian Display — retype, restyle, localize or contrast-check it in place.</p>
         </div>
       </div>
 
@@ -129,7 +129,7 @@
         <div class="tf-cons"><code>type.display only</code><span class="spacer"></span><span class="tf-status tf-status--ok">Pass</span></div>
         <div class="tf-cons"><code>max 3 lines</code><span class="spacer"></span><span class="tf-status tf-status--ok">2</span></div>
         <div class="tf-cons"><code>rule.words.avoid</code><span class="spacer"></span><span class="tf-status tf-status--ok">Clean</span></div>
-        <p class="tf-cap">Constraints re-check on the edited node only, which is why a rerender lands in under 2s.</p>
+        <p class="tf-cap">Constraints re-check on the edited node only.</p>
       </div>
 
       <div class="tf-card">
@@ -193,6 +193,12 @@
     const a = document.getElementById('applypatch');
     a.textContent = '✓ Applied'; a.disabled = true;
     document.getElementById('composerapply').textContent = '✓ Applied';
+    try {
+      const log = JSON.parse(sessionStorage.getItem('tfActivity') || '[]');
+      log.push({ what: 'Applied patch: headline tightened — one operation on one node, its rules re-checked', who: 'You',
+                 when: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) });
+      sessionStorage.setItem('tfActivity', JSON.stringify(log));
+    } catch(e) {}
     document.getElementById('patchnote').textContent = 'headline re-checked: contrast 8.3:1 · 2 lines · pass — 2 other nodes untouched';
     const edits = [...document.querySelectorAll('.tf-insp .row')].find(r => r.textContent.includes('Edits'));
     if (edits) edits.querySelector('.v').innerHTML = '3 human · 1 auto-repair<span class="src">last by you · just now</span>';

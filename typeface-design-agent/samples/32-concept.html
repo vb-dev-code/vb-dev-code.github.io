@@ -90,7 +90,6 @@
           <details class="tf-lin" id="lin-social" data-lsrc="ds"><summary>lineage · <b>grid.social.center-stack</b><em class="linwarn" hidden></em></summary><div class="tf-composed">composed from <b>grid.social.center-stack</b> · <b>component.cta.primary.v5</b> · type.display/1 + type.body/1 · 4 colour tokens · <span class="ds">figma://meridian/ds</span></div></details>
           <div class="tf-objhint">
             <span class="n">7 objects</span>
-            <span><span class="pick">hover to see what each allows</span> · purple = editable, <span style="color:var(--tf-risk)">red 🔒 = locked</span>, with the reason in the tag</span>
           </div>
           <div class="tf-row" style="gap:6px;margin-top:8px">
             <a class="tf-btn tf-btn--sm" href="35-edit.html">Open structure</a>
@@ -238,7 +237,7 @@
       <details class="tf-card" id="activitylog">
         <summary class="tf-actsum">Activity Log <span id="actcount" class="tf-status tf-status--idle">0</span></summary>
         <div id="actrows" style="margin-top:8px"></div>
-        <p class="tf-cap">Every action is timestamped for audit. The system attempts at most <b>two targeted repairs per failure class</b> before escalating to you.</p>
+        <p class="tf-cap">Every action is timestamped for audit.</p>
       </details>
 
       <a class="tf-btn tf-btn--primary" href="34-approve.html" style="width:100%">Submit for approval</a>
@@ -645,25 +644,35 @@ function srcLine(key) {
 
 /* Activity Log: what happened, who did it, when — the audit trail that also
    paves the way for automated resolution (System entries). */
-function logActivity(what, who, when) {
+function actNow() { return new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
+function renderAct(e) {
   const rows = document.getElementById('actrows');
   if (!rows) return;
   const r = document.createElement('div');
   r.className = 'tf-act';
-  r.innerHTML = `<span class="who who--${who === 'You' ? 'you' : 'sys'}">${esc(who)}</span>
-    <span class="aw">${esc(what)}</span><span class="when">${esc(when || 'just now')}</span>`;
+  r.innerHTML = `<span class="who who--${e.who === 'You' ? 'you' : 'sys'}">${esc(e.who)}</span>
+    <span class="aw">${esc(e.what)}</span><span class="when">${esc(e.when)}</span>`;
   rows.prepend(r);
   const n = document.getElementById('actcount');
   if (n) n.textContent = rows.children.length;
 }
+/* User/system actions persist across the journey, so the trail survives
+   navigation and shows brief-page and edit-page actions too. */
+function logActivity(what, who, when) {
+  const e = { what, who, when: when || actNow() };
+  renderAct(e);
+  try {
+    const a = JSON.parse(sessionStorage.getItem('tfActivity') || '[]');
+    a.push(e);
+    sessionStorage.setItem('tfActivity', JSON.stringify(a));
+  } catch(e2) {}
+}
 function seedActivity() {
-  logActivity('Auto-repaired logo clear space: the mark sat 11px from the edge on first composition, padded to 24px before display', 'System', 'during composition');
-  if (SOURCES.pim.trust !== 'verified')
-    logActivity('Withheld the price and the spec-sheet price row: Product Catalog (PIM) is past its freshness SLA', 'System', 'during composition');
-  else
-    logActivity('Price restored in every format after the Product Catalog (PIM) re-sync verified it', 'System', 'earlier');
-  if ((sessionStorage.getItem('tfV_srcs') || '').includes('pim'))
-    logActivity('Legal approved claim.preorder.301 (pre-order messaging) at your request — Dana Wu, counsel', 'Legal', 'on the brief');
+  renderAct({ what: 'Auto-repaired logo clear space: the mark sat 11px from the edge on first composition, padded to 24px before display', who: 'System', when: 'during composition' });
+  renderAct(SOURCES.pim.trust !== 'verified'
+    ? { what: 'Withheld the price and the spec-sheet price row: Product Catalog (PIM) is past its freshness SLA', who: 'System', when: 'during composition' }
+    : { what: 'Price restored in every format after the Product Catalog (PIM) re-sync verified it', who: 'System', when: 'earlier' });
+  try { (JSON.parse(sessionStorage.getItem('tfActivity') || '[]')).forEach(renderAct); } catch(e) {}
 }
 
 let FMT = 'social';

@@ -31,7 +31,7 @@
       </div>
 
       <div class="tf-card">
-        <div class="tf-sectionhead"><h2>Lineage</h2><p>travels with the export</p></div>
+        <div class="tf-sectionhead"><h2>Lineage</h2></div>
         <div class="tf-lineage" style="margin-bottom:10px">
           <span class="node">brief_31C</span><span class="arw">→</span>
           <span class="node">plan job_72A</span><span class="arw">→</span>
@@ -40,7 +40,7 @@
           <span class="node">approved</span>
         </div>
         <div class="tf-evidence">
-          <div class="tf-ev"><span class="what">Brand version</span><span class="src">Brand Contract meridian@3.8.0 · recorded on every asset</span></div>
+          <div class="tf-ev"><span class="what">Brand version</span><span class="src">Brand Contract meridian@3.8.0</span></div>
           <div class="tf-ev"><span class="what">Model versions</span><span class="src">planner pinned v4 · image model pinned v2 · no drift since golden-set run</span></div>
           <div class="tf-ev"><span class="what">Edits</span><span class="src">3 human edits · 1 auto-repair · 0 locked objects changed</span></div>
         </div>
@@ -57,12 +57,12 @@
         <button class="tf-btn tf-btn--sm tf-btn--primary" id="pubbtn" data-wired>Publish via connector</button>
         <a class="tf-btn tf-btn--sm" id="viewproj" href="20-arc-canvas.html" style="display:none" data-wired>View published project →</a>
       </div>
-      <p class="tf-cap">The Structured Design Document is canonical — pixels are a rendered view.</p>
 
       <details class="tf-drill" id="tracedrill" style="margin-top:var(--tf-3)">
-        <summary><b>🔍 Delivered assets · lineage</b><span class="hint">every asset, then every object, back to its systems of record</span><span class="map">audit</span></summary>
+        <summary><b>🔍 Delivered Assets</b></summary>
         <div class="bd">
-          <details class="tf-delast">
+          <p class="tf-cap" id="delempty" style="margin:4px 0 8px">Nothing delivered yet — assets appear here as delivery completes.</p>
+          <details class="tf-delast" hidden>
             <summary>
               <span class="thumb"><span class="tf-fmt tf-fmt--square" style="display:block"><span class="tf-artboard" style="display:flex"><span class="ab-h" style="font-size:6px">Own the second half</span><span class="ab-fill" style="min-height:16px"></span></span></span></span>
               <span class="m"><b>Social · 1080×1080</b><small>Feed placement · Urban Athletes · en-US</small></span>
@@ -89,7 +89,7 @@
                 <span class="tf-trust tf-trust--verified">design system</span></div>
             </div>
           </details>
-          <details class="tf-delast">
+          <details class="tf-delast" hidden>
             <summary>
               <span class="thumb"><span class="tf-fmt tf-fmt--banner" style="display:block"><span class="tf-artboard tf-artboard--split" style="display:flex"><span class="ab-h" style="font-size:6px">Own it</span><span class="ab-fill ab-fill--tall" style="min-height:14px"></span></span></span></span>
               <span class="m"><b>Banner · 1200×628</b><small>Paid placement · recomposed on grid.banner.split-40, not resized</small></span>
@@ -113,7 +113,7 @@
                 <span class="tf-trust tf-trust--verified">design system</span></div>
             </div>
           </details>
-          <details class="tf-delast">
+          <details class="tf-delast" hidden>
             <summary>
               <span class="thumb"><span class="tf-fmt tf-fmt--flyer" style="display:block"><span class="tf-artboard" style="display:flex"><span class="ab-h" style="font-size:6px">Own it</span><span class="ab-fill" style="min-height:18px"></span></span></span></span>
               <span class="m"><b>Flyer · 8.5×11</b><small>Retail partners · print-ready PDF: trim, safe margins, 300 dpi, embedded fonts</small></span>
@@ -152,7 +152,7 @@
             <span class="tf-trust tf-trust--verified">design system</span></div>
             </div>
           </details>
-          <div class="tf-tracefoot">composed under <b>meridian@3.8.0</b> · planner v4 · image model v2 · 3 human edits · 1 auto-repair · approved by exception · every hop timestamped in the audit record</div>
+          <div class="tf-tracefoot">composed under <b>meridian@3.8.0</b> · planner v4 · image model v2 · 3 human edits · 1 auto-repair · approved by exception</div>
         </div>
       </details>
     </div>
@@ -167,9 +167,8 @@
         </div>
       </div>
       <div class="tf-card">
-        <div class="tf-sectionhead"><h2>Counts toward north star</h2><p>Approved Design Sets Shipped</p></div>
+        <div class="tf-sectionhead"><h2>Delivery record</h2></div>
         <ul class="tf-col" style="gap:6px;font-size:12.5px;color:var(--tf-ink-2)"><li class="tf-row"><span>Agent materially composed it</span><span class="tf-spacer"></span><span class="tf-status tf-status--ok">✓</span></li><li class="tf-row"><span>Output remains editable</span><span class="tf-spacer"></span><span class="tf-status tf-status--ok">✓</span></li><li class="tf-row"><span>All mandatory checks pass</span><span class="tf-spacer"></span><span class="tf-status tf-status--ok">✓</span></li><li class="tf-row"><span>Required reviewer approved</span><span class="tf-spacer"></span><span class="tf-status tf-status--review">1 pending</span></li><li class="tf-row"><span>≥1 asset exported / delivered</span><span class="tf-spacer"></span><span class="tf-status tf-status--idle">Not yet</span></li></ul>
-        <p class="tf-cap">Resizes and minor variants do not count separately. Downstream campaign IDs are captured on delivery.</p>
       </div>
     </aside>
   </div>
@@ -223,15 +222,22 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const b = document.getElementById('pubbtn'), v = document.getElementById('viewproj');
-  const applyPub = () => {
+  const reveal = staggered => {
+    const empty = document.getElementById('delempty');
+    if (empty) empty.remove();
+    const assets = [...document.querySelectorAll('#tracedrill .tf-delast')];
+    assets.forEach((a, i) => setTimeout(() => { a.hidden = false; }, staggered ? 700 + i * 600 : 0));
+  };
+  const applyPub = staggered => {
     if (b) { b.textContent = '✓ Published'; b.disabled = true; }
     if (v) v.style.display = '';
+    reveal(staggered);
   };
-  if (sessionStorage.getItem('tfPublished') === '1') applyPub();
+  if (sessionStorage.getItem('tfPublished') === '1') applyPub(false);
   if (b) b.addEventListener('click', () => {
     try { sessionStorage.setItem('tfPublished', '1'); } catch(e) {}
-    applyPub();
-    if (typeof toast === 'function') toast('✓ Published — lineage attached · the set now counts toward the north star');
+    applyPub(true);
+    if (typeof toast === 'function') toast('✓ Published — all three assets delivered with lineage attached');
   });
 });
 </script>

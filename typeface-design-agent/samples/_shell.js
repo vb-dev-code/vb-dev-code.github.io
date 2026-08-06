@@ -619,7 +619,7 @@ const ACTS = {
         if (li) { const s = li.querySelector('.tf-status'); s.className = 'tf-status tf-status--ok'; s.textContent = '✓ Delivered'; }
         agentDock(
           `All three formats are delivered with lineage attached, and the set now counts toward the
-           north star. Ask me where anything came from — <b>Delivered assets · lineage</b>, below the
+           north star. Ask me where anything came from — <b>Delivered Assets</b>, below the
            export bar, walks every asset and object back to its system of record.`,
           'Continue →');
         unlockNext();
@@ -658,7 +658,7 @@ function initTourChrome() {
   // A fresh journey starts clean: landing on step 1 resets the simulation
   // (generated content, carried resolutions). Mid-journey state survives.
   if (step === 1) {
-    try { ['tfGenerated', 'tfV_srcs', 'tfV_checks', 'tfPublished', 'tfMissing'].forEach(k => sessionStorage.removeItem(k)); } catch(e) {}
+    try { ['tfGenerated', 'tfV_srcs', 'tfV_checks', 'tfPublished', 'tfMissing', 'tfActivity'].forEach(k => sessionStorage.removeItem(k)); } catch(e) {}
   }
   if (_selfGuided) {
     const chip = document.createElement('a');

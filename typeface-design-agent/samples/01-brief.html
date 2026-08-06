@@ -33,7 +33,6 @@
           <span class="tf-cap" style="margin:0">parsed and inherited from the Arc · <b>your 4 inputs are below</b></span>
         </div>
         <div class="tf-sectionhead" style="align-items:center"><h2>Context readiness</h2>
-          <p>every field names its source · fix anything right here</p>
           <button class="tf-btn tf-btn--sm" id="fixall" style="margin-left:auto">⚡ Apply recommended fixes</button></div>
         <details class="tf-drill" style="margin-bottom:var(--tf-3)">
           <summary><b>✓ Ready · 4 fields</b><span class="hint">Goal, Brand Kit, Rights, Audiences — inherited and verified</span></summary>
@@ -188,6 +187,13 @@
 (() => {
   const $ = (sel, root=document) => root.querySelector(sel);
   const state = { pim:false, voice:false, lang:false, legal:false };
+  function tfLog(what, who) {
+    try {
+      const a = JSON.parse(sessionStorage.getItem('tfActivity') || '[]');
+      a.push({ what, who, when: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) });
+      sessionStorage.setItem('tfActivity', JSON.stringify(a));
+    } catch(e) {}
+  }
 
   function setRow(id, { main, src, weak, chipCls, chipTxt }) {
     const row = $('#'+id);
@@ -221,6 +227,7 @@
         setRow('row-pim', { main: 'Meridian Peak 2 <span class="tf-muted">· 28 attributes · price available</span>',
           src: 'pim://catalog/peak2 · re-synced just now · verified', chipCls: 'tf-rdy--ready', chipTxt: 'Ready' });
         btn.remove(); state.pim = true; refreshSummary();
+        tfLog('Re-synced the Product Catalog (PIM) — price verified and restored to scope', 'You');
         try {
           const S = new Set(JSON.parse(sessionStorage.getItem('tfV_srcs') || '[]')); S.add('pim');
           const C = new Set(JSON.parse(sessionStorage.getItem('tfV_checks') || '[]')); C.add('claim.price');
@@ -244,6 +251,7 @@
                      : 'upload://spring-2026.pdf · scoped by you · campaign only',
           chipCls: 'tf-rdy--ready', chipTxt: 'Ready' });
         b.closest('span').remove(); state.voice = true; refreshSummary();
+        tfLog(legal ? 'Resolved the voice conflict: kept the approved legal policy' : 'Resolved the voice conflict: deck voice promoted for this campaign only', 'You');
       }));
     },
     lang(btn) {
@@ -252,6 +260,7 @@
         setRow('row-lang', { main: 'en-US + es-US <span class="tf-muted">· fallback assigned: Nunito Sans, licensed and embeddable</span>',
           src: 'figma://meridian/ds + brand kit fonts · verified', chipCls: 'tf-rdy--ready', chipTxt: 'Ready' });
         btn.remove(); state.lang = true; refreshSummary();
+        tfLog('Assigned licensed font fallback for es-US: Nunito Sans', 'You');
       }, 800);
     },
     legal(btn) {
@@ -265,6 +274,7 @@
             src: 'legal://claims/us-2026 · approved just now · verified', chipCls: 'tf-rdy--ready', chipTxt: 'Ready' });
           btn.remove();
           state.legal = true; refreshSummary();
+          tfLog('Approved claim.preorder.301 (pre-order messaging) at your request — Dana Wu, counsel', 'Legal');
         }, 1600);
       }, 900);
     },
