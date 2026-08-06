@@ -54,13 +54,72 @@
         <button class="tf-btn tf-btn--sm">Layered handoff → Figma</button>
         <div class="spacer"></div>
         <span class="tf-chip">approved-launch-assets</span>
-        <button class="tf-btn tf-btn--sm tf-btn--primary">Publish via connector</button>
+        <button class="tf-btn tf-btn--sm tf-btn--primary" id="pubbtn" data-wired>Publish via connector</button>
+        <a class="tf-btn tf-btn--sm" id="viewproj" href="20-arc-canvas.html" style="display:none" data-wired>View published project →</a>
       </div>
       <p class="tf-cap">The Structured Design Document is canonical — pixels are a rendered view.</p>
 
       <details class="tf-drill" id="tracedrill" style="margin-top:var(--tf-3)">
-        <summary><b>🔍 Trace a delivered asset</b><span class="hint">the flyer, object by object, back to its systems of record</span><span class="map">audit</span></summary>
+        <summary><b>🔍 Delivered assets · lineage</b><span class="hint">every asset, then every object, back to its systems of record</span><span class="map">audit</span></summary>
         <div class="bd">
+          <details class="tf-delast">
+            <summary>
+              <span class="thumb"><span class="tf-fmt tf-fmt--square" style="display:block"><span class="tf-artboard" style="display:flex"><span class="ab-h" style="font-size:6px">Own the second half</span><span class="ab-fill" style="min-height:16px"></span></span></span></span>
+              <span class="m"><b>Social · 1080×1080</b><small>Feed placement · Urban Athletes · en-US</small></span>
+              <span class="tf-status tf-status--ok">✓ Delivered</span>
+            </summary>
+            <div class="bd">
+              <div class="tf-trace"><span class="obj">Headline<small>text · generated</small></span>
+                <span class="chain"><code>spring-brief.pdf</code> parsed<span class="arw">→</span>brand voice · tone direct, grounded<span class="arw">→</span><code>type.display/1</code> · MeridianDisplay, licensed</span>
+                <span class="tf-trust tf-trust--verified">brand kit</span></div>
+              <div class="tf-trace"><span class="obj">Background<small>image · generated</small></span>
+                <span class="chain">image model v2, pinned<span class="arw">→</span>trained style “winter trail”<span class="arw">→</span>palette tokens from <code>figma://meridian/ds</code></span>
+                <span class="tf-trust tf-trust--verified">design system</span></div>
+              <div class="tf-trace"><span class="obj">Product render<small>asset · placed</small></span>
+                <span class="chain"><code>asset.product.4421</code><span class="arw">→</span><code>dam://meridian/approved</code> · rights US + CA · never regenerated</span>
+                <span class="tf-trust tf-trust--verified">DAM</span></div>
+              <div class="tf-trace"><span class="obj">CTA<small>component instance</small></span>
+                <span class="chain"><code>component.cta.primary.v5</code><span class="arw">→</span><code>figma://meridian/ds</code></span>
+                <span class="tf-trust tf-trust--verified">design system</span></div>
+              <div class="tf-trace"><span class="obj">Audience<small>targeting context</small></span>
+                <span class="chain">Urban Athletes<span class="arw">→</span><code>cdp://segments</code> · resolved segment, consumed not rebuilt</span>
+                <span class="tf-trust tf-trust--verified">CDP</span></div>
+              <div class="tf-trace"><span class="obj">Layout<small>composition</small></span>
+                <span class="chain"><code>grid.social.center-stack</code><span class="arw">→</span>adapted from the Spring 2026 approved precedent</span>
+                <span class="tf-trust tf-trust--verified">design system</span></div>
+            </div>
+          </details>
+          <details class="tf-delast">
+            <summary>
+              <span class="thumb"><span class="tf-fmt tf-fmt--banner" style="display:block"><span class="tf-artboard tf-artboard--split" style="display:flex"><span class="ab-h" style="font-size:6px">Own it</span><span class="ab-fill ab-fill--tall" style="min-height:14px"></span></span></span></span>
+              <span class="m"><b>Banner · 1200×628</b><small>Paid placement · recomposed on grid.banner.split-40, not resized</small></span>
+              <span class="tf-status tf-status--ok">✓ Delivered</span>
+            </summary>
+            <div class="bd">
+              <div class="tf-trace"><span class="obj">Layout<small>composition</small></span>
+                <span class="chain"><code>grid.banner.split-40</code><span class="arw">→</span>re-solved for the new ratio · product moved beside copy</span>
+                <span class="tf-trust tf-trust--verified">design system</span></div>
+              <div class="tf-trace"><span class="obj">Headline<small>text · generated</small></span>
+                <span class="chain">same approved copy as the master<span class="arw">→</span>contrast 7.4:1 re-validated on the dark fill</span>
+                <span class="tf-trust tf-trust--verified">brand kit</span></div>
+              <div class="tf-trace"><span class="obj">Background<small>image · generated</small></span>
+                <span class="chain">image model v2, pinned<span class="arw">→</span>same trained style · bounded zone re-lit for the dark variant</span>
+                <span class="tf-trust tf-trust--verified">design system</span></div>
+              <div class="tf-trace"><span class="obj">Product render<small>asset · placed</small></span>
+                <span class="chain"><code>asset.product.4421</code><span class="arw">→</span><code>dam://meridian/approved</code> · rights US + CA</span>
+                <span class="tf-trust tf-trust--verified">DAM</span></div>
+              <div class="tf-trace"><span class="obj">CTA<small>component instance</small></span>
+                <span class="chain"><code>component.cta.primary.v5</code> · compact variant<span class="arw">→</span><code>figma://meridian/ds</code></span>
+                <span class="tf-trust tf-trust--verified">design system</span></div>
+            </div>
+          </details>
+          <details class="tf-delast" open>
+            <summary>
+              <span class="thumb"><span class="tf-fmt tf-fmt--flyer" style="display:block"><span class="tf-artboard" style="display:flex"><span class="ab-h" style="font-size:6px">Own it</span><span class="ab-fill" style="min-height:18px"></span></span></span></span>
+              <span class="m"><b>Flyer · 8.5×11</b><small>Retail partners · print-ready PDF: trim, safe margins, 300 dpi, embedded fonts</small></span>
+              <span class="tf-status tf-status--ok">✓ Delivered</span>
+            </summary>
+            <div class="bd">
           <div class="tf-trace"><span class="obj">Headline<small>text · generated</small></span>
             <span class="chain"><code>spring-brief.pdf</code> parsed<span class="arw">→</span>brand voice · 34 approved samples · tone direct, grounded<span class="arw">→</span><code>type.display/1</code> · MeridianDisplay, licensed<span class="arw">→</span>contrast 8.1:1 validated</span>
             <span class="tf-trust tf-trust--verified">brand kit</span></div>
@@ -91,6 +150,8 @@
           <div class="tf-trace"><span class="obj">Layout<small>composition</small></span>
             <span class="chain"><code>grid.flyer.two-col</code> from the design system<span class="arw">→</span>adapted from the Spring 2026 approved precedent</span>
             <span class="tf-trust tf-trust--verified">design system</span></div>
+            </div>
+          </details>
           <div class="tf-tracefoot">composed under <b>meridian@3.8.0</b> · planner v4 · image model v2 · 3 human edits · 1 auto-repair · approved by exception · every hop timestamped in the audit record</div>
         </div>
       </details>
@@ -158,5 +219,20 @@
     });
   });
 })();
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const b = document.getElementById('pubbtn'), v = document.getElementById('viewproj');
+  const applyPub = () => {
+    if (b) { b.textContent = '✓ Published'; b.disabled = true; }
+    if (v) v.style.display = '';
+  };
+  if (sessionStorage.getItem('tfPublished') === '1') applyPub();
+  if (b) b.addEventListener('click', () => {
+    try { sessionStorage.setItem('tfPublished', '1'); } catch(e) {}
+    applyPub();
+    if (typeof toast === 'function') toast('✓ Published — lineage attached · the set now counts toward the north star');
+  });
+});
 </script>
 </body></html>

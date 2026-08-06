@@ -46,4 +46,32 @@
   <div class="tf-row" style="margin-top:20px"><a class="tf-btn tf-btn--sm" href="01-brief.html">Open Design Agent brief</a>
     <a class="tf-btn tf-btn--sm" href="32-concept.html">Open the Visual Kit</a><div class="tf-spacer"></div>
     <button class="tf-btn tf-btn--sm tf-btn--primary">Publish</button></div>
-</main></body></html>
+</main>
+<script>
+/* After publishing, the project wears its state: header flips to Published and
+   a delivered-assets lane appears for future reference and reuse. */
+document.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('tfPublished') !== '1') return;
+  const st = document.querySelector('header .tf-status, .tf-topbar .tf-status');
+  if (st) { st.className = 'tf-status tf-status--ok'; st.textContent = '✓ Published'; }
+  const lane = document.createElement('div');
+  lane.className = 'tf-publane';
+  lane.innerHTML = `
+    <div class="hd"><span class="tf-status tf-status--ok">✓ Published</span>
+      <b>Campaign Visual Kit · delivered</b>
+      <span class="tf-cap" style="margin:0">lineage attached · counts toward the north star</span>
+      <span class="tf-spacer"></span>
+      <a class="tf-btn tf-btn--sm" href="34-approve.html" data-wired>Open lineage</a>
+      <a class="tf-btn tf-btn--sm tf-btn--primary" href="14-templates.html" data-wired>Use as template</a></div>
+    <div class="row">
+      <span class="as"><span class="tf-fmt tf-fmt--square" style="display:block"><span class="tf-artboard" style="display:flex"><span class="ab-h" style="font-size:7px">Own the second half</span><span class="ab-fill" style="min-height:22px"></span><span class="ab-cta" style="font-size:6px">Shop the Peak 2</span></span></span><span class="cap"><span>Social</span><span>1080×1080</span></span></span>
+      <span class="as" style="width:160px"><span class="tf-fmt tf-fmt--banner" style="display:block"><span class="tf-artboard tf-artboard--split" style="display:flex"><span class="ab-h" style="font-size:7px">Own the second half</span><span class="ab-fill ab-fill--tall" style="min-height:18px"></span></span></span><span class="cap"><span>Banner</span><span>1200×628</span></span></span>
+      <span class="as" style="width:96px"><span class="tf-fmt tf-fmt--flyer" style="display:block"><span class="tf-artboard" style="display:flex"><span class="ab-h" style="font-size:7px">Own it</span><span class="ab-fill" style="min-height:26px"></span></span></span><span class="cap"><span>Flyer</span><span>8.5×11</span></span></span>
+    </div>`;
+  const tabs = document.querySelector('.tabs');
+  tabs.parentElement.insertBefore(lane, tabs);
+  const pub = [...document.querySelectorAll('button')].find(b => b.textContent.trim() === 'Publish');
+  if (pub) { pub.textContent = '✓ Published'; pub.disabled = true; pub.dataset.wired = '1'; }
+});
+</script>
+</body></html>

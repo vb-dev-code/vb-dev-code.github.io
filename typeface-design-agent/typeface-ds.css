@@ -864,9 +864,14 @@ a { color: inherit; }
 .tf-fmt--flyer  { aspect-ratio: 8.5 / 11; }     /* flyer   one page        */
 .tf-fmt--hero   { aspect-ratio: 2 / 1; }        /* email hero — P1, unused */
 .tf-fmt-label {
-  font-family: var(--tf-mono); font-size: 10.5px; color: var(--tf-ink-3);
-  display: flex; align-items: center; gap: 6px; margin-bottom: 6px;
+  font-size: 14.5px; font-weight: 650; color: var(--tf-ink);
+  letter-spacing: .01em; text-transform: capitalize;
+  display: flex; align-items: center; gap: 7px; margin-bottom: 7px;
+  padding-top: 2px;
 }
+.tf-fmt-label .dim { font-family: var(--tf-mono); font-size: 10.5px; font-weight: 400; color: var(--tf-ink-3); text-transform: none; }
+.tf-fmt-label .phase { font-family: var(--tf-mono); font-size: 10px; font-weight: 600; text-transform: none;
+  color: var(--tf-agent); background: var(--tf-agent-bg); border-radius: 999px; padding: 1px 8px; }
 .tf-fmt-label .dim { margin-left: auto; }
 
 /* --- typed Design Plan: the agent's confirmable proposal ----------------- */
@@ -1726,6 +1731,65 @@ body.tour-active { padding-bottom: 74px; }
 }
 .tf-composed b { color: var(--tf-ink-2); font-weight: 600; }
 .tf-composed .ds { color: var(--tf-agent); }
+
+/* Minimized agent chat: a floating bubble that restores the dock. */
+.tf-agentdock .hd { display: flex; align-items: center; }
+.tf-agentdock .hd .mini { margin-left: auto; border: 0; background: none; cursor: pointer;
+  font-size: 13px; line-height: 1; color: inherit; opacity: .7; padding: 2px 6px; border-radius: 6px; }
+.tf-agentdock .hd .mini:hover { opacity: 1; background: rgba(255,255,255,.14); }
+.tf-dockbubble { position: fixed; right: 22px; bottom: 22px; z-index: 60;
+  width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--tf-line);
+  background: var(--tf-surface); font-size: 20px; cursor: pointer;
+  box-shadow: 0 8px 26px rgba(15,23,42,.18); display: grid; place-items: center; }
+.tf-dockbubble:hover { transform: translateY(-1px); }
+
+/* Scorecard v2: check rows show verdict + name + confidence; everything else
+   lives one drill down. */
+.tf-scorecat { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px;
+  font-size: 12px; font-weight: 650; color: var(--tf-ink-2); }
+.tf-scorecat:first-of-type { margin-top: 6px; }
+.tf-scorecat .tf-status { margin-left: auto; }
+details.tf-chkrow { border-bottom: 1px solid var(--tf-line-soft); }
+details.tf-chkrow:last-of-type { border-bottom: 0; }
+details.tf-chkrow summary { list-style: none; display: grid; grid-template-columns: 16px 1fr auto;
+  gap: 8px; align-items: center; padding: 6px 2px; cursor: pointer; font-size: 12.5px; }
+details.tf-chkrow summary::-webkit-details-marker { display: none; }
+details.tf-chkrow summary:hover { background: var(--tf-surface-2); }
+details.tf-chkrow .cv { font-size: 11px; text-align: center; }
+details.tf-chkrow .cv--pass { color: var(--tf-ok); }
+details.tf-chkrow .cv--warn { color: var(--tf-warnc, #9a6b00); }
+details.tf-chkrow .cv--fail { color: var(--tf-risk); }
+details.tf-chkrow .cname { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+details.tf-chkrow[data-att] .cname { color: var(--tf-risk); font-weight: 600; }
+details.tf-chkrow .cconf { font-family: var(--tf-mono); font-size: 10.5px; color: var(--tf-ink-3); }
+.tf-chkdrill { padding: 4px 2px 10px 24px; display: grid; grid-template-columns: 88px 1fr; gap: 3px 10px; font-size: 11.5px; }
+.tf-chkdrill dt { color: var(--tf-ink-3); }
+.tf-chkdrill dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.tf-chkdrill .fixrow { grid-column: 1 / -1; margin-top: 6px; }
+
+/* Issue panel: each issue names its source and opens into the requirement. */
+.tf-ipsrc { font-size: 10.5px; font-family: var(--tf-mono); color: var(--tf-ink-3);
+  border: 1px solid var(--tf-line-soft); border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
+details.tf-ipdrill { font-size: 11.5px; }
+details.tf-ipdrill summary { cursor: pointer; color: var(--tf-link, var(--tf-agent)); list-style: none; font-size: 11px; }
+details.tf-ipdrill summary::-webkit-details-marker { display: none; }
+
+/* Delivered assets on the approval page: every asset, then its lineage. */
+.tf-delast { border: 1px solid var(--tf-line-soft); border-radius: var(--tf-r-sm); margin-bottom: 8px; }
+.tf-delast > summary { list-style: none; display: flex; gap: 12px; align-items: center; padding: 9px 12px; cursor: pointer; }
+.tf-delast > summary::-webkit-details-marker { display: none; }
+.tf-delast > summary .thumb { flex: none; width: 52px; }
+.tf-delast > summary .m { min-width: 0; font-size: 12.5px; }
+.tf-delast > summary .m small { display: block; color: var(--tf-ink-3); font-size: 11px; }
+.tf-delast > summary .tf-status { margin-left: auto; flex: none; }
+.tf-delast .bd { padding: 0 12px 10px; }
+
+/* Published project: delivered assets lane on the Arc canvas. */
+.tf-publane { border: 1px solid var(--tf-ok); background: var(--tf-ok-bg); border-radius: var(--tf-r); padding: 14px 16px; margin-bottom: 20px; }
+.tf-publane .hd { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13.5px; }
+.tf-publane .row { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+.tf-publane .as { width: 120px; }
+.tf-publane .as .cap { font-size: 11px; color: var(--tf-ink-2); margin-top: 4px; display: flex; justify-content: space-between; }
 
 /* Lineage disclosure: provenance is one click away, not ambient text. Opens
    itself only when a cited source needs attention. */

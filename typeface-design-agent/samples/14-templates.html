@@ -15,6 +15,16 @@
     <div class="tf-agentcard"><div class="ic">✉</div><b>Product launch</b><p>Awareness → Consideration → Offer, across email and SMS.</p></div>
     <div class="tf-agentcard"><div class="ic">◷</div><b>Seasonal promotion</b><p>Short 3-step promo journey with a hard end date.</p></div>
     <div class="tf-agentcard"><div class="ic">✎</div><b>Retail partner kit</b><p>Flyer, banners and a spec sheet for channel partners.</p><span class="tf-status tf-status--agent" style="align-self:flex-start">Design Agent</span></div>
+    <div class="tf-agentcard" id="mytpl" style="display:none;border-color:var(--tf-ok)"><div class="ic">◈</div><b>Peak 2 · Campaign Visual Kit</b><p>Saved from Spring Trail Campaign. Social, banner and flyer with your approved layouts, prompts and checks.</p><span class="tf-status tf-status--ok" style="align-self:flex-start">Your template · published</span></div>
     <div class="tf-agentcard tf-agentcard--new"><b>+ Blank Arc</b></div>
   </div>
-</main></body></html>
+</main><script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('tfPublished') === '1') {
+    const c = document.getElementById('mytpl');
+    if (c) { c.style.display = ''; c.dataset.wired = '1';
+      c.addEventListener('click', () => { if (typeof toast === 'function') toast('This kit is reusable: a new brief starts from its layouts, prompts and checks'); }); }
+  }
+});
+</script>
+</body></html>

@@ -96,7 +96,6 @@
             <a class="tf-btn tf-btn--sm" href="35-edit.html" id="editheadline">Edit headline</a>
             <a class="tf-btn tf-btn--sm" href="35-edit.html">Replace asset</a>
           </div>
-          <div class="tf-objpanel" id="objpanel" style="margin-top:var(--tf-3)"></div>
         </div>
         <div class="tf-col">
           <div>
@@ -129,21 +128,46 @@
             <details class="tf-lin" id="lin-flyer" data-lsrc="ds,pim"><summary>lineage · <b>grid.flyer.two-col</b><em class="linwarn" hidden></em></summary><div class="tf-composed">composed from <b>grid.flyer.two-col</b> · <b>component.cta.primary.v5</b> · type.display/1 · <b>table.spec/1</b> · 5 colour tokens · <span class="ds">figma://meridian/ds</span></div></details>
           </div>
           <div>
-            <div class="tf-fmt-label">coming soon <span class="dim">previews</span></div>
-            <div class="tf-row" style="gap:var(--tf-2);align-items:stretch">
-              <div class="tf-slot">
-                <b>Infographic</b>
-                <span class="tier">Soon</span>
-                <p>Charts and stat callouts, with every figure verified against your product data before it is drawn.</p>
-                <a class="tf-btn tf-btn--sm" href="36-infographic.html" style="margin-top:auto">Preview</a>
+            <div class="tf-fmt-label">infographic <span class="phase">P1 · post-MVP</span><span class="dim">1080×1350</span></div>
+            <a href="36-infographic.html" style="text-decoration:none;display:block" title="Open the infographic preview">
+            <div class="tf-fmt" style="aspect-ratio:1080/1350"><div class="tf-artboard">
+              <div class="ab-logo">Meridian</div>
+              <div class="ab-h" style="font-size:11px">The second half, by the numbers</div>
+              <div class="tf-row" style="gap:6px;margin:4px 0">
+                <span style="flex:1;text-align:center"><b style="font-size:13px;color:var(--brand-accent,#E4572E)">62%</b><br><span style="font-size:6.5px;color:var(--brand-ink-soft)">recycled upper</span></span>
+                <span style="flex:1;text-align:center"><b style="font-size:13px;color:var(--brand-accent,#E4572E)">400</b><br><span style="font-size:6.5px;color:var(--brand-ink-soft)">hours tested</span></span>
+                <span style="flex:1;text-align:center"><b style="font-size:13px;color:var(--brand-accent,#E4572E)">94%</b><br><span style="font-size:6.5px;color:var(--brand-ink-soft)">grip at 400 h</span></span>
               </div>
-              <div class="tf-slot">
-                <b>Brochure</b>
-                <span class="tier">Soon</span>
-                <p>Multi-page layout that understands folds and margins, print-checked before press.</p>
-                <a class="tf-btn tf-btn--sm" href="37-brochure.html" style="margin-top:auto">Preview</a>
+              <div style="display:grid;gap:3px;margin:2px 0">
+                <span style="height:5px;width:96%;background:var(--brand-support,#0E1B33);border-radius:2px"></span>
+                <span style="height:5px;width:88%;background:var(--brand-support,#0E1B33);border-radius:2px;opacity:.8"></span>
+                <span style="height:5px;width:71%;background:var(--brand-accent,#E4572E);border-radius:2px"></span>
               </div>
-            </div>
+              <div class="ab-fill" style="min-height:30px"></div>
+              <div class="ab-legal">Figures verified against product data before they are drawn.</div>
+            </div></div></a>
+          </div>
+          <div>
+            <div class="tf-fmt-label">brochure <span class="phase">P2 · post-MVP</span><span class="dim">tri-fold · A4</span></div>
+            <a href="37-brochure.html" style="text-decoration:none;display:block" title="Open the brochure preview">
+            <div class="tf-row" style="gap:6px;align-items:stretch">
+              <div class="tf-fmt" style="flex:1;aspect-ratio:8.5/11"><div class="tf-artboard" style="padding:8px">
+                <div class="ab-logo" style="font-size:7px">Meridian</div>
+                <div class="ab-h" style="font-size:9px">Own the second half</div>
+                <div class="ab-fill" style="min-height:26px"></div></div></div>
+              <div class="tf-fmt" style="flex:1;aspect-ratio:8.5/11"><div class="tf-artboard" style="padding:8px">
+                <div class="ab-h" style="font-size:8px">Built for the second half</div>
+                <div class="ab-b" style="font-size:6px">Story flows across pages; the disclosure stays pinned to its claim.</div>
+                <div class="ab-fill" style="min-height:18px"></div></div></div>
+              <div class="tf-fmt" style="flex:1;aspect-ratio:8.5/11"><div class="tf-artboard" style="padding:8px">
+                <div class="ab-h" style="font-size:8px">The spec</div>
+                <div style="display:grid;gap:2px;margin-top:3px">
+                  <span style="height:4px;width:90%;background:var(--brand-ink-soft,#9FB0C4);border-radius:2px;opacity:.5"></span>
+                  <span style="height:4px;width:84%;background:var(--brand-ink-soft,#9FB0C4);border-radius:2px;opacity:.5"></span>
+                  <span style="height:4px;width:88%;background:var(--brand-ink-soft,#9FB0C4);border-radius:2px;opacity:.5"></span>
+                </div>
+                <div class="ab-fill" style="min-height:14px;margin-top:auto"></div></div></div>
+            </div></a>
           </div>
         </div>
       </div>
@@ -175,6 +199,7 @@
 
     <!-- BRAND EVIDENCE -->
     <aside class="tf-stack">
+      <div class="tf-objpanel" id="objpanel"></div>
       <div class="tf-score" id="score"></div>
 
       <div class="tf-card">
@@ -231,6 +256,46 @@ const SOURCES = {
   pim:   { uri:'pim://catalog/peak2',              how:'Product PIM · connector',         age:'stale 9 h · SLA 1 h',    trust:'stale'      },
   doc:   { uri:'upload://brand-guide-2025.pdf',    how:'Manual upload · never promoted',  age:'uploaded 10 months ago', trust:'unverified' },
 };
+const SRC_NAME = {
+  ds:'Figma Design System', dam:'Asset Library (DAM)', legal:'Claims Registry (Legal)',
+  spec:'Channel Spec', wcag:'WCAG 2.2 Standard', pim:'Product Catalog (PIM)',
+  doc:'Brand Guidelines (PDF upload)', cdp:'Customer Data Platform (CDP)',
+};
+/* Human-language description per rule id: what this requirement is about and
+   why it exists, in the marketer's terms. */
+const CHECKMETA = {
+  'rule.logo.clearspace':    { t:'Logo clear space',        d:'The brand mark must always have breathing room so nothing crowds it.' },
+  'rule.type.display':       { t:'Headline typeface',       d:'Headlines must use the licensed brand display font, never a lookalike.' },
+  'rule.color.palette':      { t:'Brand color palette',     d:'Every fill has to come from approved brand colors, no off-palette values.' },
+  'rule.component.cta':      { t:'Approved CTA component',  d:'Buttons come from the design system component, so styling and states stay consistent.' },
+  'rule.words.avoid':        { t:'Avoid-list language',     d:'Certain words are off-limits in this brand\'s voice; copy is screened against the list.' },
+  'style.trained':           { t:'Image style readiness',   d:'Backgrounds may only use image styles that finished training on this brand.' },
+  'rule.disclosure.present': { t:'Required disclosure',     d:'The recycled-content claim legally requires its disclosure wherever it appears.' },
+  'a11y.contrast.text':      { t:'Text contrast',           d:'Copy has to stay readable for everyone, including low-vision readers.' },
+  'a11y.contrast.cta':       { t:'CTA contrast',            d:'The button label must be readable against its fill.' },
+  'a11y.text.live':          { t:'Text stays selectable',   d:'Words are real text, not pixels, so they stay searchable, translatable and accessible.' },
+  'a11y.minsize':            { t:'Minimum legible size',    d:'Legal copy cannot shrink below the smallest size a person can actually read.' },
+  'spec.dimensions':         { t:'Placement dimensions',    d:'The artboard must match the channel\'s exact required size.' },
+  'spec.safearea':           { t:'Safe margins',            d:'Nothing important may sit where the channel could crop or cover it.' },
+  'spec.textratio':          { t:'Text-to-image ratio',     d:'The channel limits how much of the frame text can cover.' },
+  'spec.recompose':          { t:'Recomposed layout',       d:'A new ratio gets a re-solved layout, not a stretched copy of the square.' },
+  'spec.margins':            { t:'Print-safe margins',      d:'Print objects must stay clear of the trim so nothing is cut off.' },
+  'claim.registered':        { t:'Claims are registered',   d:'Every factual claim must exist in the legal claims registry before it ships.' },
+  'claim.rights':            { t:'Asset usage rights',      d:'Placed imagery must be licensed for the markets this campaign runs in.' },
+  'claim.price':             { t:'Price accuracy',          d:'A price may only appear when the product catalog verifies it as current.' },
+  'soft.hierarchy':          { t:'Visual hierarchy',        d:'One element should clearly lead the composition.' },
+  'soft.density':            { t:'Visual density',          d:'The layout should feel as full or as open as this brand\'s guidelines allow.' },
+  'soft.similarity':         { t:'Brand resemblance',       d:'Set next to approved work, this should read as the same brand.' },
+  'soft.editeffort':         { t:'Expected edit effort',    d:'A prediction of how much hand-finishing this asset still needs.' },
+  'info.figure.bound':       { t:'Figures bound to data',   d:'Every number on an infographic must bind to a verified product-data field.' },
+  'info.module.withheld':    { t:'Unverifiable modules withheld', d:'A figure that cannot be verified is withheld visibly instead of guessed.' },
+  'info.axis':               { t:'Chart axis integrity',    d:'Charts must start at zero and never truncate in a way that misleads.' },
+  'bro.disclosure.page':     { t:'Disclosure stays with claim', d:'A page turn may never separate a claim from its required disclosure.' },
+  'bro.reflow':              { t:'Cross-page reflow',       d:'Copy edits must reflow across pages without orphaned lines.' },
+  'bro.printtype':           { t:'Minimum print type',      d:'Type must stay above the smallest size that survives a press run.' },
+  'bro.gamut':               { t:'CMYK gamut shift',        d:'Colors outside the print gamut are converted, with the shift recorded, never silently.' },
+};
+const P0_FORMATS = ['social', 'banner', 'flyer'];
 const TRUST_NOTE = {
   verified:   'Pulled from a connected system inside its freshness SLA.',
   stale:      'Connected, but past its freshness SLA. Treat the value as provisional.',
@@ -323,6 +388,33 @@ const SCORE = {
       { n:[], id:'soft.editeffort', a:'Predicted human edits before approval', m:'2.9 edits · disclosure has no size headroom', v:'warn', src:'doc', c:'0.54' },
     ]},
   ]},
+  infographic: { spec:'1080×1350 · P1 preview', meta:'preview scorecard · Data-Grounded Formats', phase:'P1', groups:[
+    { n:'Hard brand violations', s:'logo, type, chart palette', b:['ok','0 of 18'], checks:[
+      { n:[], id:'rule.logo.clearspace', a:'Clear space around the mark ≥ 0.5× mark height', m:'measured 24px · minimum 21px', v:'pass', src:'ds', c:'1.00' },
+      { n:[], id:'rule.color.palette',   a:'Chart series drawn from brand tokens',           m:'3 series · 3 matched to tokens', v:'pass', src:'ds', c:'1.00' },
+    ]},
+    { n:'Figure provenance', s:'every number traces to a field', b:['ok','3 of 3'], checks:[
+      { n:[], id:'info.figure.bound',    a:'Every drawn figure binds to a verified source field', m:'62% · 400 h · 94% all bound', v:'pass', src:'pim', c:'0.97' },
+      { n:[], id:'info.module.withheld', a:'Unbound or stale figures are withheld, not guessed',  m:'2 modules withheld (stale weight, unsourced carbon)', v:'pass', src:'pim', c:'1.00' },
+    ]},
+    { n:'Chart integrity', s:'zero-based, no truncation', b:['ok','Pass'], checks:[
+      { n:[], id:'info.axis', a:'Axes start at zero and scale honestly', m:'0-based · no truncation', v:'pass', src:'wcag', c:'0.95' },
+    ]},
+  ]},
+  brochure: { spec:'tri-fold A4 · P2 preview', meta:'preview scorecard · Governed Autonomy', phase:'P2', groups:[
+    { n:'Hard brand violations', s:'across all pages', b:['ok','0 of 18'], checks:[
+      { n:[], id:'rule.logo.clearspace', a:'Clear space held on every panel', m:'4 pages · all clear', v:'pass', src:'ds', c:'1.00' },
+      { n:[], id:'bro.disclosure.page',  a:'Disclosure on the same page as its claim', m:'claim p3 · disclosure p3', v:'pass', src:'legal', c:'1.00' },
+    ]},
+    { n:'Layout & reflow', s:'folds, margins, page breaks', b:['ok','Pass'], checks:[
+      { n:[], id:'bro.reflow',    a:'No orphaned line at a page break', m:'copy reflowed · 0 orphans', v:'pass', src:'ds', c:'0.92' },
+      { n:[], id:'bro.printtype', a:'Type at or above the 6pt print floor', m:'6.0pt · no headroom', v:'pass', src:'spec', c:'0.71' },
+    ]},
+    { n:'Print production', s:'CMYK, bleed, resolution', b:['ok','Pass'], checks:[
+      { n:[], id:'bro.gamut',       a:'Out-of-gamut colors converted with the shift recorded', m:'accent ΔE 4.1 · recorded on asset', v:'pass', src:'spec', c:'0.94' },
+      { n:[], id:'spec.dimensions', a:'300 dpi floor on every placed object',                  m:'all objects ≥ 300 dpi', v:'pass', src:'spec', c:'1.00' },
+    ]},
+  ]},
 };
 
 
@@ -366,8 +458,8 @@ function objVerdict(role) {
 function renderObjPanel() {
   const el = document.getElementById('objpanel');
   if (!SEL) {
-    el.innerHTML = '<div class="bd tf-cap" style="margin:0">Select any object on the key visual to see the checks that '
-      + 'judged it and what its policy lets you change.</div>';
+    el.innerHTML = '<div class="bd tf-cap" style="margin:0">🖱 Click any object on an artboard. Its details, provenance, '
+      + 'trust level and edit actions appear here, and the scorecard below filters to the checks that judged it.</div>';
     return;
   }
   const o = OBJECTS[SEL], v = objVerdict(SEL);
@@ -383,7 +475,7 @@ function renderObjPanel() {
         <div class="act" style="margin-top:8px" id="genroleact"></div>
       </div>`;
     const objIssues = [];
-    Object.entries(SCORE).forEach(([fmt, d]) => d.groups.forEach(g => g.checks.forEach(c => {
+    P0_FORMATS.map(k => [k, SCORE[k]]).forEach(([fmt, d]) => d.groups.forEach(g => g.checks.forEach(c => {
       if ((c.n || []).includes(SEL) && needsAttention(c)) objIssues.push({ fmt, c, blocking: c.v === 'fail' });
     })));
     const blockers = objIssues.filter(x => x.blocking);
@@ -477,6 +569,13 @@ function selectObject(role) {
     n.classList.toggle('sel', n.dataset.role === SEL));
   render(FMT);
   renderObjPanel();
+  if (SEL) {
+    const el = document.getElementById('objpanel');
+    el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    el.style.transition = 'box-shadow .3s ease';
+    el.style.boxShadow = '0 0 0 2px var(--tf-agent)';
+    setTimeout(() => { el.style.boxShadow = ''; }, 900);
+  }
 }
 
 /* Every problem carries its resolution. Inline fixes mutate the data and the
@@ -512,7 +611,7 @@ function fixFor(c) {
   return FIXES[c.id] ? { ...FIXES[c.id], act: 'fix' } : null;
 }
 function fixEverything() {
-  Object.values(SCORE).forEach(d => d.groups.forEach(g => g.checks.forEach(c => {
+  P0_FORMATS.map(k => SCORE[k]).forEach(d => d.groups.forEach(g => g.checks.forEach(c => {
     if (c.v !== 'pass' && FIXES[c.id]) FIXES[c.id].run(c);
     if (SOURCES[c.src].trust !== 'verified') promoteSource(c.src);
   })));
@@ -539,7 +638,7 @@ function render(fmt) {
   const total = d.groups.reduce((n, g) => n + g.checks.length, 0);
 
   const tabs = Object.keys(SCORE).map(k =>
-    `<button role="tab" aria-selected="${k === fmt}" data-fmt="${k}">${k}</button>`).join('');
+    `<button role="tab" aria-selected="${k === fmt}" data-fmt="${k}">${k}${SCORE[k].phase ? ` <sup style="font-size:8px;color:var(--tf-agent)">${SCORE[k].phase}</sup>` : ''}</button>`).join('');
 
   const weakSrcs = [...new Set(weak.filter(c => SOURCES[c.src].trust !== 'verified').map(c => c.src))];
   const warn = weak.length ? `<div class="tf-trustwarn">
@@ -557,24 +656,33 @@ function render(fmt) {
   const groups = scoped.map(g => {
     const nAtt = g.checks.filter(needsAttention).length;
     const chipCls = nAtt ? 'tf-status--risk' : 'tf-status--ok';
-    const chipTxt = nAtt ? `${g.b[1]} · ${nAtt} issue${nAtt > 1 ? 's' : ''}` : g.b[1];
+    const chipTxt = nAtt ? `${nAtt} issue${nAtt > 1 ? 's' : ''}` : g.b[1];
     return `
-    <details class="row">
-      <summary><span>${esc(g.n)}<small>${esc(g.s)}</small></span>
-        <span class="tf-status ${chipCls}">${esc(chipTxt)}</span></summary>
-      <div class="tf-checks">${g.checks.map(c => {
-        const fx = fixFor(c);
-        const ctl = !fx ? '' :
-          `<button class="tf-btn tf-btn--sm tf-btn--primary" data-wired data-fixid="${esc(c.id)}" data-act="${fx.act}">${esc(fx.label)}</button>`;
-        return `
-        <div class="tf-chk">
-          <span class="v v--${c.v}">${VMARK[c.v]}</span>
-          <span class="id">${esc(c.id)}</span>
-          <span class="assert">${esc(c.a)}</span>
-          <span class="meas">${esc(c.m)}</span>
-          <span class="foot">${srcLine(c.src)}<span class="conf">confidence ${c.c}</span>${ctl}</span>
-        </div>`; }).join('')}</div>
-    </details>`; }).join('');
+    <div class="tf-scorecat">${esc(g.n)}<span class="tf-status ${chipCls}">${esc(chipTxt)}</span></div>
+    ${g.checks.map(c => {
+      const meta = CHECKMETA[c.id] || { t: c.id, d: '' };
+      const s = SOURCES[c.src];
+      const att = needsAttention(c);
+      const pct = Math.round(parseFloat(c.c) * 100) + '%';
+      const fx = fixFor(c);
+      const ctl = !fx ? '' :
+        `<div class="fixrow"><button class="tf-btn tf-btn--sm tf-btn--primary" data-wired data-fixid="${esc(c.id)}" data-act="${fx.act}">${esc(fx.label)}</button></div>`;
+      return `
+      <details class="tf-chkrow"${att ? ' data-att="1" open' : ''}>
+        <summary>
+          <span class="cv cv--${c.v}">${VMARK[c.v]}</span>
+          <span class="cname">${esc(meta.t)}</span>
+          <span class="cconf">${att ? (c.v === 'fail' ? 'blocking · ' : 'attention · ') : ''}${pct}</span>
+        </summary>
+        <dl class="tf-chkdrill">
+          <dt>Source</dt><dd>${esc(SRC_NAME[c.src] || c.src)} <span class="tf-trust tf-trust--${s.trust}" title="${esc(TRUST_NOTE[s.trust])}">${s.trust}</span></dd>
+          ${meta.d ? `<dt>Why</dt><dd>${meta.d}</dd>` : ''}
+          <dt>Requirement</dt><dd>${esc(c.a)}</dd>
+          <dt>In this asset</dt><dd>${esc(c.m)}</dd>
+          <dt>Last verified</dt><dd>${esc(s.age)} · <span class="tf-mono" style="font-size:10px">${esc(s.uri)}</span></dd>
+          ${ctl}
+        </dl>
+      </details>`; }).join('')}`; }).join('');
 
   document.getElementById('score').innerHTML =
     `<div class="tf-scoretabs" role="tablist">${tabs}</div>
@@ -589,7 +697,7 @@ function render(fmt) {
     let target = null;
     SCORE[FMT].groups.forEach(g => g.checks.forEach(c => { if (c.id === id) target = c; }));
     if (!target) return;
-    KEEPOPEN = [...document.querySelectorAll('#score details.row')].map((x, i) => x.open ? i : -1).filter(i => i >= 0);
+    KEEPOPEN = [...document.querySelectorAll('#score details.tf-chkrow')].map((x, i) => x.open ? i : -1).filter(i => i >= 0);
     if (b.dataset.act === 'src') {
       promoteSource(target.src); persistFix([target.src], []);
       if (typeof toast === 'function') toast('✓ Source verified — every check citing it re-ran');
@@ -602,7 +710,7 @@ function render(fmt) {
   }));
   const fa = document.getElementById('fixallfmt');
   if (fa) fa.addEventListener('click', () => {
-    KEEPOPEN = [...document.querySelectorAll('#score details.row')].map((x, i) => x.open ? i : -1).filter(i => i >= 0);
+    KEEPOPEN = [...document.querySelectorAll('#score details.tf-chkrow')].map((x, i) => x.open ? i : -1).filter(i => i >= 0);
     fixEverything();
     persistFix(Object.keys(SOURCES), Object.keys(FIXES));
     if (typeof toast === 'function') toast('✓ All issues fixed and sources verified — every check re-ran');
@@ -610,7 +718,7 @@ function render(fmt) {
     if (document.getElementById('issuepanel')) openIssuePanel();
   });
   if (KEEPOPEN.length) {
-    const rows = document.querySelectorAll('#score details.row');
+    const rows = document.querySelectorAll('#score details.tf-chkrow');
     KEEPOPEN.forEach(i => { if (rows[i]) rows[i].open = true; });
     KEEPOPEN = [];
   }
@@ -694,7 +802,7 @@ function genRole(role) {
 }
 function attentionCount() {
   let warn = 0, crit = 0;
-  Object.values(SCORE).forEach(d => d.groups.forEach(g => g.checks.forEach(c => {
+  P0_FORMATS.map(k => SCORE[k]).forEach(d => d.groups.forEach(g => g.checks.forEach(c => {
     if (c.v === 'fail') crit++;
     else if (needsAttention(c)) warn++;
   })));
@@ -711,7 +819,7 @@ function applyFixById(fmt, id) {
 }
 function issueList() {
   const rows = [];
-  Object.entries(SCORE).forEach(([fmt, d]) => d.groups.forEach(g => g.checks.forEach(c => {
+  P0_FORMATS.map(k => [k, SCORE[k]]).forEach(([fmt, d]) => d.groups.forEach(g => g.checks.forEach(c => {
     if (needsAttention(c)) rows.push({ fmt, c, blocking: c.v === 'fail' });
   })));
   rows.sort((a, b) => (b.blocking ? 1 : 0) - (a.blocking ? 1 : 0));
@@ -737,13 +845,19 @@ function openIssuePanel() {
   panel.innerHTML = `
     <div class="tf-sectionhead"><h2>Review before generating</h2>
       <p>${crit ? crit + ' blocking · ' : ''}${warn} non-blocking · resolve here, nothing navigates away</p></div>
-    ${rows.map(r => `
+    ${rows.map(r => { const meta = CHECKMETA[r.c.id] || { t: r.c.id, d: '' }; const s = SOURCES[r.c.src]; return `
       <div class="tf-row" style="gap:10px;padding:8px 0;border-bottom:1px solid var(--tf-line-soft);align-items:flex-start">
         <span class="tf-status ${r.blocking ? 'tf-status--risk' : 'tf-status--warn'}" style="flex:none">${r.blocking ? '⛔ Blocking' : '⚠ Warning'}</span>
-        <span style="font-size:12.5px;min-width:0;flex:1"><span class="tf-mono" style="font-size:11px">${esc(r.c.id)}</span> · ${esc(r.c.a)}
-          <span class="tf-cap" style="margin:2px 0 0">${esc(r.c.m)} · ${esc(r.fmt)}</span></span>
+        <span style="font-size:12.5px;min-width:0;flex:1"><b>${esc(meta.t)}</b> · ${esc(r.fmt)} <span class="tf-ipsrc" title="${esc(TRUST_NOTE[s.trust])}">${esc(SRC_NAME[r.c.src] || r.c.src)} · ${s.trust}</span>
+          <details class="tf-ipdrill"><summary>where this requirement comes from</summary>
+            <dl class="tf-chkdrill" style="padding:4px 0 2px">
+              ${meta.d ? `<dt>Why</dt><dd>${meta.d}</dd>` : ''}
+              <dt>Requirement</dt><dd>${esc(r.c.a)}</dd>
+              <dt>In this asset</dt><dd>${esc(r.c.m)}</dd>
+              <dt>Source</dt><dd><span class="tf-mono" style="font-size:10px">${esc(s.uri)}</span> · ${esc(s.age)}</dd>
+            </dl></details></span>
         ${(() => { const fx = fixFor(r.c); return fx ? `<button class="tf-btn tf-btn--sm ${r.blocking ? 'tf-btn--primary' : ''}" data-wired data-ipfix="${esc(r.c.id)}" data-ipfmt="${esc(r.fmt)}">${esc(fx.label)}</button>` : ''; })()}
-      </div>`).join('')}
+      </div>`; }).join('')}
     <div class="tf-row" style="margin-top:12px;gap:8px">
       <span class="tf-spacer"></span>
       <button class="tf-btn tf-btn--sm" data-wired id="issuecancel">Cancel</button>

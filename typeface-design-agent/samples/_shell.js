@@ -312,12 +312,22 @@ function agentDock(html, chipText) {
   if (d) d.remove();
   d = document.createElement('div');
   d.className = 'tf-agentdock';
-  d.innerHTML = `<div class="hd">◆ Design Agent</div>
+  d.innerHTML = `<div class="hd">◆ Design Agent<button class="mini" title="Minimize chat">—</button></div>
     <div class="bd">${html}<br>
       <span class="tf-suggest">${chipText}</span>
       <div class="tf-reply"><input type="text" placeholder="Reply to the Design Agent…"><button disabled title="Send">↑</button></div>
     </div>`;
   document.body.appendChild(d);
+  d.querySelector('.hd .mini').addEventListener('click', () => {
+    d.style.display = 'none';
+    let b = document.querySelector('.tf-dockbubble');
+    if (!b) {
+      b = document.createElement('button');
+      b.className = 'tf-dockbubble'; b.title = 'Open Design Agent chat'; b.textContent = '💬';
+      b.addEventListener('click', () => { d.style.display = ''; b.remove(); });
+      document.body.appendChild(b);
+    }
+  });
   const input = d.querySelector('input'), send = d.querySelector('.tf-reply button');
   d.querySelector('.tf-suggest').addEventListener('click', () => { input.value = chipText.replace(' →',''); setTimeout(tourAdvance, 350); });
   input.addEventListener('input', () => { send.disabled = input.value.trim() === ''; });
@@ -607,8 +617,8 @@ const ACTS = {
         if (li) { const s = li.querySelector('.tf-status'); s.className = 'tf-status tf-status--ok'; s.textContent = '✓ Delivered'; }
         agentDock(
           `All three formats are delivered with lineage attached, and the set now counts toward the
-           north star. Ask me where anything came from — <b>Trace a delivered asset</b>, below the
-           export bar, walks any object back to its system of record.`,
+           north star. Ask me where anything came from — <b>Delivered assets · lineage</b>, below the
+           export bar, walks every asset and object back to its system of record.`,
           'Continue →');
         unlockNext();
       }, 550);
@@ -646,7 +656,7 @@ function initTourChrome() {
   // A fresh journey starts clean: landing on step 1 resets the simulation
   // (generated content, carried resolutions). Mid-journey state survives.
   if (step === 1) {
-    try { ['tfGenerated', 'tfV_srcs', 'tfV_checks'].forEach(k => sessionStorage.removeItem(k)); } catch(e) {}
+    try { ['tfGenerated', 'tfV_srcs', 'tfV_checks', 'tfPublished', 'tfMissing'].forEach(k => sessionStorage.removeItem(k)); } catch(e) {}
   }
   if (_selfGuided) {
     const chip = document.createElement('a');
