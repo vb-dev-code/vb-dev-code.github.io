@@ -871,7 +871,7 @@ a { color: inherit; }
 }
 .tf-fmt-label .dim { font-family: var(--tf-mono); font-size: 10.5px; font-weight: 400; color: var(--tf-ink-3); text-transform: none; }
 .tf-fmt-label .phase { font-family: var(--tf-mono); font-size: 10px; font-weight: 600; text-transform: none;
-  color: var(--tf-agent); background: var(--tf-agent-bg); border-radius: 999px; padding: 1px 8px; }
+  color: var(--tf-agent); background: var(--tf-agent-bg); border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
 .tf-fmt-label .dim { margin-left: auto; }
 
 /* --- typed Design Plan: the agent's confirmable proposal ----------------- */
@@ -1766,6 +1766,33 @@ details.tf-chkrow .cconf { font-family: var(--tf-mono); font-size: 10.5px; color
 .tf-chkdrill dt { color: var(--tf-ink-3); }
 .tf-chkdrill dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 .tf-chkdrill .fixrow { grid-column: 1 / -1; margin-top: 6px; }
+
+/* Verdict dots: green = confident met, yellow = needs review, red = not met. */
+.tf-cdot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.tf-cdot--g { background: var(--tf-ok); }
+.tf-cdot--y { background: #D08700; }
+.tf-cdot--r { background: var(--tf-risk); }
+.tf-scorelegend { display: flex; gap: 14px; font-size: 10.5px; color: var(--tf-ink-3); margin: 6px 0 2px; }
+.tf-scorelegend span { display: inline-flex; align-items: center; gap: 5px; }
+.tf-scorelegend .tf-cdot { width: 8px; height: 8px; }
+
+/* Activity Log: what happened, who did it, when. Collapsed by default. */
+#activitylog > summary.tf-actsum { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 650; color: var(--tf-ink); }
+#activitylog > summary.tf-actsum::-webkit-details-marker { display: none; }
+#activitylog > summary.tf-actsum::after { content: '▸'; font-size: 11px; color: var(--tf-ink-3); margin-left: auto; }
+#activitylog[open] > summary.tf-actsum::after { content: '▾'; }
+.tf-act { display: grid; grid-template-columns: 52px 1fr auto; gap: 8px; align-items: start;
+  padding: 7px 0; border-bottom: 1px solid var(--tf-line-soft); font-size: 11.5px; }
+.tf-act:last-child { border-bottom: 0; }
+.tf-act .who { font-weight: 650; font-size: 10.5px; border-radius: 999px; padding: 1px 7px; text-align: center; }
+.tf-act .who--you { color: var(--tf-agent); background: var(--tf-agent-bg); }
+.tf-act .who--sys { color: var(--tf-ink-2); background: var(--tf-surface-2); }
+.tf-act .aw { min-width: 0; }
+.tf-act .when { font-family: var(--tf-mono); font-size: 9.5px; color: var(--tf-ink-3); white-space: nowrap; }
+
+/* Brochure page captions on the kit canvas. */
+.bro-cap { display: block; font-family: var(--tf-mono); font-size: 9px; color: var(--tf-ink-3); margin-top: 4px; text-align: center; }
 
 /* Issue panel: each issue names its source and opens into the requirement. */
 .tf-ipsrc { font-size: 10.5px; font-family: var(--tf-mono); color: var(--tf-ink-3);
