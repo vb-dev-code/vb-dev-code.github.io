@@ -37,60 +37,60 @@
           <button class="tf-btn tf-btn--sm" id="fixall" style="margin-left:auto">⚡ Apply recommended fixes</button></div>
         <details class="tf-drill" style="margin-bottom:var(--tf-3)">
           <summary><b>✓ Ready · 4 fields</b><span class="hint">Goal, Brand Kit, Rights, Audiences — inherited and verified</span></summary>
-          <div class="bd"><dl>
-          <div class="res"><dt>Goal</dt>
-            <dd>Drive pre-orders for the Peak 2
-              <span class="tf-ctxsrc">spring-brief.pdf · parsed, confirmed by you</span></dd>
-            <span class="tf-rdy tf-rdy--ready">Ready</span></div>
-
-          <div class="res"><dt>Brand Kit</dt>
-            <dd><span class="tf-mono" style="font-size:12px">meridian@3.8.0</span> <span class="tf-muted">· package pinned for this job</span>
-              <span class="tf-ctxsrc">figma://meridian/ds · synced 10 min ago · verified</span></dd>
-            <span class="tf-rdy tf-rdy--ready">Ready</span></div>
-
-          <div class="res"><dt>Rights</dt>
-            <dd>Product render valid US · CA to 2027-12-31
-              <span class="tf-ctxsrc">dam://meridian/approved · synced 1 h ago · verified</span></dd>
-            <span class="tf-rdy tf-rdy--ready">Ready</span></div>
-
-          <div class="res"><dt>Audiences</dt>
-            <dd>Urban Athletes <span class="tf-muted">· resolved segment, not rebuilt</span>
-              <span class="tf-ctxsrc">cdp://segments · synced 6 h ago · verified</span></dd>
-            <span class="tf-rdy tf-rdy--ready">Ready</span></div>
-
-          </dl></div>
+          <div class="bd">
+          <details class="tf-chkrow"><summary><span class="tf-cdot tf-cdot--g"></span><span class="cname"><b>Goal</b> · what this campaign is for</span><span class="tf-rdy tf-rdy--ready">Ready</span></summary>
+            <dl class="tf-chkdrill"><dt>Requirement</dt><dd>Every job needs an approved goal so results can be judged against intent.</dd>
+            <dt>This field has</dt><dd>Drive pre-orders for the Peak 2</dd>
+            <dt>Source</dt><dd>Campaign brief · <span class="tf-mono" style="font-size:10px">spring-brief.pdf</span></dd>
+            <dt>Synced &amp; verified</dt><dd>parsed on upload · confirmed by you <span class="tf-trust tf-trust--verified">verified</span></dd></dl></details>
+          <details class="tf-chkrow"><summary><span class="tf-cdot tf-cdot--g"></span><span class="cname"><b>Brand Kit</b> · the design system this job composes from</span><span class="tf-rdy tf-rdy--ready">Ready</span></summary>
+            <dl class="tf-chkdrill"><dt>Requirement</dt><dd>Composition pins one brand package version so every result is reproducible.</dd>
+            <dt>This field has</dt><dd><span class="tf-mono" style="font-size:11px">meridian@3.8.0</span> · pinned for this job</dd>
+            <dt>Source</dt><dd>Figma Design System · <span class="tf-mono" style="font-size:10px">figma://meridian/ds</span></dd>
+            <dt>Synced &amp; verified</dt><dd>synced 10 min ago <span class="tf-trust tf-trust--verified">verified</span></dd></dl></details>
+          <details class="tf-chkrow"><summary><span class="tf-cdot tf-cdot--g"></span><span class="cname"><b>Rights</b> · usage licences for placed assets</span><span class="tf-rdy tf-rdy--ready">Ready</span></summary>
+            <dl class="tf-chkdrill"><dt>Requirement</dt><dd>Every placed asset must be licensed for the markets this campaign runs in.</dd>
+            <dt>This field has</dt><dd>Product render valid US · CA to 2027-12-31</dd>
+            <dt>Source</dt><dd>Asset Library (DAM) · <span class="tf-mono" style="font-size:10px">dam://meridian/approved</span></dd>
+            <dt>Synced &amp; verified</dt><dd>synced 1 h ago <span class="tf-trust tf-trust--verified">verified</span></dd></dl></details>
+          <details class="tf-chkrow"><summary><span class="tf-cdot tf-cdot--g"></span><span class="cname"><b>Audiences</b> · who this campaign targets</span><span class="tf-rdy tf-rdy--ready">Ready</span></summary>
+            <dl class="tf-chkdrill"><dt>Requirement</dt><dd>Audience segments come from the CDP, consumed rather than rebuilt.</dd>
+            <dt>This field has</dt><dd>Urban Athletes · resolved segment</dd>
+            <dt>Source</dt><dd>Customer Data Platform (CDP) · <span class="tf-mono" style="font-size:10px">cdp://segments</span></dd>
+            <dt>Synced &amp; verified</dt><dd>synced 6 h ago <span class="tf-trust tf-trust--verified">verified</span></dd></dl></details>
+          </div>
         </details>
-        <dl>
-          <div class="res" id="row-pim"><dt>Products &amp; Services</dt>
-            <dd>Meridian Peak 2 <span class="tf-muted">· price is 9 h past its SLA, so it is withheld from every artifact; composition can proceed</span>
-              <span class="tf-ctxsrc tf-ctxsrc--weak">pim://catalog/peak2 · stale</span></dd>
-            <span class="tf-rdy tf-rdy--stale">Stale</span>
-            <button class="tf-btn tf-btn--sm" data-fix="pim">Re-sync</button></div>
-
-          <div class="res" id="row-voice"><dt>Voice &amp; tone</dt>
-            <dd>Legal policy says grounded; the campaign deck says bold <span class="tf-muted">· the deck was a deliberate upload, so the agent asks instead of assuming</span>
-              <span class="tf-ctxsrc tf-ctxsrc--weak">legal://claims/us-2026 ✕ upload://spring-2026.pdf</span></dd>
-            <span class="tf-rdy tf-rdy--conflicted">Conflicted</span>
-            <button class="tf-btn tf-btn--sm tf-btn--primary" data-fix="voice">Resolve</button></div>
-
-          <div class="res" id="row-lang"><dt>Languages</dt>
-            <dd>en-US <span class="tf-muted">· es-US requested but has no font fallback; non-blocking while this brief ships English</span>
-              <span class="tf-ctxsrc">figma://meridian/ds · no Latin-Extended cut</span></dd>
-            <span class="tf-rdy tf-rdy--warning">Warning</span>
-            <button class="tf-btn tf-btn--sm" data-fix="lang">Assign fallback</button></div>
-
-          <div class="res" id="row-legal"><dt>Journey activities</dt>
-            <dd>Pre-order push <span class="tf-muted">· no approved legal copy for this stage, so pre-order messaging cannot be grounded</span>
-              <span class="tf-ctxsrc tf-ctxsrc--weak">legal://claims/us-2026 · 1 stage unresolved</span></dd>
-            <span class="tf-rdy tf-rdy--missing">Missing</span>
-            <button class="tf-btn tf-btn--sm tf-btn--primary" data-fix="legal">Request from legal</button></div>
-        </dl>
+        <div>
+          <details class="tf-chkrow" data-att="1" open id="row-pim"><summary><span class="tf-cdot tf-cdot--y"></span><span class="cname"><b>Products &amp; Services</b> · product data behind prices and spec facts</span><span class="tf-rdy tf-rdy--stale">Stale</span></summary>
+            <dl class="tf-chkdrill"><dt>Requirement</dt><dd>A price or product fact may only appear when the catalog verifies it as current.</dd>
+            <dt>This field has</dt><dd class="fmain">Meridian Peak 2 · price is 9 h past its SLA, so it is withheld from every artifact; composition can proceed</dd>
+            <dt>Source</dt><dd>Product Catalog (PIM) · <span class="tf-mono" style="font-size:10px">pim://catalog/peak2</span></dd>
+            <dt>Synced &amp; verified</dt><dd class="fsrc">stale 9 h · SLA 1 h <span class="tf-trust tf-trust--stale">stale</span></dd>
+            <div class="fixrow"><button class="tf-btn tf-btn--sm" data-fix="pim">Re-sync</button></div></dl></details>
+          <details class="tf-chkrow" data-att="1" open id="row-voice"><summary><span class="tf-cdot tf-cdot--y"></span><span class="cname"><b>Voice &amp; tone</b> · how this campaign should sound</span><span class="tf-rdy tf-rdy--conflicted">Conflicted</span></summary>
+            <dl class="tf-chkdrill"><dt>Requirement</dt><dd>One voice must win before copy generates; the agent asks rather than guessing between conflicting instructions.</dd>
+            <dt>This field has</dt><dd class="fmain">Legal policy says grounded; the campaign deck says bold · the deck was a deliberate upload, so the agent asks instead of assuming</dd>
+            <dt>Source</dt><dd>Claims Registry (Legal) × campaign deck · <span class="tf-mono" style="font-size:10px">legal://claims/us-2026 ✕ upload://spring-2026.pdf</span></dd>
+            <dt>Synced &amp; verified</dt><dd class="fsrc">both current · <span class="tf-trust tf-trust--unverified">conflicted</span> — needs your decision</dd>
+            <div class="fixrow"><button class="tf-btn tf-btn--sm tf-btn--primary" data-fix="voice">Resolve</button></div></dl></details>
+          <details class="tf-chkrow" data-att="1" open id="row-lang"><summary><span class="tf-cdot tf-cdot--y"></span><span class="cname"><b>Languages</b> · locales this campaign ships in</span><span class="tf-rdy tf-rdy--warning">Warning</span></summary>
+            <dl class="tf-chkdrill"><dt>Requirement</dt><dd>Every requested locale needs a licensed font that can render it.</dd>
+            <dt>This field has</dt><dd class="fmain">en-US ready · es-US requested but has no font fallback; non-blocking while this brief ships English</dd>
+            <dt>Source</dt><dd>Figma Design System · <span class="tf-mono" style="font-size:10px">figma://meridian/ds</span></dd>
+            <dt>Synced &amp; verified</dt><dd class="fsrc">synced 10 min ago · <span class="tf-trust tf-trust--stale">no Latin-Extended cut</span></dd>
+            <div class="fixrow"><button class="tf-btn tf-btn--sm" data-fix="lang">Assign fallback</button></div></dl></details>
+          <details class="tf-chkrow" data-att="1" open id="row-legal"><summary><span class="tf-cdot tf-cdot--r"></span><span class="cname"><b>Journey activities</b> · the funnel stages this campaign covers</span><span class="tf-rdy tf-rdy--missing">Missing</span></summary>
+            <dl class="tf-chkdrill"><dt>Requirement</dt><dd>Each stage needs approved legal copy before its messaging can be grounded.</dd>
+            <dt>This field has</dt><dd class="fmain">Pre-order push · no approved legal copy for this stage, so pre-order messaging cannot be grounded</dd>
+            <dt>Source</dt><dd>Claims Registry (Legal) · <span class="tf-mono" style="font-size:10px">legal://claims/us-2026</span></dd>
+            <dt>Synced &amp; verified</dt><dd class="fsrc">synced on change · <span class="tf-trust tf-trust--unverified">1 stage unresolved</span></dd>
+            <div class="fixrow"><button class="tf-btn tf-btn--sm tf-btn--primary" data-fix="legal">Request from legal</button></div></dl></details>
+        </div>
         <p class="tf-cap" id="readysummary">Only Missing and Conflicted block, and both are scoped to pre-order messaging.</p>
       </div>
 
       <div class="tf-card">
-        <div class="tf-sectionhead"><h2>Your inputs · 4 fields</h2>
-          <p>everything else was inherited from the Arc or your connected sources · these four are yours</p></div>
+        <div class="tf-sectionhead"><h2>Your inputs · 4 fields</h2></div>
 
         <div class="inplab">1 · Message</div>
         <div class="tf-composer" style="margin:0">
@@ -116,13 +116,13 @@
       </div>
 
       <details class="tf-drill">
-        <summary><b>Creation mode: Adapt</b><span class="hint">recommended · 2 close precedents · lowest risk that clears the brief</span><span class="map">see alternatives</span></summary>
+        <summary><b>Creation mode: Adapt</b><span class="map">see alternatives</span></summary>
         <div class="bd">
         <div class="tf-modes">
           <button class="tf-mode" aria-pressed="true">
             <b>Adapt</b>
             <span>Recompose the approved Spring 2026 launch pattern for these three formats.</span>
-            <span class="risk">recommended · 2 close precedents · lowest risk that clears the brief</span>
+            <span class="risk">Recommended</span>
           </button>
           <button class="tf-mode">
             <b>Reuse</b>
@@ -191,9 +191,13 @@
 
   function setRow(id, { main, src, weak, chipCls, chipTxt }) {
     const row = $('#'+id);
-    row.querySelector('dd').innerHTML = main + `<span class="tf-ctxsrc${weak?' tf-ctxsrc--weak':''}">${src}</span>`;
+    const m = row.querySelector('.fmain'); if (m) m.innerHTML = main;
+    const s = row.querySelector('.fsrc'); if (s) s.innerHTML = src;
     const chip = row.querySelector('.tf-rdy');
     chip.className = 'tf-rdy ' + chipCls; chip.textContent = chipTxt;
+    const dot = row.querySelector('.tf-cdot');
+    if (dot) dot.className = 'tf-cdot ' + (chipCls === 'tf-rdy--ready' ? 'tf-cdot--g' : chipCls === 'tf-rdy--missing' ? 'tf-cdot--r' : 'tf-cdot--y');
+    if (chipCls === 'tf-rdy--ready') row.removeAttribute('data-att');
   }
   function spin(btn, label) { btn.disabled = true; btn.textContent = label; }
   function refreshSummary() {

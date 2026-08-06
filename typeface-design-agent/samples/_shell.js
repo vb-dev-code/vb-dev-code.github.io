@@ -507,6 +507,8 @@ const ACTS = {
       () => reveal(cols[1], ['subject', 'headline', 'body copy', 'cta']),          // email · urban athletes
       () => reveal(cols[2], ['logo', 'headline', 'image region', 'cta', 'legal']), // design · social
       () => reveal(cols[3], ['logo', 'headline', 'image region', 'cta', 'legal']), // design · banner
+      () => { if (cols[5]) reveal(cols[5], ['logo', 'headline', 'stat callouts', 'chart', 'image region', 'legal']); }, // infographic · P1
+      () => { if (cols[6]) reveal(cols[6], ['p1 · cover', 'p2 · story + data', 'p3 · spec + cta']); },                   // brochure · P2
       () => {                                                        // design · flyer fails
         const col = cols[4];
         const st = col.querySelector('h3 .tf-status');
@@ -517,17 +519,17 @@ const ACTS = {
           card.outerHTML = `<div class="tf-flyerwarn" style="opacity:0;transition:opacity .45s ease">
             <span class="w">⚠</span>
             <b>Flyer could not be composed</b>
-            <span>The required recycled-materials disclosure can't fit at its minimum legible size.</span>
-            <button class="tf-btn tf-btn--sm tf-btn--primary tf-tour-highlight" id="flyercta">Review in Design Agent brief</button>
+            <button class="tf-btn tf-btn--sm tf-btn--primary tf-tour-highlight" id="flyercta">Review</button>
           </div>`;
           requestAnimationFrame(() => { col.querySelector('.tf-flyerwarn').style.opacity = '1'; });
           document.getElementById('flyercta').addEventListener('click', tourAdvance);
           col.scrollIntoView({ block: 'center', behavior: 'smooth' });
           agentDock(
-            `Email, social and banner are <b>composed as layouts</b> — objects and structure only.
-             Nothing renders until you approve the plan. And composition caught a problem on the
-             <b>flyer</b>: the required disclosure can't fit at minimum size alongside the locked
-             product render. Open the Design Agent brief to review.`,
+            `Email, social and banner are <b>composed as layouts</b> — objects and structure only —
+             along with the post-MVP <b>infographic (P1)</b> and <b>brochure (P2)</b> previews, which
+             composed clean. Nothing renders until you approve the plan. And composition caught a
+             problem on the <b>flyer</b>: the required disclosure can't fit at minimum size alongside
+             the locked product render. Open the Design Agent brief to review.`,
             'Open the Design Agent brief →');
           unlockNext();
         }, 1100);
