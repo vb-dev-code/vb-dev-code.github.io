@@ -1751,9 +1751,11 @@ body.tour-active { padding-bottom: 74px; }
 .tf-scorecat .tf-status { margin-left: auto; }
 details.tf-chkrow { border-bottom: 1px solid var(--tf-line-soft); }
 details.tf-chkrow:last-of-type { border-bottom: 0; }
-details.tf-chkrow summary { list-style: none; display: grid; grid-template-columns: 16px 1fr auto;
+details.tf-chkrow summary { list-style: none; display: grid; grid-template-columns: 16px 1fr auto 12px;
   gap: 8px; align-items: center; padding: 6px 2px; cursor: pointer; font-size: 12.5px; }
 details.tf-chkrow summary::-webkit-details-marker { display: none; }
+details.tf-chkrow summary::after { content: '▸'; font-size: 9px; color: var(--tf-ink-3); text-align: right; grid-column: -2; }
+details.tf-chkrow[open] summary::after { content: '▾'; }
 details.tf-chkrow summary:hover { background: var(--tf-surface-2); }
 details.tf-chkrow .cv { font-size: 11px; text-align: center; }
 details.tf-chkrow .cv--pass { color: var(--tf-ok); }

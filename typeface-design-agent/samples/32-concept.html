@@ -468,11 +468,8 @@ function objVerdict(role) {
 
 function renderObjPanel() {
   const el = document.getElementById('objpanel');
-  if (!SEL) {
-    el.innerHTML = '<div class="bd tf-cap" style="margin:0">🖱 Click any object on an artboard. Its details, provenance, '
-      + 'trust level and edit actions appear here, and the scorecard below filters to the checks that judged it.</div>';
-    return;
-  }
+  if (!SEL) { el.innerHTML = ''; el.style.display = 'none'; return; }
+  el.style.display = '';
   const o = OBJECTS[SEL], v = objVerdict(SEL);
   const ung = document.querySelector(`[data-role="${SEL}"].ungenerated`);
   if (ung) {
