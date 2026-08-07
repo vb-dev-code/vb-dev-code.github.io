@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#101418">
 <link rel="manifest" href="manifest.webmanifest">
@@ -12,116 +12,114 @@
 <meta name="apple-mobile-web-app-title" content="Newsstand">
 <title>Newsstand · SCCLD Pass Manager</title>
 <style>
+  /* Redesign 2026-08: hero-first (candidate A) + departures list (candidate C).
+     Verdict captured from prototype-redesign.html review. */
   :root {
-    --bg: #f6f4ef;
+    --paper: #f6f4ef;
     --card: #ffffff;
-    --ink: #1b1f24;
-    --muted: #6b7280;
-    --line: #e5e1d8;
-    --accent: #0f5c4f;
-    --accent-ink: #ffffff;
-    --ok: #0f7b4f;
-    --warn: #b0700a;
-    --bad: #b03a2e;
-    --chip: #eef2ee;
+    --ink: #17130e;
+    --muted: #7a7468;
+    --line: #e2ddd2;
+    --green: #0f5c4f;
+    --green-ink: #ffffff;
+    --red: #b03a2e;
+    --amber: #9a6a08;
+    --chip: #ece8df;
+    --serif: ui-serif, "New York", Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #101418;
-      --card: #1a2027;
-      --ink: #e8e6e1;
-      --muted: #9aa3ad;
-      --line: #2a323b;
-      --accent: #3ba58f;
-      --accent-ink: #0c1210;
-      --ok: #4cc38a;
-      --warn: #e0a83a;
-      --bad: #e5695c;
-      --chip: #232b33;
+      --paper: #12100c; --card: #1c1914; --ink: #ece7dd; --muted: #9a9488;
+      --line: #2c2820; --green: #3ba58f; --green-ink: #0c1210;
+      --red: #e5695c; --amber: #e0a83a; --chip: #262218;
     }
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--paper); color: var(--ink); font: 16px/1.4 var(--sans); }
+  button { font: inherit; cursor: pointer; }
+  .wrap { max-width: 430px; margin: 0 auto; min-height: 100dvh; padding: max(16px, env(safe-area-inset-top)) 16px 40px; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .topbar .word { font: 700 15px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
+  .topbar .gear { background: none; border: none; font-size: 20px; color: var(--muted); padding: 4px 6px; }
+
+  /* hero — the pass that needs you next */
+  .hero { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 22px 20px 20px; position: relative; overflow: hidden; margin-bottom: 12px; }
+  .hero .mast { font: 640 30px/1.05 var(--serif); letter-spacing: -.01em; max-width: 72%; }
+  .hero .stamp {
+    position: absolute; top: 18px; right: -8px; transform: rotate(8deg);
+    font: 700 13px/1 var(--mono); letter-spacing: .12em; color: var(--red);
+    border: 2.5px solid var(--red); border-radius: 4px; padding: 7px 22px 6px 10px;
+    opacity: .85; text-transform: uppercase;
   }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 64px; }
-  header h1 { font-size: 1.5rem; margin: 0 0 4px; }
-  header p { color: var(--muted); margin: 0 0 8px; }
-  header a { color: var(--accent); }
-  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 20px; }
-  button, .btn {
-    font: inherit; cursor: pointer; border-radius: 10px;
-    border: 1px solid var(--line); background: var(--card); color: var(--ink);
-    padding: 8px 14px; text-decoration: none; display: inline-block;
-  }
-  button.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 600; }
-  button:active { transform: translateY(1px); }
-  .pub {
-    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
-    padding: 16px; margin-bottom: 12px;
-  }
-  .pub-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-  .pub h2 { font-size: 1.05rem; margin: 0; }
-  .pub .note { color: var(--muted); font-size: .88rem; margin: 6px 0 10px; }
-  .status { font-size: .82rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--chip); white-space: nowrap; }
-  .status.ok { color: var(--ok); }
-  .status.warn { color: var(--warn); }
-  .status.bad { color: var(--bad); }
-  .status.always { color: var(--muted); font-weight: 500; }
-  .pub-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .pub-actions .small { font-size: .85rem; padding: 6px 10px; }
-  details.settings { margin-top: 28px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; }
+  .hero .chipst { position: absolute; top: 20px; right: 16px; font: 600 12px/1 var(--mono); padding: 5px 10px; border-radius: 999px; }
+  .hero .chipst.warn { color: var(--amber); background: color-mix(in srgb, var(--amber) 14%, transparent); }
+  .hero .chipst.ok { color: var(--green); background: color-mix(in srgb, var(--green) 12%, transparent); }
+  .hero .since { color: var(--muted); font-size: .85rem; margin: 10px 0 18px; }
+  .hero .go { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--green); color: var(--green-ink); font-weight: 700; font-size: 1.05rem; }
+  .hero .go.due { background: var(--red); color: #fff; }
+
+  /* departures board — everything else */
+  .board { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .row { display: flex; align-items: center; gap: 14px; padding: 15px 16px 15px 0; border: none; border-bottom: 1px solid var(--line); width: 100%; background: none; color: var(--ink); text-align: left; }
+  .row:last-child { border-bottom: none; }
+  .row .edge { align-self: stretch; width: 4px; border-radius: 0 3px 3px 0; flex: none; }
+  .edge.bad { background: var(--red); } .edge.warn { background: var(--amber); } .edge.ok { background: var(--green); opacity: .45; }
+  .row .nm { font: 600 16px/1.25 var(--serif); flex: 1; }
+  .row .nm small { display: block; font: 500 11px/1.6 var(--sans); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+  .row .tm { font: 600 15px var(--mono); }
+  .tm.bad { color: var(--red); } .tm.warn { color: var(--amber); } .tm.ok { color: var(--muted); font-weight: 500; }
+
+  .hint { font-size: .8rem; color: var(--muted); margin: 10px 2px; }
+  .hint button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; padding: 4px 10px; font-size: .8rem; margin-left: 6px; }
+
+  /* settings — behind the gear */
+  details.settings { margin-top: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; }
   details.settings summary { cursor: pointer; font-weight: 600; }
   .field { margin: 12px 0; }
   .field label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: 4px; }
-  .field input[type=text], .field input[type=url] {
+  .field input[type=text], .field input[type=url], .field input[type=password] {
     width: 100%; font: inherit; padding: 8px 10px; border-radius: 8px;
-    border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+    border: 1px solid var(--line); background: var(--paper); color: var(--ink);
   }
   .field.inline { display: flex; align-items: center; gap: 8px; }
   .field.inline label { margin: 0; color: var(--ink); font-size: .95rem; }
-  .hint { font-size: .8rem; color: var(--muted); }
   .cardnum { display: flex; gap: 8px; }
   .cardnum input { flex: 1; }
-  footer { margin-top: 28px; font-size: .8rem; color: var(--muted); }
+  .btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .btnrow button { border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 9px; padding: 8px 12px; font-size: .88rem; }
 </style>
 </head>
 <body>
 <main class="wrap">
-  <header>
-    <h1>📰 Newsstand</h1>
-    <p>One-tap activation for <a href="https://sccld.org/resources/newsstand/" target="_blank" rel="noopener">SCCLD</a> publication access. Passes (NYT, WSJ) last ~72 hours and are tracked below; everything else just needs your library card.</p>
-  </header>
-
-  <div class="toolbar">
-    <button class="primary" id="renewAll">Renew all expiring passes</button>
-    <button id="cloudBtn" title="Trigger the GitHub Actions renewal workflow now">☁️ Cloud renew now</button>
-    <button id="calBtn" title="Download a recurring calendar reminder for pass renewals">Calendar auto-reminders (.ics)</button>
+  <div class="topbar">
+    <span class="word">📰 Newsstand</span>
+    <button class="gear" id="gearBtn" aria-label="Settings">⚙︎</button>
   </div>
+
+  <section id="hero"></section>
+  <div class="board" id="board"></div>
   <p class="hint" id="cloudStatus"></p>
+  <p class="hint" id="undoSlot"></p>
 
-  <section id="pubs"></section>
-
-  <details class="settings">
+  <details class="settings" id="settings">
     <summary>Settings</summary>
     <div class="field">
-      <label for="card">Library card number (stored only in this browser, for quick copy into the login form)</label>
+      <label for="card">Library card number (stored only in this browser)</label>
       <div class="cardnum">
         <input type="text" id="card" inputmode="numeric" autocomplete="off" placeholder="e.g. 29043…">
         <button id="copyCard" class="small">Copy</button>
       </div>
     </div>
     <div class="field">
-      <label for="pin">PIN (also stored only in this browser — with both card and PIN saved, Activate signs into the library gateway automatically)</label>
+      <label for="pin">PIN (also stored only in this browser — with both card and PIN saved, tapping a publication signs into the library gateway automatically)</label>
       <div class="cardnum">
         <input type="password" id="pin" autocomplete="off" placeholder="••••">
         <button id="copyPin" class="small">Copy</button>
       </div>
     </div>
-    <p class="hint">Fastest setup: save your card number + PIN as a password for <strong>rpa.sccl.org</strong> in Safari (iCloud Keychain). The library gateway then autofills natively and activation becomes two taps — no copying needed.</p>
     <div class="field inline">
       <input type="checkbox" id="autoOpen">
       <label for="autoOpen">Auto-open activation pages for expired passes when I open this app</label>
@@ -132,16 +130,17 @@
         <input type="password" id="ghToken" autocomplete="off" placeholder="github_pat_…">
       </div>
     </div>
+    <div class="btnrow">
+      <button id="cloudBtn" title="Trigger the GitHub Actions renewal workflow now">☁️ Cloud renew now</button>
+      <button id="calBtn" title="Download a recurring calendar reminder for pass renewals">Calendar reminders (.ics)</button>
+    </div>
+    <div class="btnrow" id="markExpired"></div>
     <div id="urlOverrides"></div>
-    <p class="hint">Tip: after you click through a publication's “Access Now” flow once, copy the exact activation URL from your address bar and paste it above — future activations then skip the library landing page.</p>
     <div class="field">
       <button id="resetBtn" class="small">Reset all data</button>
     </div>
+    <p class="hint">Access is provided by SCCLD to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateway itself. · v2026-08-07b</p>
   </details>
-
-  <footer>
-    Access is provided by the Santa Clara County Library District to cardholders. This page stores everything locally in your browser — credentials are only ever sent to the library gateway itself. · v2026-08-07
-  </footer>
 </main>
 
 <script>
@@ -150,55 +149,32 @@
 const PUBS = [
   {
     id: "nyt",
-    name: "The New York Times",
+    name: "New York Times",
+    mast: "The New York Times",
+    eyebrow: "72-hour pass",
     kind: "pass",
     hours: 72,
     url: "https://login.rpa.sccl.org/login/NYT",
-    // The gateway is a plain EZproxy-style POST (url/user/pass, no CSRF
-    // token) — with card + PIN saved in Settings, Activate submits it
-    // directly and skips the unusable mobile form.
-    gateway: { action: "https://login.rpa.sccl.org/login", url: "https://login.rpa.sccl.org/login/NYT" },
-    note: "With your card + PIN saved in Settings, Activate signs into the library gateway for you — then just sign into your NYT account to redeem. Pass lasts 72 hours; reactivate any time after it lapses."
+    // Plain EZproxy-style POST (url/user/pass, no CSRF token) — with card +
+    // PIN saved, activation submits it directly and skips the mobile-hostile
+    // gateway form.
+    gateway: { action: "https://login.rpa.sccl.org/login", url: "https://login.rpa.sccl.org/login/NYT" }
   },
   {
     id: "wsj",
-    name: "The Wall Street Journal",
+    name: "Wall Street Journal",
+    mast: "The Wall Street Journal",
+    eyebrow: "72-hour pass",
     kind: "pass",
     hours: 72,
     url: "https://rpa.sccl.org/login?url=https://partner.wsj.com/p/1148200010/enter-redemption-code/P31117NM5FAD",
-    // The r0$ prefix mirrors the hidden url value the live gateway form
-    // serves for this target.
-    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://partner.wsj.com/p/1148200010/enter-redemption-code/P31117NM5FAD" },
-    note: "With your card + PIN saved in Settings, Activate signs into the library gateway for you — then sign into your WSJ account on the redemption page. Gives 3-day access; redeem again when it lapses."
+    // r0$ mirrors the hidden url value the live gateway form serves.
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://partner.wsj.com/p/1148200010/enter-redemption-code/P31117NM5FAD" }
   },
-  {
-    id: "pressreader",
-    name: "PressReader (7,000+ papers & magazines)",
-    kind: "always",
-    url: "https://www.pressreader.com/catalog",
-    note: "Click through from the newsstand page and enter your card number and PIN. Includes The Guardian, USA Today, The Economist and many international titles."
-  },
-  {
-    id: "libby",
-    name: "Libby eMagazines",
-    kind: "always",
-    url: "https://libbyapp.com/library/sccl",
-    note: "People, TIME, Consumer Reports and hundreds more. Sign in once with your card; access doesn't expire."
-  },
-  {
-    id: "mercury",
-    name: "San Jose Mercury News",
-    kind: "always",
-    url: "https://sccld.org/resources/newsstand/",
-    note: "Full-text articles via the library's database link (log in with card number + PIN)."
-  },
-  {
-    id: "flipster",
-    name: "Flipster (kids' magazines)",
-    kind: "always",
-    url: "https://sccld.org/resources/newsstand/",
-    note: "Ranger Rick, Zoobooks, Sports Illustrated Kids."
-  }
+  { id: "pressreader", name: "PressReader", eyebrow: "7,000+ titles", kind: "always", url: "https://www.pressreader.com/catalog" },
+  { id: "libby", name: "Libby eMagazines", eyebrow: "never expires", kind: "always", url: "https://libbyapp.com/library/sccl" },
+  { id: "mercury", name: "Mercury News", eyebrow: "full text", kind: "always", url: "https://sccld.org/resources/newsstand/" },
+  { id: "flipster", name: "Flipster", eyebrow: "kids' magazines", kind: "always", url: "https://sccld.org/resources/newsstand/" }
 ];
 
 const store = {
@@ -251,15 +227,13 @@ async function syncCloudStatus() {
 
 function urlFor(pub) { return state.overrides[pub.id] || pub.url; }
 
-function passStatus(pub) {
+// Pass timing: expired (or never activated) → bad; under 12h → warn.
+function passInfo(pub) {
   const ts = state.activations[pub.id];
-  if (!ts) return { cls: "bad", label: "Not active — tap Activate" };
-  const left = ts + pub.hours * 3600e3 - Date.now();
-  if (left <= 0) return { cls: "bad", label: "Expired — tap Activate" };
+  const left = ts ? ts + pub.hours * 3600e3 - Date.now() : -1;
+  if (left <= 0) return { st: "bad", tm: "EXPIRED", left: -1 };
   const h = Math.floor(left / 3600e3), m = Math.floor((left % 3600e3) / 60e3);
-  const t = h > 0 ? `${h}h ${m}m left` : `${m}m left`;
-  if (left < 3 * 3600e3) return { cls: "warn", label: `Expiring soon · ${t}` };
-  return { cls: left < 12 * 3600e3 ? "warn" : "ok", label: `Active · ${t}` };
+  return { st: left < 12 * 3600e3 ? "warn" : "ok", tm: `${h}:${String(m).padStart(2, "0")}`, left };
 }
 
 function activate(pub) {
@@ -307,47 +281,76 @@ function activate(pub) {
   render();
 }
 
+// The hero is the pass that needs attention next: expired first, then
+// soonest to expire. Everything else lives on the board below.
+function heroPub() {
+  const passes = PUBS.filter((p) => p.kind === "pass");
+  passes.sort((a, b) => passInfo(a).left - passInfo(b).left);
+  return passes[0];
+}
+
 function render() {
-  const root = document.getElementById("pubs");
-  root.innerHTML = "";
-  for (const pub of PUBS) {
-    const el = document.createElement("div");
-    el.className = "pub";
-    const st = pub.kind === "pass" ? passStatus(pub) : { cls: "always", label: "Always on with card" };
-    el.innerHTML = `
-      <div class="pub-head">
-        <h2>${pub.name}</h2>
-        <span class="status ${st.cls}">${st.label}</span>
-      </div>
-      <p class="note">${pub.note}</p>
-      <div class="pub-actions"></div>`;
-    const actions = el.querySelector(".pub-actions");
-    const go = document.createElement("button");
-    go.className = "primary";
-    go.textContent = pub.kind === "pass" ? "Activate" : "Open";
-    go.onclick = () => activate(pub);
-    actions.appendChild(go);
-    if (pub.kind === "pass" && state.activations[pub.id]) {
-      const clear = document.createElement("button");
-      clear.className = "small";
-      clear.textContent = "Mark expired";
-      clear.onclick = () => { delete state.activations[pub.id]; store.write(state); render(); };
-      actions.appendChild(clear);
-    }
-    if (pub.kind === "pass" && state.lastUndo?.id === pub.id && Date.now() - state.lastUndo.at < 10 * 60e3) {
-      const undo = document.createElement("button");
-      undo.className = "small";
-      undo.textContent = "Undo activate";
-      undo.onclick = () => {
-        if (state.lastUndo.prev) state.activations[pub.id] = state.lastUndo.prev;
-        else delete state.activations[pub.id];
-        state.lastUndo = null;
-        store.write(state);
-        render();
-      };
-      actions.appendChild(undo);
-    }
-    root.appendChild(el);
+  const hero = heroPub();
+  const hi = passInfo(hero);
+  const heroEl = document.getElementById("hero");
+  const expiresAt = state.activations[hero.id] ? new Date(state.activations[hero.id] + hero.hours * 3600e3) : null;
+  const fmtWhen = (d) => d.toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" });
+  heroEl.innerHTML = `
+    <div class="hero">
+      ${hi.st === "bad"
+        ? `<div class="stamp">Expired</div>`
+        : `<div class="chipst ${hi.st}">${hi.tm} left</div>`}
+      <div class="mast">${hero.mast}</div>
+      <p class="since">${
+        hi.st === "bad"
+          ? (expiresAt ? `Pass lapsed ${fmtWhen(expiresAt)}` : `72-hour pass · renews free with your library card`)
+          : `Expires ${fmtWhen(expiresAt)}`
+      }</p>
+      <button class="go ${hi.st === "bad" ? "due" : ""}" id="heroGo">${hi.st === "bad" ? "Renew — 3 days free →" : "Renew early"}</button>
+    </div>`;
+  heroEl.querySelector("#heroGo").onclick = () => activate(hero);
+
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+  for (const pub of PUBS.filter((p) => p !== hero)) {
+    const info = pub.kind === "pass" ? passInfo(pub) : { st: "ok", tm: "OPEN" };
+    const row = document.createElement("button");
+    row.className = "row";
+    row.dataset.pub = pub.id;
+    row.innerHTML = `
+      <span class="edge ${info.st}"></span>
+      <span class="nm">${pub.name}<small>${pub.eyebrow}</small></span>
+      <span class="tm ${info.st}">${info.tm}</span>`;
+    row.onclick = () => activate(pub);
+    board.appendChild(row);
+  }
+
+  // Mark-expired controls track activations, so they live with render(),
+  // not the one-shot settings bindings.
+  const mk = document.getElementById("markExpired");
+  mk.innerHTML = "";
+  for (const pub of PUBS.filter((p) => p.kind === "pass" && state.activations[p.id])) {
+    const b = document.createElement("button");
+    b.textContent = `Mark ${pub.name} expired`;
+    b.onclick = () => { delete state.activations[pub.id]; store.write(state); render(); };
+    mk.appendChild(b);
+  }
+
+  const undo = document.getElementById("undoSlot");
+  undo.innerHTML = "";
+  if (state.lastUndo && Date.now() - state.lastUndo.at < 10 * 60e3) {
+    const pub = PUBS.find((p) => p.id === state.lastUndo.id);
+    undo.append(`Activated ${pub?.name ?? state.lastUndo.id} just now.`);
+    const b = document.createElement("button");
+    b.textContent = "Undo activate";
+    b.onclick = () => {
+      if (state.lastUndo.prev) state.activations[state.lastUndo.id] = state.lastUndo.prev;
+      else delete state.activations[state.lastUndo.id];
+      state.lastUndo = null;
+      store.write(state);
+      render();
+    };
+    undo.appendChild(b);
   }
 }
 
@@ -396,11 +399,17 @@ function renderSettings() {
   };
 }
 
+document.getElementById("gearBtn").onclick = () => {
+  const s = document.getElementById("settings");
+  s.open = !s.open;
+  if (s.open) s.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
 document.getElementById("cloudBtn").onclick = async () => {
   const el = document.getElementById("cloudStatus");
   if (!state.ghToken) {
     el.textContent = "☁️ Add a GitHub token in Settings first (fine-grained, this repo, Actions read/write).";
-    document.querySelector("details.settings").open = true;
+    document.getElementById("settings").open = true;
     return;
   }
   el.textContent = "☁️ Triggering cloud renewal…";
@@ -422,15 +431,8 @@ document.getElementById("cloudBtn").onclick = async () => {
   }
 };
 
-document.getElementById("renewAll").onclick = () => {
-  const due = PUBS.filter(p => p.kind === "pass" && passStatus(p).cls !== "ok" && passStatus(p).cls !== "warn");
-  const targets = due.length ? due : PUBS.filter(p => p.kind === "pass");
-  targets.forEach(p => activate(p));
-};
-
 // Recurring calendar reminders: one event per pass publication, every 3 days,
-// with the activation link in the description. Subscribing/importing this into
-// Google/Apple Calendar is the "automatic" path a static page can offer.
+// with the activation link in the description.
 document.getElementById("calBtn").onclick = () => {
   const pad = n => String(n).padStart(2, "0");
   const fmt = d => `${d.getUTCFullYear()}${pad(d.getUTCMonth()+1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
@@ -444,7 +446,7 @@ document.getElementById("calBtn").onclick = () => {
       `DTSTART:${fmt(base)}`,
       "RRULE:FREQ=DAILY;INTERVAL=3",
       `SUMMARY:Renew ${p.name} library pass`,
-      `DESCRIPTION:Open ${urlFor(p)} and click Access Now. Tracker: https://vb-dev-code.github.io/newsstand/`,
+      `DESCRIPTION:Open ${urlFor(p)} and activate. Tracker: https://vb-dev-code.github.io/newsstand/`,
       "BEGIN:VALARM","TRIGGER:PT0S","ACTION:DISPLAY",`DESCRIPTION:Renew ${p.name}`,"END:VALARM",
       "END:VEVENT"
     ].join("\r\n");
@@ -470,7 +472,7 @@ setInterval(syncCloudStatus, 5 * 60e3);
 // Auto-open expired passes on load, if opted in. Delayed slightly so the page
 // paints first; popup blockers may limit this to one tab per visit.
 if (state.autoOpen) {
-  const expired = PUBS.filter(p => p.kind === "pass" && passStatus(p).cls === "bad" && state.activations[p.id]);
+  const expired = PUBS.filter(p => p.kind === "pass" && passInfo(p).st === "bad" && state.activations[p.id]);
   if (expired.length) setTimeout(() => expired.forEach(p => activate(p)), 800);
 }
 </script>
