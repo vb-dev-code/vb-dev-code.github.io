@@ -48,18 +48,8 @@
   /* hero — the pass that needs you next */
   .hero { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 22px 20px 20px; position: relative; overflow: hidden; margin-bottom: 12px; }
   .hero .mast { font: 640 30px/1.05 var(--serif); letter-spacing: -.01em; max-width: 72%; }
-  .hero .stamp {
-    position: absolute; top: 18px; right: -8px; transform: rotate(8deg);
-    font: 700 13px/1 var(--mono); letter-spacing: .12em; color: var(--red);
-    border: 2.5px solid var(--red); border-radius: 4px; padding: 7px 22px 6px 10px;
-    opacity: .85; text-transform: uppercase;
-  }
-  .hero .chipst { position: absolute; top: 20px; right: 16px; font: 600 12px/1 var(--mono); padding: 5px 10px; border-radius: 999px; }
-  .hero .chipst.warn { color: var(--amber); background: color-mix(in srgb, var(--amber) 14%, transparent); }
-  .hero .chipst.ok { color: var(--green); background: color-mix(in srgb, var(--green) 12%, transparent); }
   .hero .since { color: var(--muted); font-size: .85rem; margin: 10px 0 18px; }
   .hero .go { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--green); color: var(--green-ink); font-weight: 700; font-size: 1.05rem; }
-  .hero .go.due { background: var(--red); color: #fff; }
 
   /* departures board — everything else */
   .board { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
@@ -69,12 +59,11 @@
   .via { border: none; background: none; color: var(--muted); font: 600 11px/1 var(--sans); letter-spacing: .06em; padding: 0 14px; border-left: 1px solid var(--line); flex: none; }
   .badge { font: 600 9px/1 var(--sans); letter-spacing: .08em; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 2px 4px; vertical-align: 2px; margin-left: 6px; }
   .hero .alt { display: block; width: 100%; text-align: center; background: none; border: none; color: var(--muted); font-size: .85rem; padding: 10px 0 0; text-decoration: underline; text-underline-offset: 3px; }
-  .row .edge { align-self: stretch; width: 4px; border-radius: 0 3px 3px 0; flex: none; }
-  .edge.bad { background: var(--red); } .edge.warn { background: var(--amber); } .edge.ok { background: var(--green); opacity: .45; }
+  .row .edge { align-self: stretch; width: 4px; border-radius: 0 3px 3px 0; flex: none; background: var(--line); }
   .row .nm { font: 600 16px/1.25 var(--serif); flex: 1; }
   .row .nm small { display: block; font: 500 11px/1.6 var(--sans); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
-  .row .tm { font: 600 15px var(--mono); }
-  .tm.bad { color: var(--red); } .tm.warn { color: var(--amber); } .tm.ok { color: var(--muted); font-weight: 500; }
+  .row .tm { font: 500 13px var(--mono); color: var(--muted); text-align: right; }
+  .row .tm small { display: block; font: 500 9px/1.6 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
 
   .hint { font-size: .8rem; color: var(--muted); margin: 10px 2px; }
   .hint button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; padding: 4px 10px; font-size: .8rem; margin-left: 6px; }
@@ -140,7 +129,7 @@
     </div>
     <div class="field inline">
       <input type="checkbox" id="autoOpen">
-      <label for="autoOpen">Auto-open activation pages for expired passes when I open this app</label>
+      <label for="autoOpen">Auto-open renewal pages for passes past their renewal window when I open this app</label>
     </div>
     <div class="field">
       <label for="ghToken">GitHub token for “Cloud renew now” (fine-grained, this repo only, Actions read/write — stored only in this browser)</label>
@@ -157,7 +146,7 @@
     <div class="field">
       <button id="resetBtn" class="small">Reset all data</button>
     </div>
-    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-07d</p>
+    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-07e</p>
   </details>
 </main>
 
@@ -301,22 +290,24 @@ function credsFor(pub, viaLapl) {
     : { card: state.card, pin: state.pin };
 }
 
-// Pass timing across libraries: the effective pass is the latest-expiring
-// one. Expired (or never activated) → bad; under 12h → warn. viaLapl marks
-// countdowns backed by the LAPL activation, for the badge.
-function passInfo(pub) {
+// Renewal facts across libraries: the app only knows when a tile was tapped,
+// never whether the pass actually got redeemed — so it reports the last
+// renewal as a fact and never predicts expiry. ts = latest activation across
+// the pub's library keys (null if none); viaLapl = which library it came
+// through; stale = no renewal within the pub's cadence (hours), used only for
+// hero ordering and opt-in auto-open, never displayed as a countdown.
+function renewInfo(pub) {
   const entries = [{ key: pub.id, hours: pub.hours, viaLapl: false }];
   if (hasLapl(pub)) entries.push({ key: laplKey(pub), hours: pub.lapl.hours ?? pub.hours, viaLapl: true });
-  let best = { left: -1, viaLapl: false };
+  let best = { ts: 0, hours: pub.hours, viaLapl: false };
   for (const e of entries) {
-    const ts = state.activations[e.key];
-    const left = ts ? ts + e.hours * 3600e3 - Date.now() : -1;
-    if (left > best.left) best = { left, viaLapl: e.viaLapl };
+    const ts = state.activations[e.key] ?? 0;
+    if (ts > best.ts) best = { ts, hours: e.hours, viaLapl: e.viaLapl };
   }
-  if (best.left <= 0) return { st: "bad", tm: "EXPIRED", left: -1, viaLapl: false };
-  const h = Math.floor(best.left / 3600e3), m = Math.floor((best.left % 3600e3) / 60e3);
-  return { st: best.left < 12 * 3600e3 ? "warn" : "ok", tm: `${h}:${String(m).padStart(2, "0")}`, left: best.left, viaLapl: best.viaLapl };
+  if (!best.ts) return { ts: null, viaLapl: false, stale: true };
+  return { ts: best.ts, viaLapl: best.viaLapl, stale: Date.now() - best.ts > best.hours * 3600e3 };
 }
+const fmtWhen = (ts) => new Date(ts).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" });
 
 function activate(pub, viaLapl = false) {
   const key = viaLapl ? laplKey(pub) : pub.id;
@@ -368,37 +359,27 @@ function activate(pub, viaLapl = false) {
   render();
 }
 
-// The hero is the pass that needs attention next: expired first, then
-// soonest to expire. Everything else lives on the board below.
+// The hero is the pass that needs attention next: never-renewed first, then
+// stalest renewal. Everything else lives on the board below.
 function heroPub() {
   const passes = visiblePubs().filter((p) => p.kind === "pass");
-  passes.sort((a, b) => passInfo(a).left - passInfo(b).left);
+  passes.sort((a, b) => (renewInfo(a).ts ?? 0) - (renewInfo(b).ts ?? 0));
   return passes[0];
 }
 
 function render() {
   const hero = heroPub();
-  const hi = passInfo(hero);
+  const hi = renewInfo(hero);
   const heroEl = document.getElementById("hero");
-  // Effective expiry moment: latest across the pub's library activations
-  // (matches what passInfo counted down from).
-  const expMoments = [state.activations[hero.id] ? state.activations[hero.id] + hero.hours * 3600e3 : 0];
-  if (hasLapl(hero) && state.activations[laplKey(hero)]) expMoments.push(state.activations[laplKey(hero)] + (hero.lapl.hours ?? hero.hours) * 3600e3);
-  const maxExp = Math.max(...expMoments);
-  const expiresAt = maxExp ? new Date(maxExp) : null;
-  const fmtWhen = (d) => d.toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" });
   heroEl.innerHTML = `
     <div class="hero">
-      ${hi.st === "bad"
-        ? `<div class="stamp">Expired</div>`
-        : `<div class="chipst ${hi.st}">${hi.tm} left${hi.viaLapl ? " · LAPL" : ""}</div>`}
       <div class="mast">${hero.mast}</div>
       <p class="since">${
-        hi.st === "bad"
-          ? (expiresAt ? `Pass lapsed ${fmtWhen(expiresAt)}` : `${hero.eyebrow} · renews free with your library card`)
-          : `Expires ${fmtWhen(expiresAt)}`
+        hi.ts
+          ? `Renewed ${fmtWhen(hi.ts)}${hi.viaLapl ? " · via LAPL" : ""}`
+          : `Not renewed yet on this device · ${hero.eyebrow}`
       }</p>
-      <button class="go ${hi.st === "bad" ? "due" : ""}" id="heroGo">${hi.st === "bad" ? `Renew — ${Math.round(hero.hours / 24)} days free →` : "Renew early"}</button>
+      <button class="go" id="heroGo">Renew — ${Math.round(hero.hours / 24)} days free →</button>
       ${hasLapl(hero) ? `<button class="alt" id="heroAlt">or renew via LAPL →</button>` : ""}
     </div>`;
   heroEl.querySelector("#heroGo").onclick = () => activate(hero);
@@ -408,16 +389,17 @@ function render() {
   const board = document.getElementById("board");
   board.innerHTML = "";
   for (const pub of visiblePubs().filter((p) => p !== hero)) {
-    const info = pub.kind === "pass" ? passInfo(pub) : { st: "ok", tm: "OPEN" };
+    const info = pub.kind === "pass" ? renewInfo(pub) : null;
+    const tm = info ? (info.ts ? `<small>renewed</small>${fmtWhen(info.ts)}` : "—") : "OPEN";
     const wrap = document.createElement("div");
     wrap.className = "rowwrap";
     const row = document.createElement("button");
     row.className = "row";
     row.dataset.pub = pub.id;
     row.innerHTML = `
-      <span class="edge ${info.st}"></span>
-      <span class="nm">${pub.name}${info.viaLapl ? `<span class="badge">LAPL</span>` : ""}<small>${pub.eyebrow}</small></span>
-      <span class="tm ${info.st}">${info.tm}</span>`;
+      <span class="edge"></span>
+      <span class="nm">${pub.name}${info?.viaLapl ? `<span class="badge">LAPL</span>` : ""}<small>${pub.eyebrow}</small></span>
+      <span class="tm">${tm}</span>`;
     row.onclick = () => activate(pub);
     wrap.appendChild(row);
     if (hasLapl(pub)) {
@@ -439,7 +421,7 @@ function render() {
     for (const key of [pub.id, ...(pub.lapl ? [laplKey(pub)] : [])]) {
       if (!state.activations[key]) continue;
       const b = document.createElement("button");
-      b.textContent = `Mark ${pub.name}${key.endsWith(":lapl") ? " (LAPL)" : ""} expired`;
+      b.textContent = `Forget ${pub.name}${key.endsWith(":lapl") ? " (LAPL)" : ""} renewal`;
       b.onclick = () => { delete state.activations[key]; store.write(state); render(); };
       mk.appendChild(b);
     }
@@ -571,8 +553,8 @@ document.getElementById("calBtn").onclick = () => {
   const fmt = d => `${d.getUTCFullYear()}${pad(d.getUTCMonth()+1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
   const now = new Date();
   const events = visiblePubs().filter(p => p.kind === "pass").map(p => {
-    const info = passInfo(p);
-    const base = info.left > 0 ? new Date(Date.now() + info.left) : now;
+    const info = renewInfo(p);
+    const base = info.ts ? new Date(info.ts) : now;
     return [
       "BEGIN:VEVENT",
       `UID:newsstand-${p.id}@vb-dev-code.github.io`,
@@ -603,11 +585,12 @@ syncCloudStatus();
 setInterval(render, 60e3);
 setInterval(syncCloudStatus, 5 * 60e3);
 
-// Auto-open expired passes on load, if opted in. Delayed slightly so the page
-// paints first; popup blockers may limit this to one tab per visit.
+// Auto-open stale passes on load, if opted in — "stale" means no renewal
+// within the pub's cadence, not a claim about actual expiry. Delayed slightly
+// so the page paints first; popup blockers may limit this to one tab per visit.
 if (state.autoOpen) {
-  const expired = visiblePubs().filter(p => p.kind === "pass" && passInfo(p).st === "bad" && state.activations[p.id]);
-  if (expired.length) setTimeout(() => expired.forEach(p => activate(p)), 800);
+  const stale = visiblePubs().filter(p => p.kind === "pass" && renewInfo(p).stale && state.activations[p.id]);
+  if (stale.length) setTimeout(() => stale.forEach(p => activate(p)), 800);
 }
 </script>
 </body>
