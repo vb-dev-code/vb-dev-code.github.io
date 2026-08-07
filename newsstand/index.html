@@ -111,7 +111,7 @@
     <div class="field">
       <label for="card">Library card number (stored only in this browser)</label>
       <div class="cardnum">
-        <input type="text" id="card" inputmode="numeric" autocomplete="off" placeholder="e.g. 29043…">
+        <input type="text" id="card" autocomplete="off" placeholder="e.g. 29043… (dashes OK)">
         <button id="copyCard" class="small">Copy</button>
       </div>
     </div>
@@ -125,7 +125,7 @@
     <div class="field">
       <label for="laplCard">LAPL card number (optional — adds Washington Post and "via LAPL" backup links; stored only in this browser)</label>
       <div class="cardnum">
-        <input type="text" id="laplCard" inputmode="numeric" autocomplete="off" placeholder="e.g. 2111…">
+        <input type="text" id="laplCard" autocomplete="off" placeholder="e.g. 2111…">
         <button id="copyLaplCard" class="small">Copy</button>
       </div>
     </div>
@@ -155,7 +155,7 @@
     <div class="field">
       <button id="resetBtn" class="small">Reset all data</button>
     </div>
-    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-07f</p>
+    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-07g</p>
   </details>
 </main>
 
@@ -232,7 +232,7 @@ const PUBS = [
     gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://access.medianewsgroup.com/proxy-entrance/?org=sccld" }
   },
   {
-    id: "flipster", name: "Flipster", eyebrow: "kids' magazines", kind: "always",
+    id: "flipster", name: "Flipster", eyebrow: "digital magazines", kind: "always",
     url: "https://rpa.sccl.org/login?url=https://search.ebscohost.com/login.aspx?authtype=ip,cpid&custid=scc&profile=eon",
     gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://search.ebscohost.com/login.aspx?authtype=ip,cpid&custid=scc&profile=eon" }
   },
