@@ -9,13 +9,23 @@ Pass manager for Santa Clara County Library District (SCCLD) publication
 access (https://sccld.org/resources/newsstand/). Three layers:
 
 1. **`newsstand/index.html`** — self-contained PWA (no build step, no deps).
-   Tiles per publication with activation links, 72-hour pass countdowns in
-   localStorage, `.ics` reminder export, and a "Cloud renew now" button that
-   dispatches the Actions workflow via a fine-grained PAT stored in
-   localStorage. Reads `newsstand/status.json` (committed by CI) to merge
-   cloud renewals into local countdowns. Installable on iOS via
-   `manifest.webmanifest` + `icon-*.png`. Deliberately unlinked from the
-   portfolio homepage and marked noindex.
+   Layout (Aug 2026 redesign, picked from prototyped candidates): a hero
+   card for the pass that needs attention next (expired first, then soonest
+   to expire) plus a departures-style status board for everything else; no
+   body copy; settings, cloud renew, `.ics` export, and mark-expired live
+   behind the gear. With card + PIN saved, tapping any gateway-backed
+   source POSTs the rpa login form directly (one-tap sign-in — the gateways
+   are plain EZproxy-style `url`/`user`/`pass` POSTs, no CSRF); card-only
+   setups fall back to opening the gateway with the card number
+   pre-copied. 10-minute undo after activation. Reads
+   `newsstand/status.json` (committed by CI) to merge cloud renewals into
+   local countdowns. `sw.js` (network-first) keeps installed copies on the
+   latest deploy — without it iOS freezes PWAs at install-time versions.
+   Installable on iOS via `manifest.webmanifest` + `icon-*.png`;
+   deliberately unlinked from the portfolio homepage and marked noindex.
+   Smoke-test convention: serve `newsstand/` over localhost and drive with
+   Playwright (see the test in the session scratchpad pattern — hero, board
+   rows, gateway POST interception via `context.route`).
 2. **`newsstand/renew/renew.mjs`** — Playwright script that drives the real
    renewal flow: library "Access Now" link → card + PIN gateway →
    publication account login (two-step email/password) → redeem click →
@@ -33,11 +43,18 @@ access (https://sccld.org/resources/newsstand/). Three layers:
   (gitignored, `SCCLD_CARD`/`SCCLD_PIN` + optional `NYT_EMAIL`/`NYT_PASSWORD`
   `WSJ_EMAIL`/`WSJ_PASSWORD`); CI uses Actions secrets of the same names.
   `config.json`, `state/`, `shots/` are gitignored too.
-- Real gateway URLs (captured from sccld.org/resources/newsstand/, Jul 2026,
-  now the defaults in both the app and `renew.mjs`):
+- Real gateway URLs (captured from sccld.org, Jul–Aug 2026, defaults in the
+  app and `renew.mjs`; `rpa.sccl.org/login?url=…` is SCCLD's generic
+  remote-patron-auth wrapper and its POST body wants the `r0$`-prefixed
+  hidden `url` value exactly as the live form serves it):
   - NYT: `https://login.rpa.sccl.org/login/NYT`
   - WSJ: `https://rpa.sccl.org/login?url=https://partner.wsj.com/p/1148200010/enter-redemption-code/P31117NM5FAD`
-  - `rpa.sccl.org/login?url=…` is SCCLD's generic remote-patron-auth wrapper.
+  - Mercury News: gateway → `access.medianewsgroup.com/proxy-entrance/?org=sccld`
+    (user picks "continue anonymously" there → full mercurynews.com)
+  - Flipster: gateway → `search.ebscohost.com/login.aspx?authtype=ip,cpid&custid=scc&profile=eon`
+  - PressReader: gateway → `https://www.pressreader.com`
+  - Libby: no gateway; OverDrive slug is `santaclara` (`sccl` is
+    LibraryNotFound per thunder.api.overdrive.com).
 - Tested against the real sites (Jul 2026): the library card/PIN leg works
   end to end. Both publications hard-block the automated browser at their
   own login, even headed on a residential IP with a human solving
