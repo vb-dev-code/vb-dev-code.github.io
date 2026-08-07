@@ -16,7 +16,13 @@ access (https://sccld.org/resources/newsstand/). Three layers:
    behind the gear. Renewal-facts model (Aug 2026): no expiry countdowns —
    the tap timestamp can't prove redemption, so tiles show "renewed <when>"
    facts only; `pub.hours` is internal renewal cadence (hero ordering +
-   opt-in auto-open), never displayed as time remaining. With card + PIN saved, tapping any gateway-backed
+   opt-in auto-open), never displayed as time remaining. Reading Room
+   (Aug 2026): always-on sources render as a 2-col chip shelf below the
+   pass rows (Mercury, PressReader, Flipster, Libby, Nature, HBR,
+   Businessweek, Consumer Reports); sublabels set landing expectations
+   (proxied full site vs EBSCO issue browser vs Flipster reader). The NYT
+   pass is all-access — Cooking/Wirecutter/Athletic ride the same
+   `login.rpa.sccl.org/login/NYT` gateway, no separate tiles needed. With card + PIN saved, tapping any gateway-backed
    source POSTs the rpa login form directly (one-tap sign-in — the gateways
    are plain EZproxy-style `url`/`user`/`pass` POSTs, no CSRF); card-only
    setups fall back to opening the gateway with the card number
