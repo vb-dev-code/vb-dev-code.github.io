@@ -140,7 +140,7 @@
   </details>
 
   <footer>
-    Access is provided by the Santa Clara County Library District to cardholders. This page stores everything locally in your browser — nothing is sent anywhere.
+    Access is provided by the Santa Clara County Library District to cardholders. This page stores everything locally in your browser — credentials are only ever sent to the library gateway itself. · v2026-08-07
   </footer>
 </main>
 
@@ -210,10 +210,12 @@ const store = {
 };
 let state = Object.assign({ activations: {}, overrides: {}, card: "", pin: "", ghToken: "", autoOpen: false, lastUndo: null }, store.read());
 
-// The defaults used to point at library landing pages; an override that
-// still equals one of them now just masks the better built-in deep link.
+// Drop overrides that no longer add information: old landing-page defaults,
+// and anything equal to the pub's current built-in URL (a redundant override
+// would silently disable one-tap gateway sign-in).
 for (const [id, u] of Object.entries(state.overrides ?? {})) {
-  if (u === "https://sccld.org/nyt-online/" || u === "https://sccld.org/resources/newsstand/") {
+  const pub = PUBS.find((p) => p.id === id);
+  if (u === "https://sccld.org/nyt-online/" || u === "https://sccld.org/resources/newsstand/" || (pub && u === pub.url)) {
     delete state.overrides[id];
     store.write(state);
   }
