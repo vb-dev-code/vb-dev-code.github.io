@@ -115,7 +115,7 @@
       </div>
     </div>
     <div class="field">
-      <label for="pin">PIN (optional — also stored only in this browser)</label>
+      <label for="pin">PIN (also stored only in this browser — with both card and PIN saved, Activate signs into the library gateway automatically)</label>
       <div class="cardnum">
         <input type="password" id="pin" autocomplete="off" placeholder="••••">
         <button id="copyPin" class="small">Copy</button>
@@ -154,7 +154,11 @@ const PUBS = [
     kind: "pass",
     hours: 72,
     url: "https://login.rpa.sccl.org/login/NYT",
-    note: "Opens the library gateway directly — enter your card number and PIN, then sign into your NYT account to redeem. Pass lasts 72 hours; reactivate any time after it lapses."
+    // The gateway is a plain EZproxy-style POST (url/user/pass, no CSRF
+    // token) — with card + PIN saved in Settings, Activate submits it
+    // directly and skips the unusable mobile form.
+    gateway: { action: "https://login.rpa.sccl.org/login", url: "https://login.rpa.sccl.org/login/NYT" },
+    note: "With your card + PIN saved in Settings, Activate signs into the library gateway for you — then just sign into your NYT account to redeem. Pass lasts 72 hours; reactivate any time after it lapses."
   },
   {
     id: "wsj",
@@ -162,7 +166,10 @@ const PUBS = [
     kind: "pass",
     hours: 72,
     url: "https://rpa.sccl.org/login?url=https://partner.wsj.com/p/1148200010/enter-redemption-code/P31117NM5FAD",
-    note: "Opens the library gateway directly — enter your card number and PIN, then sign into your WSJ account on the redemption page. Gives 3-day access; redeem again when it lapses."
+    // The r0$ prefix mirrors the hidden url value the live gateway form
+    // serves for this target.
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://partner.wsj.com/p/1148200010/enter-redemption-code/P31117NM5FAD" },
+    note: "With your card + PIN saved in Settings, Activate signs into the library gateway for you — then sign into your WSJ account on the redemption page. Gives 3-day access; redeem again when it lapses."
   },
   {
     id: "pressreader",
@@ -261,8 +268,33 @@ function activate(pub) {
     state.lastUndo = { id: pub.id, prev: prev ?? null, at: Date.now() };
     store.write(state);
   }
-  // Best-effort: drop the card number on the clipboard on the way out so the
-  // gateway form is one paste away. Must start before window.open steals
+
+  // One-tap path: when the pub's gateway POST is known and card + PIN are
+  // saved, submit the login form ourselves — the user lands past the
+  // card/PIN screen. Credentials go over HTTPS to the same endpoint the
+  // gateway's own form posts to; nothing new is stored. A custom URL
+  // override opts out (we can't know an arbitrary gateway's shape).
+  if (pub.gateway && state.card && state.pin && !state.overrides[pub.id]) {
+    const w = window.open("", "_blank");
+    if (w) {
+      const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+      w.document.write(
+        `<!doctype html><title>Signing in…</title>` +
+        `<body style="font:16px/1.5 -apple-system,sans-serif;padding:24px">Signing into the library gateway…` +
+        `<form method="post" action="${esc(pub.gateway.action)}">` +
+        `<input type="hidden" name="url" value="${esc(pub.gateway.url)}">` +
+        `<input type="hidden" name="user" value="${esc(state.card)}">` +
+        `<input type="hidden" name="pass" value="${esc(state.pin)}">` +
+        `</form><script>document.forms[0].submit()<\/script>`
+      );
+      w.document.close();
+      render();
+      return;
+    }
+  }
+
+  // Fallback: open the gateway and put the card number on the clipboard so
+  // the form is one paste away. Copy must start before window.open steals
   // focus; fails silently where clipboard access isn't granted.
   if (state.card && navigator.clipboard) {
     navigator.clipboard.writeText(state.card)
