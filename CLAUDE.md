@@ -55,6 +55,23 @@ access (https://sccld.org/resources/newsstand/). Three layers:
   - PressReader: gateway → `https://www.pressreader.com`
   - Libby: no gateway; OverDrive slug is `santaclara` (`sccl` is
     LibraryNotFound per thunder.api.overdrive.com).
+- LAPL second library (Aug 2026): NYT/WSJ/PressReader carry a `lapl` backup
+  block and Washington Post is an LAPL-only 7-day pass; everything LAPL is
+  invisible in the app until an LAPL card is saved in settings (none exists
+  yet — e-cards are LA City residents only; CA residents get full cards in
+  person at a branch). Activations are keyed `<id>:lapl`; effective expiry =
+  latest live pass across libraries. LAPL's gateway is OCLC-hosted EZproxy
+  (`login.lapl.idm.oclc.org/login`) whose form is identical in shape to
+  SCCLD's rpa gateway — `url`/`user`/`pass` POST, `r0$`-prefixed hidden url,
+  no CSRF (verified live 2026-08-07). LAPL URLs (defaults in the app):
+  - WSJ: `https://login.lapl.idm.oclc.org/login?url=https://partner.wsj.com/p/1148200010/enter-redemption-code/P243PJRHHM6A` (3-day)
+  - WaPo: `https://login.lapl.idm.oclc.org/login?url=https://www.washingtonpost.com/subscribe/signin/special-offers?s_oe=SPECIALOFFER_LOSANGELESPL` (7-day)
+  - NYT: bare public redemption link, NOT gateway-wrapped (gift codes may
+    rotate; captured from lapl.org): `https://nytimes.com/subscription/redeem/all-access?campaignId=8XUKX&gift_code=5570e1739089cc00` (72-hour)
+  - PressReader: `https://login.lapl.idm.oclc.org/login?url=https://www.pressreader.com`
+    (form serves; end-to-end untested pending a real card)
+  - LAPL offers no current-access LA Times (historical ProQuest archive only);
+    Libby slug would be `lapl` (not added — WaPo was the only new tile taken).
 - Tested against the real sites (Jul 2026): the library card/PIN leg works
   end to end. Both publications hard-block the automated browser at their
   own login, even headed on a residential IP with a human solving
