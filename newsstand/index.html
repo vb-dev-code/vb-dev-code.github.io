@@ -457,6 +457,10 @@ document.getElementById("calBtn").onclick = () => {
   URL.revokeObjectURL(a.href);
 };
 
+// Keep installed copies current: without a service worker, iOS freezes the
+// PWA on whatever version existed at install time.
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+
 render();
 renderSettings();
 syncCloudStatus();
