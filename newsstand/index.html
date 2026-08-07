@@ -139,7 +139,7 @@
     <div class="field">
       <button id="resetBtn" class="small">Reset all data</button>
     </div>
-    <p class="hint">Access is provided by SCCLD to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateway itself. · v2026-08-07b</p>
+    <p class="hint">Access is provided by SCCLD to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateway itself. · v2026-08-07c</p>
   </details>
 </main>
 
@@ -171,10 +171,29 @@ const PUBS = [
     // r0$ mirrors the hidden url value the live gateway form serves.
     gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://partner.wsj.com/p/1148200010/enter-redemption-code/P31117NM5FAD" }
   },
-  { id: "pressreader", name: "PressReader", eyebrow: "7,000+ titles", kind: "always", url: "https://www.pressreader.com/catalog" },
-  { id: "libby", name: "Libby eMagazines", eyebrow: "never expires", kind: "always", url: "https://libbyapp.com/library/sccl" },
-  { id: "mercury", name: "Mercury News", eyebrow: "full text", kind: "always", url: "https://sccld.org/resources/newsstand/" },
-  { id: "flipster", name: "Flipster", eyebrow: "kids' magazines", kind: "always", url: "https://sccld.org/resources/newsstand/" }
+  // Always-on sources route through the same rpa gateway (one-tap when card
+  // + PIN are saved) and land inside the provider, not on a library page.
+  // Each gateway.url mirrors the hidden value the live rpa form serves.
+  {
+    id: "pressreader", name: "PressReader", eyebrow: "7,000+ titles", kind: "always",
+    url: "https://rpa.sccl.org/login?url=https://www.pressreader.com",
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://www.pressreader.com" }
+  },
+  // "santaclara" is SCCLD's OverDrive slug (verified via thunder.api
+  // .overdrive.com); "sccl" is not a library Libby knows.
+  { id: "libby", name: "Libby eMagazines", eyebrow: "never expires", kind: "always", url: "https://libbyapp.com/library/santaclara" },
+  {
+    // Lands on MediaNews Group's proxy entrance — pick "continue
+    // anonymously" there once and it hands you to mercurynews.com.
+    id: "mercury", name: "Mercury News", eyebrow: "full site access", kind: "always",
+    url: "https://rpa.sccl.org/login?url=https://access.medianewsgroup.com/proxy-entrance/?org=sccld",
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://access.medianewsgroup.com/proxy-entrance/?org=sccld" }
+  },
+  {
+    id: "flipster", name: "Flipster", eyebrow: "kids' magazines", kind: "always",
+    url: "https://rpa.sccl.org/login?url=https://search.ebscohost.com/login.aspx?authtype=ip,cpid&custid=scc&profile=eon",
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://search.ebscohost.com/login.aspx?authtype=ip,cpid&custid=scc&profile=eon" }
+  }
 ];
 
 const store = {
