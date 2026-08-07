@@ -10,10 +10,13 @@ access (https://sccld.org/resources/newsstand/). Three layers:
 
 1. **`newsstand/index.html`** — self-contained PWA (no build step, no deps).
    Layout (Aug 2026 redesign, picked from prototyped candidates): a hero
-   card for the pass that needs attention next (expired first, then soonest
-   to expire) plus a departures-style status board for everything else; no
-   body copy; settings, cloud renew, `.ics` export, and mark-expired live
-   behind the gear. With card + PIN saved, tapping any gateway-backed
+   card for the pass that needs attention next (never-renewed first, then
+   stalest renewal) plus a departures-style board for everything else; no
+   body copy; settings, cloud renew, `.ics` export, and forget-renewal live
+   behind the gear. Renewal-facts model (Aug 2026): no expiry countdowns —
+   the tap timestamp can't prove redemption, so tiles show "renewed <when>"
+   facts only; `pub.hours` is internal renewal cadence (hero ordering +
+   opt-in auto-open), never displayed as time remaining. With card + PIN saved, tapping any gateway-backed
    source POSTs the rpa login form directly (one-tap sign-in — the gateways
    are plain EZproxy-style `url`/`user`/`pass` POSTs, no CSRF); card-only
    setups fall back to opening the gateway with the card number
