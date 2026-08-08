@@ -150,12 +150,18 @@
       <button id="cloudBtn" title="Trigger the GitHub Actions renewal workflow now">☁️ Cloud renew now</button>
       <button id="calBtn" title="Download a recurring calendar reminder for pass renewals">Calendar reminders (.ics)</button>
     </div>
+    <div class="field">
+      <label for="userscriptBtn">NYT auto-redeem userscript (optional — clicks Redeem on nytimes.com for you; needs Tampermonkey on desktop or the Userscripts app in iOS Safari; runs in Safari tabs, not in the installed home-screen app)</label>
+      <div class="cardnum">
+        <button id="userscriptBtn" class="small">Install userscript</button>
+      </div>
+    </div>
     <div class="btnrow" id="markExpired"></div>
     <div id="urlOverrides"></div>
     <div class="field">
       <button id="resetBtn" class="small">Reset all data</button>
     </div>
-    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-07h</p>
+    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-07i</p>
   </details>
 </main>
 
@@ -538,6 +544,9 @@ function renderSettings() {
   document.getElementById("copyLaplPin").onclick = async () => {
     if (state.laplPin) await navigator.clipboard.writeText(state.laplPin);
   };
+  // Tampermonkey / Userscripts intercept navigations to .user.js files and
+  // offer their install UI; all we do is open the raw file.
+  document.getElementById("userscriptBtn").onclick = () => window.open("nyt-autoredeem.user.js", "_blank", "noopener");
   const tok = document.getElementById("ghToken");
   tok.value = state.ghToken;
   tok.oninput = () => { state.ghToken = tok.value.trim(); store.write(state); };

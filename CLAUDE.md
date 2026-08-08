@@ -45,6 +45,30 @@ access (https://sccld.org/resources/newsstand/). Three layers:
 3. **`.github/workflows/newsstand-renew.yml`** — runs the script every 3
    days, caches `state/` (browser profile) between runs, commits
    `newsstand/status.json`, uploads final-page screenshots as an artifact.
+4. **`newsstand/nyt-autoredeem.user.js`** (Aug 2026) — userscript that, on
+   NYT's redemption page, fills the code from `?gift_code=`/`?code=` (React
+   prototype-setter + input event) and clicks `btn-redeem` once per tab
+   session (sessionStorage guard; MutationObserver + 1s poll for 30s,
+   because hydration is late and the page may fill the field without DOM
+   mutations). Installed via the "Install userscript" button in the PWA's
+   settings (Tampermonkey desktop / Userscripts app on iOS). iOS limit
+   (verified Aug 2026): extensions do NOT run in the in-app browser that an
+   installed home-screen PWA opens, and nothing can force real Safari — the
+   userscript only fires when Newsstand is used in a Safari tab. The PWA
+   itself can never click the button: nytimes.com is cross-origin, and the
+   redeem submit is a GraphQL call (graphql.nytimes.com/graphql/v2) needing
+   NYT session cookies, so calling it from the PWA origin is equally dead.
+5. **`newsstand/renew/local-renew.sh` + `~/Library/LaunchAgents/`**
+   **`com.newsstand.local-renew.plist`** (Aug 2026) — every-3-days local
+   (Varun's Mac) headless NYT renewal that relies on a *seeded* session in
+   `renew/state/profile` to skip the DataDome-blocked NYT login (the block
+   is at login; the library leg and redeem click were never the blocked
+   step). Seed by running `node renew.mjs --pubs nyt` headed and logging in
+   manually. On success the script commits + pushes `newsstand/status.json`
+   so the phone app picks the renewal up. Logs: `renew/logs/`. Unseeded or
+   expired session → run fails at NYT login and logs it; that's expected,
+   re-seed. This is session reuse, not challenge evasion — the
+   no-fingerprint-masking rule below still holds.
 
 ### Conventions and constraints
 

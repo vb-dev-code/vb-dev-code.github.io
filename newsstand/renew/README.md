@@ -76,15 +76,27 @@ npm run renew:headless          # both passes
 node renew.mjs --headless --pubs nyt
 ```
 
-Cron (every 3 days at 7am):
+### Seeded-session local schedule (the path that dodges the login wall)
 
-```
-0 7 */3 * * cd /path/to/vb-dev-code.github.io/newsstand/renew && /usr/local/bin/node renew.mjs --headless >> renew.log 2>&1
-```
+The DataDome/SSO blocks hit the publication *login* step. The persistent
+profile under `state/profile` keeps you logged in between runs — so if a
+session is already live, scheduled runs skip login entirely and only do the
+library leg (never blocked) plus the redeem click.
 
-macOS sleeps through cron; `launchd` with `StartCalendarInterval`, or an
-every-3-days reminder from the [web app](https://vb-dev-code.github.io/newsstand/)'s
-.ics export, are the reliable alternatives.
+1. **Seed once**: `node renew.mjs --pubs nyt` (headed). Log into NYT
+   yourself in the window — solve any challenge as a human; the script
+   waits up to 5 minutes at unrecognized pages and picks up when the page
+   moves. When it logs SUCCESS, the profile holds a live session.
+2. **Schedule**: `local-renew.sh` wraps the headless run and, on success,
+   commits `newsstand/status.json` and pushes, so the phone app learns
+   about the renewal. It's driven by a launchd agent at
+   `~/Library/LaunchAgents/com.newsstand.local-renew.plist` (every 3 days;
+   load with `launchctl bootstrap gui/$UID <plist>`). Logs land in
+   `logs/local-renew.log`.
+3. **If it starts failing at NYT login**, the session expired — re-seed
+   with step 1. If it fails *after* login (redeem page blocked in
+   headless), edit `local-renew.sh` to drop `--headless`; a headed window
+   every 3 days is the tradeoff. Never automate around a challenge.
 
 ## Tuning
 
