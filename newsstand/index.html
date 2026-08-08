@@ -109,14 +109,14 @@
   <details class="settings" id="settings">
     <summary>Settings</summary>
     <div class="field">
-      <label for="card">Library card number (stored only in this browser)</label>
+      <label for="card">SCCLD card number (Santa Clara County — stored only in this browser)</label>
       <div class="cardnum">
         <input type="text" id="card" autocomplete="off" placeholder="e.g. 29043… (dashes OK)">
         <button id="copyCard" class="small">Copy</button>
       </div>
     </div>
     <div class="field">
-      <label for="pin">PIN (also stored only in this browser — with both card and PIN saved, tapping a publication signs into the library gateway automatically)</label>
+      <label for="pin">SCCLD PIN (also stored only in this browser — with both card and PIN saved, tapping a publication signs into the library gateway automatically)</label>
       <div class="cardnum">
         <input type="password" id="pin" autocomplete="off" placeholder="••••">
         <button id="copyPin" class="small">Copy</button>
@@ -155,7 +155,7 @@
     <div class="field">
       <button id="resetBtn" class="small">Reset all data</button>
     </div>
-    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-07g</p>
+    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-07h</p>
   </details>
 </main>
 
@@ -318,6 +318,9 @@ function laplKey(pub) { return pub.id + ":lapl"; }
 // saved — without one the app must look identical to the SCCLD-only version.
 function visiblePubs() { return PUBS.filter((p) => (p.library ?? "sccld") === "sccld" || state.laplCard); }
 function hasLapl(pub) { return !!(pub.lapl && state.laplCard); }
+// With an LAPL card saved but no SCCLD card, tiles with an LAPL side act via
+// LAPL by default — the SCCLD gateway would dead-end without credentials.
+function defaultViaLapl(pub) { return hasLapl(pub) && !state.card; }
 function credsFor(pub, viaLapl) {
   return (viaLapl || pub.library === "lapl")
     ? { card: state.laplCard, pin: state.laplPin }
@@ -343,7 +346,7 @@ function renewInfo(pub) {
 }
 const fmtWhen = (ts) => new Date(ts).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" });
 
-function activate(pub, viaLapl = false) {
+function activate(pub, viaLapl = defaultViaLapl(pub)) {
   const key = viaLapl ? laplKey(pub) : pub.id;
   const side = viaLapl ? pub.lapl : pub;
   if (pub.kind === "pass") {
@@ -413,8 +416,8 @@ function render() {
           ? `Renewed ${fmtWhen(hi.ts)}${hi.viaLapl ? " · via LAPL" : ""}`
           : `Not renewed yet on this device · ${hero.eyebrow}`
       }</p>
-      <button class="go" id="heroGo">Renew — ${Math.round(hero.hours / 24)} days free →</button>
-      ${hasLapl(hero) ? `<button class="alt" id="heroAlt">or renew via LAPL →</button>` : ""}
+      <button class="go" id="heroGo">Renew${defaultViaLapl(hero) ? " via LAPL" : ""} — ${Math.round((defaultViaLapl(hero) ? hero.lapl.hours ?? hero.hours : hero.hours) / 24)} days free →</button>
+      ${hasLapl(hero) && !defaultViaLapl(hero) ? `<button class="alt" id="heroAlt">or renew via LAPL →</button>` : ""}
     </div>`;
   heroEl.querySelector("#heroGo").onclick = () => activate(hero);
   const heroAlt = heroEl.querySelector("#heroAlt");
@@ -431,11 +434,11 @@ function render() {
     row.dataset.pub = pub.id;
     row.innerHTML = `
       <span class="edge"></span>
-      <span class="nm">${pub.name}${info.viaLapl ? `<span class="badge">LAPL</span>` : ""}<small>${pub.eyebrow}</small></span>
+      <span class="nm">${pub.name}${info.viaLapl || defaultViaLapl(pub) ? `<span class="badge">LAPL</span>` : ""}<small>${pub.eyebrow}</small></span>
       <span class="tm">${info.ts ? `<small>renewed</small>${fmtWhen(info.ts)}` : "—"}</span>`;
     row.onclick = () => activate(pub);
     wrap.appendChild(row);
-    if (hasLapl(pub)) {
+    if (hasLapl(pub) && !defaultViaLapl(pub)) {
       const via = document.createElement("button");
       via.className = "via";
       via.textContent = "LAPL";
@@ -462,7 +465,7 @@ function render() {
     main.innerHTML = `<b>${pub.name}</b><small>${pub.eyebrow}</small>`;
     main.onclick = () => activate(pub);
     chip.appendChild(main);
-    if (hasLapl(pub)) {
+    if (hasLapl(pub) && !defaultViaLapl(pub)) {
       const via = document.createElement("button");
       via.className = "viaL";
       via.textContent = "LAPL";
@@ -650,7 +653,7 @@ setInterval(syncCloudStatus, 5 * 60e3);
 // within the pub's cadence, not a claim about actual expiry. Delayed slightly
 // so the page paints first; popup blockers may limit this to one tab per visit.
 if (state.autoOpen) {
-  const stale = visiblePubs().filter(p => p.kind === "pass" && renewInfo(p).stale && state.activations[p.id]);
+  const stale = visiblePubs().filter(p => p.kind === "pass" && renewInfo(p).stale && (state.activations[p.id] || state.activations[laplKey(p)]));
   if (stale.length) setTimeout(() => stale.forEach(p => activate(p)), 800);
 }
 </script>

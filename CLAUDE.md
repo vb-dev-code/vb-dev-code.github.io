@@ -69,7 +69,11 @@ access (https://sccld.org/resources/newsstand/). Three layers:
   invisible in the app until an LAPL card is saved in settings (none exists
   yet — e-cards are LA City residents only; CA residents get full cards in
   person at a branch). Activations are keyed `<id>:lapl`; effective expiry =
-  latest live pass across libraries. LAPL's gateway is OCLC-hosted EZproxy
+  latest live pass across libraries. With an LAPL card saved but no SCCLD
+  card, LAPL is the default side for pubs that have one (`defaultViaLapl`):
+  hero/row/chip primary taps act via LAPL directly and the now-redundant
+  "via LAPL" buttons are hidden; settings labels name both libraries
+  (SCCLD card/PIN, LAPL card/PIN). LAPL's gateway is OCLC-hosted EZproxy
   (`login.lapl.idm.oclc.org/login`) whose form is identical in shape to
   SCCLD's rpa gateway — `url`/`user`/`pass` POST, `r0$`-prefixed hidden url,
   no CSRF (verified live 2026-08-07). LAPL URLs (defaults in the app):
