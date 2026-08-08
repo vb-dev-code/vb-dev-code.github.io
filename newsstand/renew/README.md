@@ -83,10 +83,20 @@ profile under `state/profile` keeps you logged in between runs — so if a
 session is already live, scheduled runs skip login entirely and only do the
 library leg (never blocked) plus the redeem click.
 
-1. **Seed once**: `node renew.mjs --pubs nyt` (headed). Log into NYT
-   yourself in the window — solve any challenge as a human; the script
-   waits up to 5 minutes at unrecognized pages and picks up when the page
-   moves. When it logs SUCCESS, the profile holds a live session.
+1. **Seed once — with real Chrome, not via the script** (DataDome serves
+   Playwright's Chromium a blank login page even headed, reproduced
+   2026-08-07, so log in with no automation attached at all):
+
+   ```sh
+   cd newsstand/renew
+   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+     --user-data-dir="$PWD/state/profile" --no-first-run \
+     https://www.nytimes.com/account
+   ```
+
+   Log into NYT in that window, then quit that Chrome instance. The
+   session now lives in `state/profile`, and the scheduled runs use real
+   Chrome too (`CHROMIUM_PATH` in `local-renew.sh`) so they can open it.
 2. **Schedule**: `local-renew.sh` wraps the headless run and, on success,
    commits `newsstand/status.json` and pushes, so the phone app learns
    about the renewal. It's driven by a launchd agent at

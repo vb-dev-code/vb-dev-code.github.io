@@ -68,7 +68,13 @@ access (https://sccld.org/resources/newsstand/). Three layers:
    so the phone app picks the renewal up. Logs: `renew/logs/`. Unseeded or
    expired session → run fails at NYT login and logs it; that's expected,
    re-seed. This is session reuse, not challenge evasion — the
-   no-fingerprint-masking rule below still holds.
+   no-fingerprint-masking rule below still holds. Seeding must use REAL
+   Chrome launched bare against `state/profile` (see renew/README.md):
+   DataDome serves Playwright's Chromium a blank page at
+   `myaccount.nytimes.com/auth/login` even headed with a human watching
+   (reproduced 2026-08-07), and a profile created by one browser build may
+   not open in the other — so `local-renew.sh` exports `CHROMIUM_PATH` to
+   real Chrome for the scheduled runs as well.
 
 ### Conventions and constraints
 

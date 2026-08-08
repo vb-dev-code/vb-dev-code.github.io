@@ -13,6 +13,12 @@ echo "=== $(date '+%Y-%m-%d %H:%M:%S') local renew start ==="
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
+# Real Chrome, not Playwright's bundled Chromium: DataDome serves Playwright
+# Chromium a blank login page (reproduced 2026-08-07), and the seeded session
+# in state/profile is created by real Chrome — the scheduled runs must use
+# the same browser or the profile won't even open.
+export CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
 # Sync first so the status.json commit below lands on an up-to-date main
 # (CI commits status.json too).
 git -C ../.. pull --rebase --quiet || echo "git pull failed — continuing with local tree"
