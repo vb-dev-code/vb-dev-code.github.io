@@ -161,7 +161,7 @@
     <div class="field">
       <button id="resetBtn" class="small">Reset all data</button>
     </div>
-    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-07i</p>
+    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-08j</p>
   </details>
 </main>
 
@@ -307,12 +307,17 @@ async function syncCloudStatus() {
       }
     }
     if (changed) { store.write(state); render(); }
-    const last = Object.values(data.renewed ?? {}).map(r => r.ts).sort().pop();
+    const entries = Object.values(data.renewed ?? {});
+    const last = entries.map(r => r.ts).sort().pop();
     if (last) {
       const el = document.getElementById("cloudStatus");
       const when = new Date(last).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
-      const allOk = Object.values(data.renewed).every(r => r.ok);
-      el.textContent = allOk ? `☁️ Last automatic renewal: ${when}` : `☁️ Last automatic renewal had failures (${when}) — check the Actions run.`;
+      // Judge only the most recent run window: entries within a day of the
+      // newest one. Each pub keeps its last result forever, so a weeks-old
+      // failure must not taint the message about last night's good run.
+      const recent = entries.filter(r => last - r.ts < 24 * 3600e3);
+      const allOk = recent.every(r => r.ok);
+      el.textContent = allOk ? `☁️ Last automatic renewal: ${when}` : `☁️ Last automatic renewal had failures (${when}) — check the renewal logs.`;
     }
   } catch { /* offline or status not yet published */ }
 }
