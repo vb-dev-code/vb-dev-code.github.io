@@ -313,6 +313,11 @@ async function renew(context, id, pub) {
 const context = await chromium.launchPersistentContext(join(HERE, "state", "profile"), {
   headless,
   executablePath: process.env.CHROMIUM_PATH || undefined,
+  // Playwright defaults to --use-mock-keychain, which can't decrypt cookies
+  // written by the bare real-Chrome seeding session (encrypted with the real
+  // "Chrome Safe Storage" key) — the seeded NYT login would silently vanish
+  // and every run would dead-end at the publication login.
+  ignoreDefaultArgs: ["--use-mock-keychain"],
   viewport: { width: 1280, height: 900 },
 });
 
