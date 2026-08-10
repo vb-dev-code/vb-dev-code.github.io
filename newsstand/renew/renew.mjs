@@ -26,6 +26,10 @@ const DEFAULT_PUBS = {
     activationUrl: "https://login.rpa.sccl.org/login/NYT",
     successHosts: ["nytimes.com"],
     accountEnv: ["NYT_EMAIL", "NYT_PASSWORD"],
+    // 2026-08-08: a run declared SUCCESS off the bare-landing gate while its
+    // final page was blank and the pass never actually renewed. For NYT only
+    // explicit confirmation text counts.
+    requireSuccessText: true,
   },
   wsj: {
     name: "The Wall Street Journal",
@@ -104,7 +108,7 @@ const SUBMIT_SELECTORS = [
   'button:has-text("Submit")',
 ];
 const ACCESS_NOW = /access now|redeem|get access|claim|activate|continue/i;
-const SUCCESS_TEXT = /all set|access (?:is )?(?:activated|granted)|you now have|enjoy your|start reading|welcome back/i;
+const SUCCESS_TEXT = /all set|access (?:is )?(?:activated|granted)|you now have|enjoy your|start reading|welcome back|code (?:was|has been) redeemed|successfully redeemed/i;
 
 // "Visible" alone is not enough: NYT's email screen carries a decoy
 // password input (readonly, aria-hidden) that Playwright deems visible.
@@ -218,7 +222,7 @@ async function walk(page, id, pub, log) {
       if (target && redeemClicks < 3) {
         if (repeats("redeem") > 1) { log("redeem click isn't advancing the page — stopping"); break; }
         redeemClicks++;
-        log("clicking redeem/continue on publication site");
+        log(`clicking redeem/continue on ${page.url()}`);
         await target.click().catch(() => {});
         continue;
       }
@@ -236,8 +240,10 @@ async function walk(page, id, pub, log) {
       // Bare landing on the publication's host is only success if this run
       // actually did something (library login, account login, or a redeem
       // click). Without that gate, any stray redirect to nytimes.com would
-      // report SUCCESS and exit 0 while the pass was never activated.
-      if (libraryLogins + accountFills + redeemClicks > 0) {
+      // report SUCCESS and exit 0 while the pass was never activated. Pubs
+      // with requireSuccessText opt out of this gate entirely — landing
+      // proves nothing for them (see the nyt note above).
+      if (!pub.requireSuccessText && libraryLogins + accountFills + redeemClicks > 0) {
         log(`SUCCESS — landed on ${new URL(page.url()).hostname} after ${libraryLogins} library login(s), ${accountFills} account fill(s), ${redeemClicks} redeem click(s)`);
         return true;
       }

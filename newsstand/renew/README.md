@@ -76,7 +76,19 @@ npm run renew:headless          # both passes
 node renew.mjs --headless --pubs nyt
 ```
 
-### Seeded-session local schedule (the path that dodges the login wall)
+### Seeded-session local schedule — RETIRED for NYT (2026-08-10)
+
+Session reuse works: a live `NYT-S` cookie in `state/profile` carries runs
+past the login wall with zero account fills. But the redeem transaction is
+*also* bot-walled — clicking Redeem on the redemption page white-screens
+even headed, in real Chrome, with a human watching. A 2026-08-08 run
+declared SUCCESS off the bare-landing heuristic while redeeming nothing;
+`requireSuccessText` now guards NYT so that can't recur. The launchd agent
+is unloaded; re-enable only for an occasional retest after a multi-day
+cooldown (`launchctl bootstrap gui/$UID ~/Library/LaunchAgents/com.newsstand.local-renew.plist`).
+The dependable NYT path is the web app's one-tap link plus the
+auto-redeem userscript in a real browser. The mechanics below are kept for
+that retest and for any pub whose redeem step isn't walled.
 
 The DataDome/SSO blocks hit the publication *login* step. The persistent
 profile under `state/profile` keeps you logged in between runs — so if a

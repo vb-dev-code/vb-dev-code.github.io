@@ -74,7 +74,16 @@ access (https://sccld.org/resources/newsstand/). Three layers:
    `myaccount.nytimes.com/auth/login` even headed with a human watching
    (reproduced 2026-08-07), and a profile created by one browser build may
    not open in the other — so `local-renew.sh` exports `CHROMIUM_PATH` to
-   real Chrome for the scheduled runs as well.
+   real Chrome for the scheduled runs as well. RETIRED 2026-08-10: session
+   reuse does defeat the login wall, but the redeem *transaction* itself is
+   also DataDome-walled — clicking Redeem on the redemption page white-
+   screens even headed, real Chrome, live NYT-S session, human watching.
+   A 2026-08-08 run "succeeded" off the bare-landing gate while redeeming
+   nothing (user's pass lapsed); renew.mjs now sets `requireSuccessText`
+   for nyt so only confirmation text counts. The launchd agent is unloaded
+   (plist kept in ~/Library/LaunchAgents for a future cooldown retest);
+   status.json was reset to empty. The supported NYT path is the PWA tap +
+   the auto-redeem userscript in a real browser.
 
 ### Conventions and constraints
 
