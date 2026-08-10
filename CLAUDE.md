@@ -83,7 +83,16 @@ access (https://sccld.org/resources/newsstand/). Three layers:
    for nyt so only confirmation text counts. The launchd agent is unloaded
    (plist kept in ~/Library/LaunchAgents for a future cooldown retest);
    status.json was reset to empty. The supported NYT path is the PWA tap +
-   the auto-redeem userscript in a real browser.
+   the auto-redeem userscript in a real browser. 2026-08-10 update: the
+   pass renewed at 7:48 AM on a morning when both the script (7:40 click,
+   white-screened) and a logged-in human page visit (~7:48) happened, so
+   whether redeem clicks actually go through is UNRESOLVED — the white
+   screen may hide a successful transaction. Agent re-armed for a
+   controlled retest Thu 2026-08-13 ~8:23 AM (pass lapses 7:48; user
+   touches nothing; a confirmation email at run time = script works).
+   Judge by the NYT confirmation email timestamp, not the script's exit
+   code — requireSuccessText makes it report FAILED even when the
+   transaction succeeds behind the white screen.
 
 ### Conventions and constraints
 
