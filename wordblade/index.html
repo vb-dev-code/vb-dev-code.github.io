@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wordblade · Varun Bhardwaj</title>
+<meta name="description" content="A word game where you slash through flying letters to spell words. Why I built the whole analytics pipeline myself instead of embedding a tracking SDK.">
+<link rel="stylesheet" href="/assets/css/site.css">
+</head>
+<body>
+<main class="wrap">
+
+  <a class="backlink" href="/">← All work</a>
+
+  <header class="case-header">
+    <p class="eyebrow">Closed beta · iOS &amp; Android · Unity</p>
+    <h1>Wordblade <span class="pill">Beta</span></h1>
+    <p>A word game that moves. You slash your finger through flying letters to spell the target word, but the wave freezes while your finger is down and any letter that would continue your word waits for you, so it rewards knowing the word over being fast.</p>
+  </header>
+
+  <div class="shots">
+    <img src="/assets/img/wordblade-01-arcade.webp" alt="Arcade mode on the Midnight Blade skin: score 1240, the target word CAN glowing gold, three strike markers, and letters drifting up the screen" width="880" height="1904">
+    <img src="/assets/img/wordblade-02-slash.webp" alt="Mid-swipe on the Scriptorium skin, the slash trail cutting through a grid of letters with a plus-30 score float" width="880" height="1904">
+    <img src="/assets/img/wordblade-03-quiz.webp" alt="Quiz mode: the clue &quot;tennis with four players on the court&quot;, question 2 of 10, with letters in flight to spell the answer" width="880" height="1904">
+  </div>
+
+  <section class="block">
+    <h2>What it is</h2>
+    <p>It started from a simple question: what would Fruit Ninja feel like if the fruit were letters and the point was spelling? The catch is that slashing is a reflex and spelling isn't, so the whole design problem was keeping the tactility without punishing the person who knows the word but isn't quick. Two mechanics do that. The wave freezes while your finger is down, and a letter that would carry your word into something real lingers instead of flying off. The help is invisible, but the rule stays legible.</p>
+    <p>There are five modes plus a daily challenge, and no accounts, no ads, and no tracking. Underneath it is Unity 6 with a pure-C# engine that doesn't lean on Unity's runtime and steps on a fixed clock, so the same inputs always produce the same frame, which is what lets about 2,072 tests actually mean something. I built all of it, on both iOS and Android.</p>
+  </section>
+
+  <section class="block decision">
+    <h2>The decision</h2>
+    <p>The store listing says no accounts, no ads, no tracking, and I decided that had to be literally true.</p>
+    <p>The easy path for analytics is a turnkey SDK, the kind almost every mobile game drops in on day one. But those SDKs are exactly what forces the App Store's "data used to track you" label, and that label would make the promise on my own listing a lie. So I built the pipeline myself: every event tees off one logging choke point, there's a fixed allowlist of nine events, the only identifier is a random per-install ID, and adding any new event sends me back through a privacy review before it can ship. It's a Cloudflare collector writing to my own datastore, and no other company ever sees a row.</p>
+    <p>I made the same call on money. I looked hard at ads and in-app purchases and shipped neither. The game is fully free at soft launch, and I killed an earlier idea about selling cosmetics outright, because revenue is a later bet that only pays off if people actually come back. I'd rather answer "do they come back" cleanly first than compromise the honest version of the game to find out.</p>
+    <p>I also left the EU out of the first launch, since selling there needs disclosure groundwork I haven't done yet, and shipping clean to a few markets beats shipping half-ready to all of them.</p>
+  </section>
+
+  <section class="block">
+    <h2>What it cost</h2>
+    <p>Every one of those choices cost something real. I gave up the whole EU market for the first launch. I gave up turnkey analytics and took on building and running my own telemetry instead: the collector, the datastore, the event taxonomy, the offline queue, all of it mine to maintain. And I gave up launch-day revenue entirely, because the free-clean posture leaves the money model dormant until I have retention data worth pointing it at.</p>
+    <p>I make the same kind of subtractive call at the mechanic level. In the target modes, spelling a real word that isn't the target counts as a miss, which reverses my own earlier design that rewarded any valid word, because "what counts" has to be unambiguous when the target is the biggest thing on the screen. And when playtest captures showed two different success animations competing for attention rather than reinforcing each other, I deleted one of them instead of trying to tune both.</p>
+  </section>
+
+  <section class="block">
+    <h2>Status &amp; next</h2>
+    <p>Wordblade is in closed beta on both platforms, with the iOS build on TestFlight and the Android build working, and it hasn't gone to App Review yet. The plan is a quiet soft launch to New Zealand, Canada, and the US, targeted for later in August 2026.</p>
+    <p>The soft launch is the test, not a victory lap. It's there to answer the one question that matters before I spend anything on distribution: do people install it, get through their first word, and come back the next day? If they do, the wider launch and the revenue model are earned. If they don't, I'd much rather learn that from a small quiet release than a loud one.</p>
+  </section>
+
+  <footer class="footer">
+    <a href="/">All work</a>
+    <a href="mailto:vbhardw@gmail.com">vbhardw@gmail.com</a>
+    <a href="https://www.linkedin.com/in/varun2">LinkedIn</a>
+  </footer>
+
+</main>
+</body>
+</html>

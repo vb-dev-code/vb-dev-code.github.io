@@ -115,6 +115,14 @@ a:focus-visible, .card:focus-visible {
   }
 }
 
+/* Three across once there's room, so five cards read as 3 + 2 rather than
+   leaving an orphan on a second row of a two-column grid. */
+@media (min-width: 60rem) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 .grid > li {
   display: flex;
 }
