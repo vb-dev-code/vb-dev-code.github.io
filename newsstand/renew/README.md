@@ -137,7 +137,7 @@ library leg (never blocked) plus the redeem click.
 2. **Schedule**: `local-renew.sh` wraps the headless run and, on success,
    commits `newsstand/status.json` and pushes, so the phone app learns
    about the renewal. It's driven by a launchd agent at
-   `~/Library/LaunchAgents/com.newsstand.local-renew.plist` (every 3 days;
+   `~/Library/LaunchAgents/com.newsstand.local-renew.plist` (daily at 8 AM;
    load with `launchctl bootstrap gui/$UID <plist>`). Logs land in
    `logs/local-renew.log`.
 3. **If it starts failing at NYT login**, the session expired — re-seed
