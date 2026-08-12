@@ -96,6 +96,9 @@ observed 48 hours, not the advertised 72.
 Each family member's renewal runs on this same machine — no hardware or
 setup on their side. Per member, once:
 
+Easiest: run `./add-tenant.sh <name>` and follow the prompts — it does all
+of the below plus verification and the first renewal. Manual equivalent:
+
 1. Create `tenants/<name>.env` (gitignored) with THEIR library card:
    `SCCLD_CARD=...` and `SCCLD_PIN=...`
 2. Seed THEIR NYT session:
