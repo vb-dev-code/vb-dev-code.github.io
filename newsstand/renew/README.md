@@ -91,6 +91,27 @@ truth when in doubt: the "Confirming your New York Times access" email.
 The launchd agent runs DAILY at 8:00 AM because the pass lasts an
 observed 48 hours, not the advertised 72.
 
+### Household tenants (zero-touch for family members)
+
+Each family member's renewal runs on this same machine — no hardware or
+setup on their side. Per member, once:
+
+1. Create `tenants/<name>.env` (gitignored) with THEIR library card:
+   `SCCLD_CARD=...` and `SCCLD_PIN=...`
+2. Seed THEIR NYT session:
+   ```sh
+   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+     --user-data-dir="$PWD/state/profile-<name>" --no-first-run \
+     https://www.nytimes.com/account
+   ```
+   They log into their own NYT account in that window, then quit that
+   Chrome instance.
+
+`local-renew.sh` picks up every `tenants/*.env` automatically after the
+owner's run. Tenant runs never write `status.json`; their signal is their
+own NYT confirmation email and the NYT app just working. If a tenant run
+fails at an auth page, re-seed that profile the same way.
+
 The DataDome/SSO blocks hit the publication *login* step. The persistent
 profile under `state/profile` keeps you logged in between runs — so if a
 session is already live, scheduled runs skip login entirely and only do the

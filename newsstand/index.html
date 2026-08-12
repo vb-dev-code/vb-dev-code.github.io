@@ -77,6 +77,11 @@
   .hint { font-size: .8rem; color: var(--muted); margin: 10px 2px; }
   .hint button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; padding: 4px 10px; font-size: .8rem; margin-left: 6px; }
 
+  /* first-run welcome steps */
+  .hero ol.steps { margin: 10px 0 16px 20px; padding: 0; }
+  .hero ol.steps li { margin: 6px 0; font-size: .92rem; line-height: 1.45; }
+  .hero ol.steps a { color: inherit; }
+
   /* settings — behind the gear */
   details.settings { margin-top: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; }
   details.settings summary { cursor: pointer; font-weight: 600; }
@@ -151,7 +156,7 @@
       <button id="calBtn" title="Download a recurring calendar reminder for pass renewals">Calendar reminders (.ics)</button>
     </div>
     <div class="field">
-      <label for="userscriptBtn">NYT auto-redeem userscript (optional — clicks Redeem on nytimes.com for you; needs Tampermonkey on desktop or the Userscripts app in iOS Safari; runs in Safari tabs, not in the installed home-screen app)</label>
+      <label for="userscriptBtn">NYT auto-redeem userscript (optional, advanced — clicks Redeem on nytimes.com for you; needs Tampermonkey on desktop or the Userscripts app in iOS Safari; runs in Safari tabs, not in the installed home-screen app. It automates a click NYT expects from a human — use at your own comfort)</label>
       <div class="cardnum">
         <button id="userscriptBtn" class="small">Install userscript</button>
       </div>
@@ -161,7 +166,7 @@
     <div class="field">
       <button id="resetBtn" class="small">Reset all data</button>
     </div>
-    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-12k</p>
+    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. This site has no server and its operator never sees your card. · v2026-08-12l</p>
   </details>
 </main>
 
@@ -297,6 +302,10 @@ const WORKFLOW = "newsstand-renew.yml";
 // Merge cloud renewal results (written by the GitHub Actions workflow) into
 // local pass state, so the phone shows renewals that happened server-side.
 async function syncCloudStatus() {
+  // status.json records the OWNER's cloud/local renewals. Visitors must not
+  // inherit them as their own tile state (single-owner, multi-visitor app) —
+  // a saved GitHub token is the ownership signal.
+  if (!state.ghToken) return;
   try {
     const res = await fetch("status.json", { cache: "no-store" });
     if (!res.ok) return;
@@ -360,6 +369,15 @@ function renewInfo(pub) {
 const fmtWhen = (ts) => new Date(ts).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" });
 
 function activate(pub, viaLapl = defaultViaLapl(pub)) {
+  // First-run guard: gateway-backed sources dead-end without a card, so
+  // route the tap to Settings instead of stranding the user on a login form.
+  if (!state.card && !state.laplCard && (pub.gateway || pub.lapl?.gateway)) {
+    const s = document.getElementById("settings");
+    s.open = true;
+    document.getElementById("cloudStatus").textContent = "Save your library card + PIN in Settings first — they stay on this device.";
+    s.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
   const key = viaLapl ? laplKey(pub) : pub.id;
   const side = viaLapl ? pub.lapl : pub;
   if (pub.kind === "pass") {
@@ -421,6 +439,29 @@ function render() {
   const hero = heroPub();
   const hi = renewInfo(hero);
   const heroEl = document.getElementById("hero");
+  // First-run welcome: the entire onboarding is this one card. It renders
+  // only while no library card is saved, then disappears forever.
+  if (!state.card && !state.laplCard) {
+    heroEl.innerHTML = `
+      <div class="hero">
+        <div class="mast">Newsstand</div>
+        <p class="since">Free NYT, WSJ &amp; Washington Post — with your library card</p>
+        <ol class="steps">
+          <li>Get a free library card from <a href="https://sccld.org" target="_blank" rel="noopener">Santa Clara County</a> or <a href="https://lapl.org" target="_blank" rel="noopener">LA Public Library</a> (you may already have one).</li>
+          <li>Save your card + PIN in Settings — they stay on this device and are sent only to the library's own login.</li>
+          <li>Tap a paper to read. Passes renew with one tap every 2–3 days.</li>
+        </ol>
+        <button class="go" id="setupGo">Set up — takes 30 seconds →</button>
+      </div>`;
+    heroEl.querySelector("#setupGo").onclick = () => {
+      const s = document.getElementById("settings");
+      s.open = true;
+      s.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("card").focus();
+    };
+    renderBoard(null);
+    return;
+  }
   heroEl.innerHTML = `
     <div class="hero">
       <div class="mast">${hero.mast}</div>
@@ -435,7 +476,12 @@ function render() {
   heroEl.querySelector("#heroGo").onclick = () => activate(hero);
   const heroAlt = heroEl.querySelector("#heroAlt");
   if (heroAlt) heroAlt.onclick = () => activate(hero, true);
+  renderBoard(hero);
+}
 
+// Board, reading room, mark-expired and undo — shared by the normal render
+// and the first-run welcome (hero = null lists every pass on the board).
+function renderBoard(hero) {
   const board = document.getElementById("board");
   board.innerHTML = "";
   for (const pub of visiblePubs().filter((p) => p.kind === "pass" && p !== hero)) {
@@ -526,7 +572,9 @@ function render() {
 function renderSettings() {
   const card = document.getElementById("card");
   card.value = state.card;
-  card.oninput = () => { state.card = card.value.trim(); store.write(state); };
+  // Saving/clearing the card toggles the first-run welcome and the LAPL
+  // defaults, so re-render the board (same pattern as the LAPL field below).
+  card.oninput = () => { state.card = card.value.trim(); store.write(state); render(); };
   document.getElementById("copyCard").onclick = async () => {
     if (state.card) await navigator.clipboard.writeText(state.card);
   };
@@ -556,7 +604,12 @@ function renderSettings() {
   document.getElementById("userscriptBtn").onclick = () => window.open("nyt-autoredeem.user.js", "_blank", "noopener");
   const tok = document.getElementById("ghToken");
   tok.value = state.ghToken;
-  tok.oninput = () => { state.ghToken = tok.value.trim(); store.write(state); };
+  // Owner-only controls: "Cloud renew now" dispatches the owner's repo
+  // workflow, so it's dead weight (and an invitation to paste tokens) for
+  // anyone else. Visible only once a token is saved.
+  const ownerUI = () => { document.getElementById("cloudBtn").style.display = state.ghToken ? "" : "none"; };
+  ownerUI();
+  tok.oninput = () => { state.ghToken = tok.value.trim(); store.write(state); ownerUI(); if (state.ghToken) syncCloudStatus(); };
   const auto = document.getElementById("autoOpen");
   auto.checked = state.autoOpen;
   auto.onchange = () => { state.autoOpen = auto.checked; store.write(state); };

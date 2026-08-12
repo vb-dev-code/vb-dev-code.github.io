@@ -86,6 +86,13 @@ const headless = flag("headless");
 const stepTimeout = Number(opt("timeout", "20000"));
 const statusPath = opt("status", "");
 const shotsDir = opt("shots", "");
+// --profile selects the browser profile, enabling tenant renewals: each
+// household member gets their own seeded profile (their NYT session) and
+// their own card via env, all running on the same machine.
+const profileArg = opt("profile", "");
+const profileDir = profileArg
+  ? (profileArg.startsWith("/") ? profileArg : join(HERE, profileArg))
+  : join(HERE, "state", "profile");
 if (shotsDir) mkdirSync(shotsDir, { recursive: true });
 
 // ---------------------------------------------------------------------------
@@ -330,7 +337,7 @@ async function renew(context, id, pub) {
 }
 
 // ---------------------------------------------------------------------------
-const context = await chromium.launchPersistentContext(join(HERE, "state", "profile"), {
+const context = await chromium.launchPersistentContext(profileDir, {
   headless,
   executablePath: process.env.CHROMIUM_PATH || undefined,
   // Playwright defaults to --use-mock-keychain, which can't decrypt cookies

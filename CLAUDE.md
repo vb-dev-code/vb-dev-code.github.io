@@ -88,7 +88,19 @@ access (https://sccld.org/resources/newsstand/). Three layers:
    is observed to last 48h, not the advertised 72 (renewed Mon 7:48 AM →
    expired Wed morning, Aug 2026), so the launchd agent runs DAILY at
    8:00 AM (StartCalendarInterval; missed fires run on wake) and the app's
-   nyt `hours` is 48.
+   nyt `hours` is 48. Household tenants (Aug 2026): family members get
+   zero-touch via `renew/tenants/<name>.env` (their card, gitignored) +
+   `state/profile-<name>` (their seeded NYT session) — local-renew.sh loops
+   over tenants after the owner's run; tenant runs never write status.json.
+
+ADR (Aug 2026): the app is single-owner, multi-visitor by design. All
+visitor state (cards, PINs, activations) is per-browser localStorage;
+`status.json` and "Cloud renew now" are owner-only, gated on a saved
+GitHub token (`state.ghToken`) as the ownership signal — deliberately not
+an identity system at friends-and-family scale. First-run visitors see a
+self-destructing welcome card (renders while no library card is saved);
+gateway-backed tile taps route to Settings until a card exists. Do not
+"fix" this into accounts/auth without a real second automation user.
 
 ### Conventions and constraints
 

@@ -23,7 +23,23 @@ export CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chro
 # (CI commits status.json too).
 git -C ../.. pull --rebase --quiet || echo "git pull failed — continuing with local tree"
 
-if node renew.mjs --pubs nyt --headless --status ../status.json --shots shots; then
+node renew.mjs --pubs nyt --headless --status ../status.json --shots shots
+own_ok=$?
+
+# Tenant renewals: each tenants/<name>.env holds that person's SCCLD_CARD /
+# SCCLD_PIN, and their seeded NYT session lives in state/profile-<name>
+# (seed it the same bare-Chrome way, logging into THEIR NYT account).
+# Tenant runs never write status.json — that file is the owner's.
+for envfile in tenants/*.env(N); do
+  name="${${envfile:t}%.env}"
+  echo "--- tenant: $name"
+  ( unset SCCLD_CARD SCCLD_PIN
+    set -a; source "$envfile"; set +a
+    node renew.mjs --pubs nyt --headless --profile "state/profile-$name" --shots "shots/$name" ) \
+    || echo "tenant $name renew FAILED (re-seed state/profile-$name if it's the NYT login)"
+done
+
+if (( own_ok == 0 )); then
   cd ../..
   git add newsstand/status.json
   if ! git diff --cached --quiet; then
