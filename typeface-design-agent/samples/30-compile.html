@@ -1,0 +1,150 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Authority Registry &amp; Brand Design Package</title><link rel="stylesheet" href="../typeface-ds.css?v=72"><script src="_shell.js?v=72"></script>
+<style>.pg{font-size:30px;font-weight:600;letter-spacing:-.02em;margin-bottom:4px}
+.sub{color:var(--tf-ink-2);margin-bottom:24px;max-width:680px}
+.two{display:grid;grid-template-columns:1fr 300px;gap:var(--tf-6);align-items:start}.two>*{min-width:0}
+@media(max-width:1100px){.two{grid-template-columns:1fr}}</style></head>
+<body data-nav="Brands" data-chrome="off">
+<main class="tf-main">
+  <div class="tf-subnav"><a href="03-brand-foundations.html">Design Guidelines</a><a href="04-connections.html">Connected sources</a><a href="30-compile.html" aria-selected="true">Authority Registry</a></div>
+
+  <div class="pg">Authority Registry</div>
+  <p class="sub">Customer systems remain the source of truth. Arc Graph compiles a governed, generation-ready view — it does not become the system of record. A recent upload cannot silently outrank an approved system.</p>
+
+  <div class="two">
+    <div class="tf-stack">
+
+      <div class="tf-card">
+        <div class="tf-sectionhead"><h2>Designated sources</h2><p>owner, connection, last sync and trust per data type</p></div>
+        <div class="tf-auth tf-auth--head"><span>Data type</span><span>Source of truth</span><span>How it connects</span><span>Trust</span><span>State</span></div>
+        <div class="tf-auth">
+          <span class="d"><b>Tokens &amp; components</b><small>Jordan Tate · design ops</small></span>
+          <span class="sys">figma://meridian/ds</span>
+          <span class="conn"><b>Figma connector</b>synced 10 min ago</span>
+          <span class="tf-trust tf-trust--verified">verified</span>
+          <span class="tf-rdy tf-rdy--ready">Ready</span>
+        </div>
+        <div class="tf-auth">
+          <span class="d"><b>Logos, imagery, rights</b><small>Priya Raman · brand</small></span>
+          <span class="sys">dam://meridian/approved</span>
+          <span class="conn"><b>DAM connector</b>synced 1 h ago</span>
+          <span class="tf-trust tf-trust--verified">verified</span>
+          <span class="tf-rdy tf-rdy--ready">Ready</span>
+        </div>
+        <div class="tf-auth">
+          <span class="d"><b>Product facts &amp; price</b><small>PIM · commerce</small></span>
+          <span class="sys">pim://catalog/peak2</span>
+          <span class="conn"><b>PIM connector</b>last sync 9 h ago · SLA 1 h</span>
+          <span class="tf-trust tf-trust--stale">stale</span>
+          <span class="tf-rdy tf-rdy--stale">Stale 9h</span>
+        </div>
+        <div class="tf-auth">
+          <span class="d"><b>Legal &amp; compliance</b><small>Dana Wu · counsel</small></span>
+          <span class="sys">legal://claims/us-2026</span>
+          <span class="conn"><b>Registry connector</b>synced on change · 3 d ago</span>
+          <span class="tf-trust tf-trust--verified">verified</span>
+          <span class="tf-rdy tf-rdy--ready">Ready</span>
+        </div>
+        <div class="tf-auth">
+          <span class="d"><b>Voice, messaging, claims</b><small>product marketing</small></span>
+          <span class="sys">arc_graph://voice</span>
+          <span class="conn"><b>Derived in Arc Graph</b>rebuilt 12 d ago</span>
+          <span class="tf-trust tf-trust--verified">verified</span>
+          <span class="tf-rdy tf-rdy--conflicted">Conflicted</span>
+        </div>
+        <div class="tf-auth">
+          <span class="d"><b>Audience &amp; journey</b><small>CDP — resolved segments only</small></span>
+          <span class="sys">cdp://segments</span>
+          <span class="conn"><b>CDP connector</b>synced 6 h ago</span>
+          <span class="tf-trust tf-trust--verified">verified</span>
+          <span class="tf-rdy tf-rdy--ready">Ready</span>
+        </div>
+        <div class="tf-auth tf-auth--supp tf-auth--weak">
+          <span class="d"><b>Spring guidelines deck</b><small>uploaded by M. Okafor</small></span>
+          <span class="sys">upload://spring-2026.pdf</span>
+          <span class="conn"><b>Manual upload</b>uploaded 2 d ago · never promoted</span>
+          <span class="tf-trust tf-trust--unverified">unverified</span>
+          <span class="tf-rdy tf-rdy--warning">Supplemental</span>
+        </div>
+        <div class="tf-auth tf-auth--supp tf-auth--weak">
+          <span class="d"><b>Brand guidelines PDF</b><small>uploaded by a former owner</small></span>
+          <span class="sys">upload://brand-guide-2025.pdf</span>
+          <span class="conn"><b>Manual upload</b>uploaded 10 months ago · never promoted</span>
+          <span class="tf-trust tf-trust--unverified">unverified</span>
+          <span class="tf-rdy tf-rdy--warning">Supplemental</span>
+        </div>
+        <div class="tf-row" style="margin-top:12px">
+          <span class="tf-cap" style="margin:0">Trust is a property of the connection, not the document. A connected system inside its SLA is <b>verified</b>; past the SLA it is <b>stale</b>; a manual upload stays <b>unverified</b> until an authorized owner promotes it, however official the file looks.</span>
+          <span class="tf-spacer"></span>
+          <button class="tf-btn tf-btn--sm">Promote…</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="tf-sectionhead"><h2>Preflight</h2><p>2 items need a decision · warnings do not block</p></div>
+        <div class="tf-col">
+          <div class="tf-conflict">
+            <div class="field">voice.claims — conflicted</div>
+            <div class="opts">
+              <button class="opt" aria-pressed="true">legal://claims/us-2026 <span class="tf-mono" style="color:var(--tf-ink-3)">precedence 2</span></button>
+              <button class="opt">arc_graph://voice <span class="tf-mono" style="color:var(--tf-ink-3)">precedence 6</span></button>
+            </div>
+            <div class="why">Resolved deterministically by precedence: approved legal policy outranks campaign messaging. Escalation owner: <b>Dana Wu</b>.</div>
+          </div>
+          <div class="tf-conflict" style="border-left-color:var(--tf-info)">
+            <div class="field">pim://catalog/peak2 — stale 9h against a 1h SLA</div>
+            <div class="opts">
+              <button class="opt" aria-pressed="true">Re-sync now</button>
+              <button class="opt">Proceed and flag on output</button>
+            </div>
+            <div class="why">Price is a critical fact class — stale critical objects block; optional ones only warn.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tf-card">
+        <div class="tf-sectionhead"><h2>Rule precedence</h2><p>applied in order; ambiguity is exposed, never hidden in model reasoning</p></div>
+        <div class="tf-prec">
+          <div class="lvl lvl--locked"><span class="n">1</span><div><b>Law &amp; regulatory</b></div></div>
+          <div class="lvl lvl--locked"><span class="n">2</span><div><b>Customer-approved legal &amp; compliance policy</b></div></div>
+          <div class="lvl lvl--locked"><span class="n">3</span><div><b>Locked brand &amp; design-system rules</b></div></div>
+          <div class="lvl"><span class="n">4</span><div><b>Factual &amp; data integrity</b></div></div>
+          <div class="lvl"><span class="n">5</span><div><b>Channel &amp; accessibility specifications</b></div></div>
+          <div class="lvl"><span class="n">6</span><div><b>Approved campaign instructions</b></div></div>
+          <div class="lvl"><span class="n">7</span><div><b>Regional &amp; audience guidance</b></div></div>
+          <div class="lvl"><span class="n">8</span><div><b>Approved historical patterns</b></div></div>
+          <div class="lvl"><span class="n">9</span><div><b>Performance recommendations</b><span>flexible zones only</span></div></div>
+          <div class="lvl"><span class="n">10</span><div><b>Model aesthetic preference</b><span>lowest authority in the system</span></div></div>
+        </div>
+      </div>
+
+      <div class="tf-row" style="justify-content:flex-end;gap:var(--tf-2)">
+        <button class="tf-btn">Save registry</button>
+        <a class="tf-btn tf-btn--primary" href="01-brief.html">Compile package &amp; continue</a>
+      </div>
+    </div>
+
+    <aside class="tf-stack">
+      <div class="tf-card">
+        <div class="tf-sectionhead"><h2>Brand Design Package</h2><p>immutable for the job</p></div>
+        <div class="tf-row" style="margin-bottom:10px"><span class="tf-mono" style="font-size:13px">meridian@3.8.0</span><span class="tf-spacer"></span><span class="tf-rdy tf-rdy--warning">1 stale</span></div>
+        <ul class="tf-col" style="gap:7px;font-size:12.5px;color:var(--tf-ink-2)">
+          <li class="tf-row"><span>Effective-dated &amp; scoped</span><span class="tf-spacer"></span><span class="tf-status tf-status--ok">✓</span></li>
+          <li class="tf-row"><span>Permission-aware, tenant-isolated</span><span class="tf-spacer"></span><span class="tf-status tf-status--ok">✓</span></li>
+          <li class="tf-row"><span>Reproducible from source IDs</span><span class="tf-spacer"></span><span class="tf-status tf-status--ok">✓</span></li>
+          <li class="tf-row"><span>Inferred fields marked</span><span class="tf-spacer"></span><span class="tf-mono">7</span></li>
+          <li class="tf-row"><span>Cached · invalidates on change</span><span class="tf-spacer"></span><span class="tf-status tf-status--ok">✓</span></li>
+        </ul>
+        <p class="tf-cap">Minimal by design — the whole design system is never placed in a model context.</p>
+      </div>
+      <div class="tf-card">
+        <div class="tf-sectionhead"><h2>Change impact</h2></div>
+        <p style="font-size:12.5px;color:var(--tf-ink-2);line-height:1.55;margin:0 0 10px">A logo update in the DAM affects <b>2 drafts</b> and <b>1 scheduled campaign</b>.</p>
+        <div class="tf-row"><button class="tf-btn tf-btn--sm">Revalidate drafts</button></div>
+        <p class="tf-cap">Approved work is never silently regenerated.</p>
+      </div>
+    </aside>
+  </div>
+</main></body></html>

@@ -168,3 +168,14 @@ Playwright headlessly: serve `newsstand/` over localhost HTTP (status.json
 fetch doesn't work from `file://`) and assert on tile status text; for
 `renew.mjs`, run against a mock HTTP server that reproduces the flow, and
 check both exit codes (0 on success, 1 on wrong PIN).
+
+## typeface-design-agent/ — do not remove (active interview submission)
+
+`typeface-design-agent/` is the live prototype for the Typeface Staff PM
+interview, emailed to their recruiter on Aug 6, 2026 as
+`https://varunb.me/typeface-design-agent/`. It must stay deployed until that
+interview process concludes. It was removed once by a portfolio cleanup
+(Aug 12, 2026) and had to be restored while under active review — do not
+repeat that. The pages include a cookie-free Abacus visit counter
+(namespace `vb-tfda-2026`); owner visits are excluded by loading any page
+once with `?self=1`.
