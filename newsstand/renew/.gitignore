@@ -1,8 +1,0 @@
-.env
-config.json
-state/
-shots/
-logs/
-tenants/
-node_modules/
-package-lock.json
