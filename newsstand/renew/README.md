@@ -76,19 +76,20 @@ npm run renew:headless          # both passes
 node renew.mjs --headless --pubs nyt
 ```
 
-### Seeded-session local schedule — RETIRED for NYT (2026-08-10)
+### Seeded-session local schedule — WORKING for NYT (2026-08-12)
 
 Session reuse works: a live `NYT-S` cookie in `state/profile` carries runs
-past the login wall with zero account fills. But the redeem transaction is
-*also* bot-walled — clicking Redeem on the redemption page white-screens
-even headed, in real Chrome, with a human watching. A 2026-08-08 run
-declared SUCCESS off the bare-landing heuristic while redeeming nothing;
-`requireSuccessText` now guards NYT so that can't recur. The launchd agent
-is unloaded; re-enable only for an occasional retest after a multi-day
-cooldown (`launchctl bootstrap gui/$UID ~/Library/LaunchAgents/com.newsstand.local-renew.plist`).
-The dependable NYT path is the web app's one-tap link plus the
-auto-redeem userscript in a real browser. The mechanics below are kept for
-that retest and for any pub whose redeem step isn't walled.
+past the login wall with zero account fills. The redeem click *looks*
+walled — DataDome white-screens every NYT page around it — but a
+controlled test proved the transaction goes through anyway (redeem click
+8:32:45 with the user away from the machine; NYT confirmation email
+8:33). So: never judge a run by rendered content. Success for nyt is a
+redeem click on the redemption page itself (`redeemUrlPattern`);
+`requireSuccessText` still blocks the bare-landing gate that once
+declared success for a click that redeemed nothing (2026-08-08). Ground
+truth when in doubt: the "Confirming your New York Times access" email.
+The launchd agent runs DAILY at 8:00 AM because the pass lasts an
+observed 48 hours, not the advertised 72.
 
 The DataDome/SSO blocks hit the publication *login* step. The persistent
 profile under `state/profile` keeps you logged in between runs — so if a

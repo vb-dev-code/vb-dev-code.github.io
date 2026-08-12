@@ -161,7 +161,7 @@
     <div class="field">
       <button id="resetBtn" class="small">Reset all data</button>
     </div>
-    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-08j</p>
+    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. · v2026-08-12k</p>
   </details>
 </main>
 
@@ -173,9 +173,11 @@ const PUBS = [
     id: "nyt",
     name: "New York Times",
     mast: "The New York Times",
-    eyebrow: "72-hour pass",
+    // SCCLD's page says 72 hours, but observed reality (Aug 2026) is 48:
+    // renewed Mon 7:48 AM, expired by Wed morning.
+    eyebrow: "48-hour pass",
     kind: "pass",
-    hours: 72,
+    hours: 48,
     url: "https://login.rpa.sccl.org/login/NYT",
     // Plain EZproxy-style POST (url/user/pass, no CSRF token) — with card +
     // PIN saved, activation submits it directly and skips the mobile-hostile

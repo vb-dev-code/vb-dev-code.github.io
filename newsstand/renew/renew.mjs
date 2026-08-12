@@ -27,9 +27,14 @@ const DEFAULT_PUBS = {
     successHosts: ["nytimes.com"],
     accountEnv: ["NYT_EMAIL", "NYT_PASSWORD"],
     // 2026-08-08: a run declared SUCCESS off the bare-landing gate while its
-    // final page was blank and the pass never actually renewed. For NYT only
-    // explicit confirmation text counts.
+    // final page was blank and the pass never actually renewed — so bare
+    // landing never counts for NYT (requireSuccessText). 2026-08-12: a
+    // controlled test proved the redeem transaction DOES go through even
+    // though DataDome white-screens the confirmation page (redeem click
+    // 8:32:45, NYT confirmation email 8:33, user away from the machine) —
+    // so a redeem click on the redemption page itself counts as success.
     requireSuccessText: true,
+    redeemUrlPattern: "nytimes\\.com/subscription/redeem",
   },
   wsj: {
     name: "The Wall Street Journal",
@@ -222,8 +227,17 @@ async function walk(page, id, pub, log) {
       if (target && redeemClicks < 3) {
         if (repeats("redeem") > 1) { log("redeem click isn't advancing the page — stopping"); break; }
         redeemClicks++;
+        const onRedeemPage = pub.redeemUrlPattern && new RegExp(pub.redeemUrlPattern, "i").test(page.url());
         log(`clicking redeem/continue on ${page.url()}`);
         await target.click().catch(() => {});
+        if (onRedeemPage) {
+          // The transaction fires on click; the confirmation page may never
+          // render under bot protection (verified by confirmation-email
+          // timing, 2026-08-12). Give the request a beat, then call it.
+          await page.waitForTimeout(5000);
+          log("SUCCESS — redeem clicked on the redemption page (confirmation may not render; transaction verified out-of-band 2026-08-12)");
+          return true;
+        }
         continue;
       }
 

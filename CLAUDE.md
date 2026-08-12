@@ -74,25 +74,21 @@ access (https://sccld.org/resources/newsstand/). Three layers:
    `myaccount.nytimes.com/auth/login` even headed with a human watching
    (reproduced 2026-08-07), and a profile created by one browser build may
    not open in the other — so `local-renew.sh` exports `CHROMIUM_PATH` to
-   real Chrome for the scheduled runs as well. RETIRED 2026-08-10: session
-   reuse does defeat the login wall, but the redeem *transaction* itself is
-   also DataDome-walled — clicking Redeem on the redemption page white-
-   screens even headed, real Chrome, live NYT-S session, human watching.
-   A 2026-08-08 run "succeeded" off the bare-landing gate while redeeming
-   nothing (user's pass lapsed); renew.mjs now sets `requireSuccessText`
-   for nyt so only confirmation text counts. The launchd agent is unloaded
-   (plist kept in ~/Library/LaunchAgents for a future cooldown retest);
-   status.json was reset to empty. The supported NYT path is the PWA tap +
-   the auto-redeem userscript in a real browser. 2026-08-10 update: the
-   pass renewed at 7:48 AM on a morning when both the script (7:40 click,
-   white-screened) and a logged-in human page visit (~7:48) happened, so
-   whether redeem clicks actually go through is UNRESOLVED — the white
-   screen may hide a successful transaction. Agent re-armed for a
-   controlled retest Thu 2026-08-13 ~8:23 AM (pass lapses 7:48; user
-   touches nothing; a confirmation email at run time = script works).
-   Judge by the NYT confirmation email timestamp, not the script's exit
-   code — requireSuccessText makes it report FAILED even when the
-   transaction succeeds behind the white screen.
+   real Chrome for the scheduled runs as well. WORKING as of 2026-08-12,
+   after a false retirement: a controlled test (redeem click 8:32:45 with
+   the user away; NYT confirmation email 8:33) proved the redeem
+   transaction goes through even though DataDome white-screens every NYT
+   page around it — never judge these runs by rendered content. Success
+   for nyt = a redeem click on a URL matching `redeemUrlPattern`
+   (`nytimes.com/subscription/redeem`); `requireSuccessText` still blocks
+   the bare-landing gate that produced 2026-08-08's false success (a click
+   on some other page that redeemed nothing). Ground truth for any doubt:
+   the "Confirming your New York Times access" email (berkeley.edu inbox;
+   from:nytimes.com auto-forwards to gmail). Cadence: the SCCLD NYT pass
+   is observed to last 48h, not the advertised 72 (renewed Mon 7:48 AM →
+   expired Wed morning, Aug 2026), so the launchd agent runs DAILY at
+   8:00 AM (StartCalendarInterval; missed fires run on wake) and the app's
+   nyt `hours` is 48.
 
 ### Conventions and constraints
 
