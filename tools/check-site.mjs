@@ -26,10 +26,17 @@ try {
   fail(`banned-patterns.json missing; cannot verify banned content (${e.message})`);
 }
 
+// Skip repo internals and any co-hosted, non-portfolio project sharing this
+// Pages repo. `newsstand/` (a family utility PWA) and `typeface-design-agent/`
+// (an interview submission) are intentionally served here but kept out of the
+// portfolio by being unlinked and noindex'd, not deleted (see README). They
+// have their own conventions and are not part of the portfolio this verifier
+// governs.
+const SKIP = new Set(['.git', 'node_modules', 'docs', '.github', 'newsstand', 'typeface-design-agent']);
 const htmlFiles = [];
 (function walk(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (e.name === '.git' || e.name === 'node_modules' || e.name === 'docs') continue;
+    if (SKIP.has(e.name)) continue;
     const p = path.join(dir, e.name);
     if (e.isDirectory()) walk(p);
     else if (e.name.endsWith('.html')) htmlFiles.push(p);

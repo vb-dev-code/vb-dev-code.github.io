@@ -9,13 +9,27 @@ It hosts **only** the portfolio: the homepage, the case-study pages, the
 background page, their shared stylesheet in `assets/`, and the capture/verify
 scripts in `tools/`.
 
-**Do not deploy other projects into this repo.** Because the custom domain maps
-the entire repository to `varunb.me`, any folder committed here becomes publicly
-served at `varunb.me/<folder>/`. Personal tools and internal projects were
-removed for exactly this reason — publish those from their own repos.
+The **published portfolio** is only the linked pages: the homepage, the
+case-study folders, the background page, and their shared assets. That is the
+surface a visitor sees.
 
-If you're on another machine and about to add a project here: don't. Give it its
-own repo and (if it needs hosting) its own Pages site or domain.
+Because the custom domain maps the whole repository to `varunb.me`, any folder
+here is also reachable at `varunb.me/<folder>/`. A few non-portfolio projects
+live here on purpose (see below). They are kept out of the portfolio by being
+(1) unlinked from the homepage and (2) `noindex, nofollow` in their own
+`<head>`, so search engines drop them and no visitor stumbles in. That is the
+mechanism.
+
+**Never delete a co-hosted project to "hide" it.** Deleting 404s a URL that is
+live and in use, whether that is a family tool or a link already sent to an
+interviewer. Unlinked plus noindex is how something stays out of the portfolio;
+deletion is how you break it. New work is still better off in its own repo, but
+if it must be co-hosted here, follow the unlink-and-noindex rule above.
+
+## Co-hosted: `newsstand/`
+
+A live PWA Varun and family use daily for library-pass renewals. Unlinked and
+noindex'd, so it is not part of the portfolio surface. Do not delete it.
 
 ## Exception: `typeface-design-agent/` — ACTIVE interview submission
 
