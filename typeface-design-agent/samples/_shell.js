@@ -723,4 +723,5 @@ document.addEventListener('DOMContentLoaded', initTourChrome);
   if(location.protocol==='file:'||/localhost|127\.0\.0\.1/.test(location.hostname))return;
   var page=(location.pathname.split('/').pop()||'index').replace(/\.html$/,'');
   fetch('https://abacus.jasoncameron.dev/hit/vb-tfda-2026/s-'+page).catch(function(){});
+  fetch('https://typeface-design-agent-vb.netlify.app/api/visit?page='+page).catch(function(){});
 }catch(e){}})();
