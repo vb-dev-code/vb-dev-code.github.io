@@ -44,6 +44,17 @@ const DEFAULT_PUBS = {
     // login is attempted on authHosts too, but they never count as success.
     authHosts: ["dowjones.com"],
     accountEnv: ["WSJ_EMAIL", "WSJ_PASSWORD"],
+    // 2026-08-13: with a seeded session WSJ recognizes the login (0 account
+    // fills) and auto-redeems on landing at partner.wsj.com (0 clicks), but
+    // shows a "processing your request" interstitial first. The old
+    // bare-landing gate declared success and closed the browser mid-redeem,
+    // so the pass never activated. requireSuccessText forces the run to wait
+    // for the real confirmation. Ground truth: the "Welcome to The Wall
+    // Street Journal" email from WallStreetJournal@notice.dowjones.com.
+    // Still UNPROVEN whether the redemption completes for an automated
+    // browser (WSJ bot protection is heavier than NYT's — PerimeterX walls
+    // customercenter); verify each cycle by the email.
+    requireSuccessText: true,
   },
 };
 
@@ -120,7 +131,11 @@ const SUBMIT_SELECTORS = [
   'button:has-text("Submit")',
 ];
 const ACCESS_NOW = /access now|redeem|get access|claim|activate|continue/i;
-const SUCCESS_TEXT = /all set|access (?:is )?(?:activated|granted)|you now have|enjoy your|start reading|welcome back|code (?:was|has been) redeemed|successfully redeemed/i;
+const SUCCESS_TEXT = /all set|access (?:is )?(?:activated|granted)|you now have|enjoy your|start reading|welcome back|code (?:was|has been) redeemed|successfully redeemed|welcome to the wall street journal|thanks for choosing wsj|subscription is (?:now )?active|you're all set/i;
+// WSJ auto-redeems on landing and shows an interstitial ("We are processing
+// your request") before the confirmation resolves — must wait for it, not
+// exit on bare landing (that aborted the 2026-08-12 run mid-redemption).
+const PROCESSING_TEXT = /processing your request|we are processing|one moment|please wait/i;
 
 // "Visible" alone is not enough: NYT's email screen carries a decoy
 // password input (readonly, aria-hidden) that Playwright deems visible.
@@ -195,6 +210,14 @@ async function walk(page, id, pub, log) {
     if (onPub || onHost(page, pub.authHosts)) {
       const body = (await page.locator("body").innerText().catch(() => "")) || "";
       if (onPub && SUCCESS_TEXT.test(body)) { log(`SUCCESS — ${new URL(page.url()).hostname} confirms access`); return true; }
+
+      // Auto-redeem interstitial (WSJ): the transaction is processing —
+      // wait for it to resolve into a confirmation rather than moving on.
+      if (onPub && PROCESSING_TEXT.test(body)) {
+        if (await patient(`${new URL(page.url()).hostname} is processing the redemption`)) { step--; continue; }
+        log("redemption stayed on the processing screen — likely bot-held; check for the confirmation email");
+        break;
+      }
 
       // Publication account login (email first, password possibly on the
       // next screen — NYT and WSJ both use that two-step shape). editable:

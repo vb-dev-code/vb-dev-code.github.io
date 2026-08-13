@@ -23,7 +23,11 @@ export CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chro
 # (CI commits status.json too).
 git -C ../.. pull --rebase --quiet || echo "git pull failed — continuing with local tree"
 
-node renew.mjs --pubs nyt --headless --status ../status.json --shots shots
+# WSJ runs alongside NYT: same seeded profile also holds the WSJ/Dow Jones
+# session. WSJ redemption completion via automation is unproven — verify by
+# the "Welcome to The Wall Street Journal" email; if it stops arriving, WSJ
+# has fallen back to manual and should be dropped from this list.
+node renew.mjs --pubs nyt,wsj --headless --status ../status.json --shots shots
 own_ok=$?
 
 # Tenant renewals: each tenants/<name>.env holds that person's SCCLD_CARD /

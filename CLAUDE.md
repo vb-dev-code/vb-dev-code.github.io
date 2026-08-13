@@ -93,6 +93,25 @@ access (https://sccld.org/resources/newsstand/). Three layers:
    `state/profile-<name>` (their seeded NYT session) — local-renew.sh loops
    over tenants after the owner's run; tenant runs never write status.json.
 
+WSJ zero-touch (2026-08-13, IN TEST): same seeded-session approach as NYT.
+A seeded WSJ/Dow Jones session in `state/profile` is recognized (0 account
+fills — login wall bypassed), and WSJ auto-redeems on landing at
+`partner.wsj.com` (0 clicks) via an "We are processing your request"
+interstitial. The first automated run FAILED because the bare-landing gate
+closed the browser mid-processing; fixed by giving WSJ `requireSuccessText`
++ a PROCESSING_TEXT patience wait, and adding wsj to local-renew.sh's
+`--pubs`. Manual renewal works and WSJ DOES send a heartbeat email
+("Welcome to The Wall Street Journal" from
+`WallStreetJournal@notice.dowjones.com`, to varunb007@gmail.com) — that
+email, checkable via Gmail, is the ground truth. UNPROVEN whether the
+redemption completes for an automated browser: WSJ's bot stack is heavier
+than NYT's (PerimeterX walls customercenter.wsj.com against automation), so
+the "processing" screen may bot-hold. Verify each cycle by the email; if it
+stops arriving, WSJ has fallen back to manual — drop it from `--pubs`.
+Observed WSJ pass label: "PUBLIC LIBRARIES AMENITY", Digital Light Package.
+Do NOT hammer WSJ redemption (multiple runs in a short window risks the
+account) — one attempt per natural cycle.
+
 ADR (Aug 2026): the app is single-owner, multi-visitor by design. All
 visitor state (cards, PINs, activations) is per-browser localStorage;
 `status.json` and "Cloud renew now" are owner-only, gated on a saved
