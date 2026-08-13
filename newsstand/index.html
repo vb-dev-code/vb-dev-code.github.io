@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#101418">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Newsstand">
+<title>Newsstand · Library Pass Manager</title>
+<style>
+  /* Redesign 2026-08: hero-first (candidate A) + departures list (candidate C).
+     Verdict captured from prototype-redesign.html review. */
+  :root {
+    --paper: #f6f4ef;
+    --card: #ffffff;
+    --ink: #17130e;
+    --muted: #7a7468;
+    --line: #e2ddd2;
+    --green: #0f5c4f;
+    --green-ink: #ffffff;
+    --red: #b03a2e;
+    --amber: #9a6a08;
+    --chip: #ece8df;
+    --serif: ui-serif, "New York", Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #12100c; --card: #1c1914; --ink: #ece7dd; --muted: #9a9488;
+      --line: #2c2820; --green: #3ba58f; --green-ink: #0c1210;
+      --red: #e5695c; --amber: #e0a83a; --chip: #262218;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--paper); color: var(--ink); font: 16px/1.4 var(--sans); }
+  button { font: inherit; cursor: pointer; }
+  .wrap { max-width: 430px; margin: 0 auto; min-height: 100dvh; padding: max(16px, env(safe-area-inset-top)) 16px 40px; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .topbar .word { font: 700 15px/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; }
+  .topbar .gear { background: none; border: none; font-size: 20px; color: var(--muted); padding: 4px 6px; }
+
+  /* hero — the pass that needs you next */
+  .hero { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 22px 20px 20px; position: relative; overflow: hidden; margin-bottom: 12px; }
+  .hero .mast { font: 640 30px/1.05 var(--serif); letter-spacing: -.01em; max-width: 72%; }
+  .hero .since { color: var(--muted); font-size: .85rem; margin: 10px 0 18px; }
+  .hero .go { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--green); color: var(--green-ink); font-weight: 700; font-size: 1.05rem; }
+
+  /* departures board — everything else */
+  .board { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .rowwrap { display: flex; align-items: stretch; border-bottom: 1px solid var(--line); }
+  .rowwrap:last-child { border-bottom: none; }
+  .row { display: flex; align-items: center; gap: 14px; padding: 15px 16px 15px 0; border: none; width: 100%; background: none; color: var(--ink); text-align: left; flex: 1; min-width: 0; }
+  .via { border: none; background: none; color: var(--muted); font: 600 11px/1 var(--sans); letter-spacing: .06em; padding: 0 14px; border-left: 1px solid var(--line); flex: none; }
+  .badge { font: 600 9px/1 var(--sans); letter-spacing: .08em; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 2px 4px; vertical-align: 2px; margin-left: 6px; }
+  .hero .alt { display: block; width: 100%; text-align: center; background: none; border: none; color: var(--muted); font-size: .85rem; padding: 10px 0 0; text-decoration: underline; text-underline-offset: 3px; }
+  .row .edge { align-self: stretch; width: 4px; border-radius: 0 3px 3px 0; flex: none; background: var(--line); }
+  .row .nm { font: 600 16px/1.25 var(--serif); flex: 1; }
+  .row .nm small { display: block; font: 500 11px/1.6 var(--sans); letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+  .row .tm { font: 500 13px var(--mono); color: var(--muted); text-align: right; }
+  .row .tm small { display: block; font: 500 9px/1.6 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+
+  /* reading room — always-on sources as a compact shelf inside the board */
+  .shelfhead { font: 600 11px/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 14px 16px 10px; }
+  .shelf { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 12px 14px; }
+  .chip { display: flex; align-items: stretch; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--paper); }
+  .chip .main { flex: 1; border: none; background: none; color: var(--ink); text-align: left; padding: 10px 12px; min-width: 0; }
+  .chip .main b { display: block; font: 600 13.5px/1.2 var(--serif); }
+  .chip .main small { display: block; font: 500 9px/1.5 var(--sans); letter-spacing: .07em; color: var(--muted); text-transform: uppercase; }
+  .chip .viaL { border: none; border-left: 1px solid var(--line); background: none; color: var(--muted); font: 600 9px/1 var(--sans); letter-spacing: .05em; padding: 0 8px; cursor: pointer; }
+
+  .hint { font-size: .8rem; color: var(--muted); margin: 10px 2px; }
+  .hint button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 8px; padding: 4px 10px; font-size: .8rem; margin-left: 6px; }
+
+  /* first-run welcome steps */
+  .hero ol.steps { margin: 10px 0 16px 20px; padding: 0; }
+  .hero ol.steps li { margin: 6px 0; font-size: .92rem; line-height: 1.45; }
+  .hero ol.steps a { color: inherit; }
+
+  /* settings — behind the gear */
+  details.settings { margin-top: 16px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; }
+  details.settings summary { cursor: pointer; font-weight: 600; }
+  .field { margin: 12px 0; }
+  .field label { display: block; font-size: .85rem; color: var(--muted); margin-bottom: 4px; }
+  .field input[type=text], .field input[type=url], .field input[type=password] {
+    width: 100%; font: inherit; padding: 8px 10px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+  }
+  .field.inline { display: flex; align-items: center; gap: 8px; }
+  .field.inline label { margin: 0; color: var(--ink); font-size: .95rem; }
+  .cardnum { display: flex; gap: 8px; }
+  .cardnum input { flex: 1; }
+  .btnrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .btnrow button { border: 1px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 9px; padding: 8px 12px; font-size: .88rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="topbar">
+    <span class="word">📰 Newsstand</span>
+    <button class="gear" id="gearBtn" aria-label="Settings">⚙︎</button>
+  </div>
+
+  <section id="hero"></section>
+  <div class="board" id="board"></div>
+  <p class="hint" id="cloudStatus"></p>
+  <p class="hint" id="undoSlot"></p>
+
+  <details class="settings" id="settings">
+    <summary>Settings</summary>
+    <div class="field">
+      <label for="card">SCCLD card number (Santa Clara County — stored only in this browser)</label>
+      <div class="cardnum">
+        <input type="text" id="card" autocomplete="off" placeholder="e.g. 29043… (dashes OK)">
+        <button id="copyCard" class="small">Copy</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="pin">SCCLD PIN (also stored only in this browser — with both card and PIN saved, tapping a publication signs into the library gateway automatically)</label>
+      <div class="cardnum">
+        <input type="password" id="pin" autocomplete="off" placeholder="••••">
+        <button id="copyPin" class="small">Copy</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="laplCard">LAPL card number (optional — adds Washington Post and "via LAPL" backup links; stored only in this browser)</label>
+      <div class="cardnum">
+        <input type="text" id="laplCard" autocomplete="off" placeholder="e.g. 2111…">
+        <button id="copyLaplCard" class="small">Copy</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="laplPin">LAPL PIN (last 4 digits of the phone number on file with LAPL)</label>
+      <div class="cardnum">
+        <input type="password" id="laplPin" autocomplete="off" placeholder="••••">
+        <button id="copyLaplPin" class="small">Copy</button>
+      </div>
+    </div>
+    <div class="field inline">
+      <input type="checkbox" id="autoOpen">
+      <label for="autoOpen">Auto-open renewal pages for passes past their renewal window when I open this app</label>
+    </div>
+    <div class="field">
+      <label for="ghToken">GitHub token for “Cloud renew now” (fine-grained, this repo only, Actions read/write — stored only in this browser)</label>
+      <div class="cardnum">
+        <input type="password" id="ghToken" autocomplete="off" placeholder="github_pat_…">
+      </div>
+    </div>
+    <div class="btnrow">
+      <button id="cloudBtn" title="Trigger the GitHub Actions renewal workflow now">☁️ Cloud renew now</button>
+      <button id="calBtn" title="Download a recurring calendar reminder for pass renewals">Calendar reminders (.ics)</button>
+    </div>
+    <div class="field">
+      <label for="userscriptBtn">NYT auto-redeem userscript (optional, advanced — clicks Redeem on nytimes.com for you; needs Tampermonkey on desktop or the Userscripts app in iOS Safari; runs in Safari tabs, not in the installed home-screen app. It automates a click NYT expects from a human — use at your own comfort)</label>
+      <div class="cardnum">
+        <button id="userscriptBtn" class="small">Install userscript</button>
+      </div>
+    </div>
+    <div class="btnrow" id="markExpired"></div>
+    <div id="urlOverrides"></div>
+    <div class="field">
+      <button id="resetBtn" class="small">Reset all data</button>
+    </div>
+    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. This site has no server and its operator never sees your card. · v2026-08-12l</p>
+  </details>
+</main>
+
+<script>
+"use strict";
+
+const PUBS = [
+  {
+    id: "nyt",
+    name: "New York Times",
+    mast: "The New York Times",
+    // SCCLD's page says 72 hours, but observed reality (Aug 2026) is 48:
+    // renewed Mon 7:48 AM, expired by Wed morning.
+    eyebrow: "48-hour pass",
+    kind: "pass",
+    hours: 48,
+    url: "https://login.rpa.sccl.org/login/NYT",
+    // Plain EZproxy-style POST (url/user/pass, no CSRF token) — with card +
+    // PIN saved, activation submits it directly and skips the mobile-hostile
+    // gateway form.
+    gateway: { action: "https://login.rpa.sccl.org/login", url: "https://login.rpa.sccl.org/login/NYT" },
+    // LAPL backup: bare public redemption link (verified 2026-08-07 — LAPL's
+    // NYT link is NOT gateway-wrapped; gift codes may rotate, override in
+    // settings if it dies).
+    lapl: { url: "https://nytimes.com/subscription/redeem/all-access?campaignId=8XUKX&gift_code=5570e1739089cc00", hours: 72 }
+  },
+  {
+    id: "wsj",
+    name: "Wall Street Journal",
+    mast: "The Wall Street Journal",
+    eyebrow: "72-hour pass",
+    kind: "pass",
+    hours: 72,
+    url: "https://rpa.sccl.org/login?url=https://partner.wsj.com/p/1148200010/enter-redemption-code/P31117NM5FAD",
+    // r0$ mirrors the hidden url value the live gateway form serves.
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://partner.wsj.com/p/1148200010/enter-redemption-code/P31117NM5FAD" },
+    // LAPL's OCLC EZproxy form shape matches SCCLD's rpa gateway, r0$ prefix
+    // included (verified live 2026-08-07).
+    lapl: {
+      url: "https://login.lapl.idm.oclc.org/login?url=https://partner.wsj.com/p/1148200010/enter-redemption-code/P243PJRHHM6A",
+      gateway: { action: "https://login.lapl.idm.oclc.org/login", url: "r0$https://partner.wsj.com/p/1148200010/enter-redemption-code/P243PJRHHM6A" },
+      hours: 72
+    }
+  },
+  {
+    id: "wapo",
+    name: "Washington Post",
+    mast: "The Washington Post",
+    eyebrow: "7-day pass · LAPL",
+    kind: "pass",
+    hours: 168,
+    library: "lapl",
+    url: "https://login.lapl.idm.oclc.org/login?url=https://www.washingtonpost.com/subscribe/signin/special-offers?s_oe=SPECIALOFFER_LOSANGELESPL",
+    gateway: { action: "https://login.lapl.idm.oclc.org/login", url: "r0$https://www.washingtonpost.com/subscribe/signin/special-offers?s_oe=SPECIALOFFER_LOSANGELESPL" }
+  },
+  // Always-on sources route through the same rpa gateway (one-tap when card
+  // + PIN are saved) and land inside the provider, not on a library page.
+  // Each gateway.url mirrors the hidden value the live rpa form serves.
+  {
+    id: "pressreader", name: "PressReader", eyebrow: "7,000+ titles", kind: "always",
+    url: "https://rpa.sccl.org/login?url=https://www.pressreader.com",
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://www.pressreader.com" },
+    lapl: {
+      url: "https://login.lapl.idm.oclc.org/login?url=https://www.pressreader.com",
+      gateway: { action: "https://login.lapl.idm.oclc.org/login", url: "r0$https://www.pressreader.com" }
+    }
+  },
+  // "santaclara" is SCCLD's OverDrive slug (verified via thunder.api
+  // .overdrive.com); "sccl" is not a library Libby knows.
+  { id: "libby", name: "Libby eMagazines", eyebrow: "never expires", kind: "always", url: "https://libbyapp.com/library/santaclara" },
+  {
+    // Lands on MediaNews Group's proxy entrance — pick "continue
+    // anonymously" there once and it hands you to mercurynews.com.
+    id: "mercury", name: "Mercury News", eyebrow: "full site access", kind: "always",
+    url: "https://rpa.sccl.org/login?url=https://access.medianewsgroup.com/proxy-entrance/?org=sccld",
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://access.medianewsgroup.com/proxy-entrance/?org=sccld" }
+  },
+  {
+    id: "flipster", name: "Flipster", eyebrow: "digital magazines", kind: "always",
+    url: "https://rpa.sccl.org/login?url=https://search.ebscohost.com/login.aspx?authtype=ip,cpid&custid=scc&profile=eon",
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://search.ebscohost.com/login.aspx?authtype=ip,cpid&custid=scc&profile=eon" }
+  },
+  // Reading-room titles (Aug 2026): always-on SCCLD sources whose sublabels
+  // set expectations about where you land — a proxied real site, EBSCO's
+  // issue browser (jid deep links), or Flipster's page-replica reader. Each
+  // gateway.url mirrors the hidden value the live rpa form serves (curled
+  // 2026-08-07; ampersands are literal, esc() handles them on POST).
+  {
+    id: "nature", name: "Nature", eyebrow: "full site", kind: "always",
+    url: "https://rpa.sccl.org/login?url=https://www.nature.com",
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://www.nature.com" }
+  },
+  {
+    id: "hbr", name: "Harvard Business Review", eyebrow: "issue browser", kind: "always",
+    url: "http://rpa.sccl.org/login?url=http://search.ebscohost.com/login.aspx?direct=true&db=bth&jid=HBR&site=ehost-live&authtype=ip,url&custid=scc&profile=ehost&groupid=main",
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$http://search.ebscohost.com/login.aspx?direct=true&db=bth&jid=HBR&site=ehost-live&authtype=ip,url&custid=scc&profile=ehost&groupid=main" }
+  },
+  {
+    id: "businessweek", name: "Businessweek", eyebrow: "issue browser", kind: "always",
+    url: "https://rpa.sccl.org/login?url=https://search.ebscohost.com/login.aspx?direct=true&db=bwa&jid=BWK&site=ehost-live&authtype=ip%2ccpid&custid=scc&groupid=main&profile=ehost",
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://search.ebscohost.com/login.aspx?direct=true&db=bwa&jid=BWK&site=ehost-live&authtype=ip%2ccpid&custid=scc&groupid=main&profile=ehost" }
+  },
+  {
+    id: "consumerreports", name: "Consumer Reports", eyebrow: "in Flipster", kind: "always",
+    url: "https://rpa.sccl.org/login?url=https://search.ebscohost.com/login.aspx?direct=true&db=eon&bquery=Consumer&cli0=EH1&clv0=Y&type=0&site=eon-live",
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://search.ebscohost.com/login.aspx?direct=true&db=eon&bquery=Consumer&cli0=EH1&clv0=Y&type=0&site=eon-live" }
+  }
+];
+
+const store = {
+  read() {
+    try { return JSON.parse(localStorage.getItem("newsstand") || "{}"); }
+    catch { return {}; }
+  },
+  write(data) { localStorage.setItem("newsstand", JSON.stringify(data)); }
+};
+let state = Object.assign({ activations: {}, overrides: {}, card: "", pin: "", laplCard: "", laplPin: "", ghToken: "", autoOpen: false, lastUndo: null }, store.read());
+
+// Drop overrides that no longer add information: old landing-page defaults,
+// and anything equal to the pub's current built-in URL (a redundant override
+// would silently disable one-tap gateway sign-in).
+for (const [id, u] of Object.entries(state.overrides ?? {})) {
+  const pub = PUBS.find((p) => p.id === id);
+  if (u === "https://sccld.org/nyt-online/" || u === "https://sccld.org/resources/newsstand/" || (pub && u === pub.url)) {
+    delete state.overrides[id];
+    store.write(state);
+  }
+}
+
+const REPO = "vb-dev-code/vb-dev-code.github.io";
+const WORKFLOW = "newsstand-renew.yml";
+
+// Merge cloud renewal results (written by the GitHub Actions workflow) into
+// local pass state, so the phone shows renewals that happened server-side.
+async function syncCloudStatus() {
+  // status.json records the OWNER's cloud/local renewals. Visitors must not
+  // inherit them as their own tile state (single-owner, multi-visitor app) —
+  // a saved GitHub token is the ownership signal.
+  if (!state.ghToken) return;
+  try {
+    const res = await fetch("status.json", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    let changed = false;
+    for (const [id, r] of Object.entries(data.renewed ?? {})) {
+      if (r.ok && r.ts > (state.activations[id] ?? 0)) {
+        state.activations[id] = r.ts;
+        changed = true;
+      }
+    }
+    if (changed) { store.write(state); render(); }
+    const entries = Object.values(data.renewed ?? {});
+    const last = entries.map(r => r.ts).sort().pop();
+    if (last) {
+      const el = document.getElementById("cloudStatus");
+      const when = new Date(last).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+      // Judge only the most recent run window: entries within a day of the
+      // newest one. Each pub keeps its last result forever, so a weeks-old
+      // failure must not taint the message about last night's good run.
+      const recent = entries.filter(r => last - r.ts < 24 * 3600e3);
+      const allOk = recent.every(r => r.ok);
+      el.textContent = allOk ? `☁️ Last automatic renewal: ${when}` : `☁️ Last automatic renewal had failures (${when}) — check the renewal logs.`;
+    }
+  } catch { /* offline or status not yet published */ }
+}
+
+function urlFor(pub) { return state.overrides[pub.id] || pub.url; }
+
+function laplKey(pub) { return pub.id + ":lapl"; }
+// LAPL-only pubs and "via LAPL" actions stay invisible until a LAPL card is
+// saved — without one the app must look identical to the SCCLD-only version.
+function visiblePubs() { return PUBS.filter((p) => (p.library ?? "sccld") === "sccld" || state.laplCard); }
+function hasLapl(pub) { return !!(pub.lapl && state.laplCard); }
+// With an LAPL card saved but no SCCLD card, tiles with an LAPL side act via
+// LAPL by default — the SCCLD gateway would dead-end without credentials.
+function defaultViaLapl(pub) { return hasLapl(pub) && !state.card; }
+function credsFor(pub, viaLapl) {
+  return (viaLapl || pub.library === "lapl")
+    ? { card: state.laplCard, pin: state.laplPin }
+    : { card: state.card, pin: state.pin };
+}
+
+// Renewal facts across libraries: the app only knows when a tile was tapped,
+// never whether the pass actually got redeemed — so it reports the last
+// renewal as a fact and never predicts expiry. ts = latest activation across
+// the pub's library keys (null if none); viaLapl = which library it came
+// through; stale = no renewal within the pub's cadence (hours), used only for
+// hero ordering and opt-in auto-open, never displayed as a countdown.
+function renewInfo(pub) {
+  const entries = [{ key: pub.id, hours: pub.hours, viaLapl: false }];
+  if (hasLapl(pub)) entries.push({ key: laplKey(pub), hours: pub.lapl.hours ?? pub.hours, viaLapl: true });
+  let best = { ts: 0, hours: pub.hours, viaLapl: false };
+  for (const e of entries) {
+    const ts = state.activations[e.key] ?? 0;
+    if (ts > best.ts) best = { ts, hours: e.hours, viaLapl: e.viaLapl };
+  }
+  if (!best.ts) return { ts: null, viaLapl: false, stale: true };
+  return { ts: best.ts, viaLapl: best.viaLapl, stale: Date.now() - best.ts > best.hours * 3600e3 };
+}
+const fmtWhen = (ts) => new Date(ts).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" });
+
+function activate(pub, viaLapl = defaultViaLapl(pub)) {
+  // First-run guard: gateway-backed sources dead-end without a card, so
+  // route the tap to Settings instead of stranding the user on a login form.
+  if (!state.card && !state.laplCard && (pub.gateway || pub.lapl?.gateway)) {
+    const s = document.getElementById("settings");
+    s.open = true;
+    document.getElementById("cloudStatus").textContent = "Save your library card + PIN in Settings first — they stay on this device.";
+    s.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+  const key = viaLapl ? laplKey(pub) : pub.id;
+  const side = viaLapl ? pub.lapl : pub;
+  if (pub.kind === "pass") {
+    const prev = state.activations[key];
+    state.activations[key] = Date.now();
+    // Mistap insurance: remember what this overwrote for 10 minutes.
+    state.lastUndo = { id: key, prev: prev ?? null, at: Date.now() };
+    store.write(state);
+  }
+
+  // One-tap path: when this side's gateway POST is known and the matching
+  // library's card + PIN are saved, submit the login form ourselves — the
+  // user lands past the card/PIN screen. Credentials go over HTTPS to the
+  // same endpoint the gateway's own form posts to; nothing new is stored.
+  // A custom URL override opts out (we can't know an arbitrary gateway's
+  // shape). LAPL's OCLC EZproxy form shape matches SCCLD's rpa gateway,
+  // r0$-prefixed hidden url included (verified live 2026-08-07).
+  const creds = credsFor(pub, viaLapl);
+  if (side.gateway && creds.card && creds.pin && !state.overrides[key]) {
+    const w = window.open("", "_blank");
+    if (w) {
+      const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+      w.document.write(
+        `<!doctype html><title>Signing in…</title>` +
+        `<body style="font:16px/1.5 -apple-system,sans-serif;padding:24px">Signing into the library gateway…` +
+        `<form method="post" action="${esc(side.gateway.action)}">` +
+        `<input type="hidden" name="url" value="${esc(side.gateway.url)}">` +
+        `<input type="hidden" name="user" value="${esc(creds.card)}">` +
+        `<input type="hidden" name="pass" value="${esc(creds.pin)}">` +
+        `</form><script>document.forms[0].submit()<\/script>`
+      );
+      w.document.close();
+      render();
+      return;
+    }
+  }
+
+  // Fallback: open the gateway and put the right card number on the
+  // clipboard so the form is one paste away. Copy must start before
+  // window.open steals focus; fails silently where clipboard isn't granted.
+  if (creds.card && navigator.clipboard) {
+    navigator.clipboard.writeText(creds.card)
+      .then(() => { document.getElementById("cloudStatus").textContent = "📋 Card number copied — paste it into the gateway form."; })
+      .catch(() => {});
+  }
+  window.open(state.overrides[key] || side.url, "_blank", "noopener");
+  render();
+}
+
+// The hero is the pass that needs attention next: never-renewed first, then
+// stalest renewal. Everything else lives on the board below.
+function heroPub() {
+  const passes = visiblePubs().filter((p) => p.kind === "pass");
+  passes.sort((a, b) => (renewInfo(a).ts ?? 0) - (renewInfo(b).ts ?? 0));
+  return passes[0];
+}
+
+function render() {
+  const hero = heroPub();
+  const hi = renewInfo(hero);
+  const heroEl = document.getElementById("hero");
+  // First-run welcome: the entire onboarding is this one card. It renders
+  // only while no library card is saved, then disappears forever.
+  if (!state.card && !state.laplCard) {
+    heroEl.innerHTML = `
+      <div class="hero">
+        <div class="mast">Newsstand</div>
+        <p class="since">Free NYT, WSJ &amp; Washington Post — with your library card</p>
+        <ol class="steps">
+          <li>Get a free library card from <a href="https://sccld.org" target="_blank" rel="noopener">Santa Clara County</a> or <a href="https://lapl.org" target="_blank" rel="noopener">LA Public Library</a> (you may already have one).</li>
+          <li>Save your card + PIN in Settings — they stay on this device and are sent only to the library's own login.</li>
+          <li>Tap a paper to read. Passes renew with one tap every 2–3 days.</li>
+        </ol>
+        <button class="go" id="setupGo">Set up — takes 30 seconds →</button>
+      </div>`;
+    heroEl.querySelector("#setupGo").onclick = () => {
+      const s = document.getElementById("settings");
+      s.open = true;
+      s.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("card").focus();
+    };
+    renderBoard(null);
+    return;
+  }
+  heroEl.innerHTML = `
+    <div class="hero">
+      <div class="mast">${hero.mast}</div>
+      <p class="since">${
+        hi.ts
+          ? `Renewed ${fmtWhen(hi.ts)}${hi.viaLapl ? " · via LAPL" : ""}`
+          : `Not renewed yet on this device · ${hero.eyebrow}`
+      }</p>
+      <button class="go" id="heroGo">Renew${defaultViaLapl(hero) ? " via LAPL" : ""} — ${Math.round((defaultViaLapl(hero) ? hero.lapl.hours ?? hero.hours : hero.hours) / 24)} days free →</button>
+      ${hasLapl(hero) && !defaultViaLapl(hero) ? `<button class="alt" id="heroAlt">or renew via LAPL →</button>` : ""}
+    </div>`;
+  heroEl.querySelector("#heroGo").onclick = () => activate(hero);
+  const heroAlt = heroEl.querySelector("#heroAlt");
+  if (heroAlt) heroAlt.onclick = () => activate(hero, true);
+  renderBoard(hero);
+}
+
+// Board, reading room, mark-expired and undo — shared by the normal render
+// and the first-run welcome (hero = null lists every pass on the board).
+function renderBoard(hero) {
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+  for (const pub of visiblePubs().filter((p) => p.kind === "pass" && p !== hero)) {
+    const info = renewInfo(pub);
+    const wrap = document.createElement("div");
+    wrap.className = "rowwrap";
+    const row = document.createElement("button");
+    row.className = "row";
+    row.dataset.pub = pub.id;
+    row.innerHTML = `
+      <span class="edge"></span>
+      <span class="nm">${pub.name}${info.viaLapl || defaultViaLapl(pub) ? `<span class="badge">LAPL</span>` : ""}<small>${pub.eyebrow}</small></span>
+      <span class="tm">${info.ts ? `<small>renewed</small>${fmtWhen(info.ts)}` : "—"}</span>`;
+    row.onclick = () => activate(pub);
+    wrap.appendChild(row);
+    if (hasLapl(pub) && !defaultViaLapl(pub)) {
+      const via = document.createElement("button");
+      via.className = "via";
+      via.textContent = "LAPL";
+      via.title = `Open ${pub.name} via LAPL`;
+      via.onclick = () => activate(pub, true);
+      wrap.appendChild(via);
+    }
+    board.appendChild(wrap);
+  }
+
+  // Reading room: always-on sources as a compact shelf in the same card.
+  const head = document.createElement("div");
+  head.className = "shelfhead";
+  head.textContent = "Reading room";
+  board.appendChild(head);
+  const shelf = document.createElement("div");
+  shelf.className = "shelf";
+  for (const pub of visiblePubs().filter((p) => p.kind !== "pass")) {
+    const chip = document.createElement("div");
+    chip.className = "chip";
+    const main = document.createElement("button");
+    main.className = "main";
+    main.dataset.pub = pub.id;
+    main.innerHTML = `<b>${pub.name}</b><small>${pub.eyebrow}</small>`;
+    main.onclick = () => activate(pub);
+    chip.appendChild(main);
+    if (hasLapl(pub) && !defaultViaLapl(pub)) {
+      const via = document.createElement("button");
+      via.className = "viaL";
+      via.textContent = "LAPL";
+      via.title = `Open ${pub.name} via LAPL`;
+      via.onclick = () => activate(pub, true);
+      chip.appendChild(via);
+    }
+    shelf.appendChild(chip);
+  }
+  board.appendChild(shelf);
+
+  // Mark-expired controls track activations, so they live with render(),
+  // not the one-shot settings bindings.
+  const mk = document.getElementById("markExpired");
+  mk.innerHTML = "";
+  for (const pub of PUBS.filter((p) => p.kind === "pass")) {
+    for (const key of [pub.id, ...(pub.lapl ? [laplKey(pub)] : [])]) {
+      if (!state.activations[key]) continue;
+      const b = document.createElement("button");
+      b.textContent = `Forget ${pub.name}${key.endsWith(":lapl") ? " (LAPL)" : ""} renewal`;
+      b.onclick = () => { delete state.activations[key]; store.write(state); render(); };
+      mk.appendChild(b);
+    }
+  }
+
+  const undo = document.getElementById("undoSlot");
+  undo.innerHTML = "";
+  if (state.lastUndo && Date.now() - state.lastUndo.at < 10 * 60e3) {
+    const [undoBase, undoLib] = state.lastUndo.id.split(":");
+    const pub = PUBS.find((p) => p.id === undoBase);
+    undo.append(`Activated ${pub?.name ?? undoBase}${undoLib === "lapl" ? " via LAPL" : ""} just now.`);
+    const b = document.createElement("button");
+    b.textContent = "Undo activate";
+    b.onclick = () => {
+      if (state.lastUndo.prev) state.activations[state.lastUndo.id] = state.lastUndo.prev;
+      else delete state.activations[state.lastUndo.id];
+      state.lastUndo = null;
+      store.write(state);
+      render();
+    };
+    undo.appendChild(b);
+  }
+}
+
+function renderSettings() {
+  const card = document.getElementById("card");
+  card.value = state.card;
+  // Saving/clearing the card toggles the first-run welcome and the LAPL
+  // defaults, so re-render the board (same pattern as the LAPL field below).
+  card.oninput = () => { state.card = card.value.trim(); store.write(state); render(); };
+  document.getElementById("copyCard").onclick = async () => {
+    if (state.card) await navigator.clipboard.writeText(state.card);
+  };
+  const pin = document.getElementById("pin");
+  pin.value = state.pin;
+  pin.oninput = () => { state.pin = pin.value.trim(); store.write(state); };
+  document.getElementById("copyPin").onclick = async () => {
+    if (state.pin) await navigator.clipboard.writeText(state.pin);
+  };
+  const lcard = document.getElementById("laplCard");
+  lcard.value = state.laplCard;
+  // Saving/clearing the LAPL card toggles WaPo and the via-LAPL actions, so
+  // re-render the board and the override list (not the whole settings pane —
+  // that would rebind and blur this input mid-typing).
+  lcard.oninput = () => { state.laplCard = lcard.value.trim(); store.write(state); render(); renderOverrides(); };
+  document.getElementById("copyLaplCard").onclick = async () => {
+    if (state.laplCard) await navigator.clipboard.writeText(state.laplCard);
+  };
+  const lpin = document.getElementById("laplPin");
+  lpin.value = state.laplPin;
+  lpin.oninput = () => { state.laplPin = lpin.value.trim(); store.write(state); };
+  document.getElementById("copyLaplPin").onclick = async () => {
+    if (state.laplPin) await navigator.clipboard.writeText(state.laplPin);
+  };
+  // Tampermonkey / Userscripts intercept navigations to .user.js files and
+  // offer their install UI; all we do is open the raw file.
+  document.getElementById("userscriptBtn").onclick = () => window.open("nyt-autoredeem.user.js", "_blank", "noopener");
+  const tok = document.getElementById("ghToken");
+  tok.value = state.ghToken;
+  // Owner-only controls: "Cloud renew now" dispatches the owner's repo
+  // workflow, so it's dead weight (and an invitation to paste tokens) for
+  // anyone else. Visible only once a token is saved.
+  const ownerUI = () => { document.getElementById("cloudBtn").style.display = state.ghToken ? "" : "none"; };
+  ownerUI();
+  tok.oninput = () => { state.ghToken = tok.value.trim(); store.write(state); ownerUI(); if (state.ghToken) syncCloudStatus(); };
+  const auto = document.getElementById("autoOpen");
+  auto.checked = state.autoOpen;
+  auto.onchange = () => { state.autoOpen = auto.checked; store.write(state); };
+
+  renderOverrides();
+
+  document.getElementById("resetBtn").onclick = () => {
+    if (confirm("Clear activations, card numbers, PINs, GitHub token and URL overrides stored in this browser?")) {
+      localStorage.removeItem("newsstand");
+      state = { activations: {}, overrides: {}, card: "", pin: "", laplCard: "", laplPin: "", ghToken: "", autoOpen: false, lastUndo: null };
+      render(); renderSettings();
+    }
+  };
+}
+
+function renderOverrides() {
+  const ov = document.getElementById("urlOverrides");
+  ov.innerHTML = "";
+  const addField = (label, key, placeholder) => {
+    const f = document.createElement("div");
+    f.className = "field";
+    f.innerHTML = `<label>Activation URL · ${label}</label>
+      <input type="url" placeholder="${placeholder}" value="${state.overrides[key] || ""}">`;
+    const input = f.querySelector("input");
+    input.onchange = () => {
+      const v = input.value.trim();
+      if (v) state.overrides[key] = v; else delete state.overrides[key];
+      store.write(state);
+    };
+    ov.appendChild(f);
+  };
+  for (const pub of visiblePubs()) {
+    addField(pub.name, pub.id, pub.url);
+    if (hasLapl(pub)) addField(`${pub.name} (LAPL)`, laplKey(pub), pub.lapl.url);
+  }
+}
+
+document.getElementById("gearBtn").onclick = () => {
+  const s = document.getElementById("settings");
+  s.open = !s.open;
+  if (s.open) s.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+document.getElementById("cloudBtn").onclick = async () => {
+  const el = document.getElementById("cloudStatus");
+  if (!state.ghToken) {
+    el.textContent = "☁️ Add a GitHub token in Settings first (fine-grained, this repo, Actions read/write).";
+    document.getElementById("settings").open = true;
+    return;
+  }
+  el.textContent = "☁️ Triggering cloud renewal…";
+  try {
+    const res = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${state.ghToken}`,
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ref: "main" }),
+    });
+    el.textContent = res.status === 204
+      ? "☁️ Cloud renewal started — passes update in a few minutes."
+      : `☁️ Trigger failed (HTTP ${res.status}) — check the token's permissions.`;
+  } catch {
+    el.textContent = "☁️ Trigger failed — network error.";
+  }
+};
+
+// Recurring calendar reminders: one event per pass publication, every 3 days,
+// with the activation link in the description.
+document.getElementById("calBtn").onclick = () => {
+  const pad = n => String(n).padStart(2, "0");
+  const fmt = d => `${d.getUTCFullYear()}${pad(d.getUTCMonth()+1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}00Z`;
+  const now = new Date();
+  const events = visiblePubs().filter(p => p.kind === "pass").map(p => {
+    const info = renewInfo(p);
+    const base = info.ts ? new Date(info.ts) : now;
+    return [
+      "BEGIN:VEVENT",
+      `UID:newsstand-${p.id}@vb-dev-code.github.io`,
+      `DTSTAMP:${fmt(now)}`,
+      `DTSTART:${fmt(base)}`,
+      "RRULE:FREQ=DAILY;INTERVAL=3",
+      `SUMMARY:Renew ${p.name} library pass`,
+      `DESCRIPTION:Open ${urlFor(p)} and activate. Tracker: https://vb-dev-code.github.io/newsstand/`,
+      "BEGIN:VALARM","TRIGGER:PT0S","ACTION:DISPLAY",`DESCRIPTION:Renew ${p.name}`,"END:VALARM",
+      "END:VEVENT"
+    ].join("\r\n");
+  });
+  const ics = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//newsstand//EN", ...events, "END:VCALENDAR"].join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
+  a.download = "newsstand-renewals.ics";
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+// Keep installed copies current: without a service worker, iOS freezes the
+// PWA on whatever version existed at install time.
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+
+render();
+renderSettings();
+syncCloudStatus();
+setInterval(render, 60e3);
+setInterval(syncCloudStatus, 5 * 60e3);
+
+// Auto-open stale passes on load, if opted in — "stale" means no renewal
+// within the pub's cadence, not a claim about actual expiry. Delayed slightly
+// so the page paints first; popup blockers may limit this to one tab per visit.
+if (state.autoOpen) {
+  const stale = visiblePubs().filter(p => p.kind === "pass" && renewInfo(p).stale && (state.activations[p.id] || state.activations[laplKey(p)]));
+  if (stale.length) setTimeout(() => stale.forEach(p => activate(p)), 800);
+}
+</script>
+</body>
+</html>
