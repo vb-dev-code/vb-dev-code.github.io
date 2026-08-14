@@ -111,6 +111,17 @@ stops arriving, WSJ has fallen back to manual — drop it from `--pubs`.
 Observed WSJ pass label: "PUBLIC LIBRARIES AMENITY", Digital Light Package.
 Do NOT hammer WSJ redemption (multiple runs in a short window risks the
 account) — one attempt per natural cycle.
+CRITICAL NUANCE (2026-08-13): the automated "SUCCESS" is NOT proof of a
+renewal. When the pass is already ACTIVE, partner.wsj.com shows "Welcome
+Back, Varun — Looks like you already have a subscription" (screenshot
+confirmed), and SUCCESS_TEXT matches "welcome back" → logs success while
+redeeming NOTHING (no email). Every automated run so far hit an
+already-active pass (kept alive by manual renewals); the ONLY genuinely-
+expired automated run (23:24 first attempt) FAILED. So WSJ auto-renewal of
+an EXPIRED pass remains UNPROVEN. Trust the "Welcome to The Wall Street
+Journal" email (WallStreetJournal@notice.dowjones.com), NOT the log's
+SUCCESS, as the renewal signal. Clean test = the next true expiry with no
+manual renewal intervening, verified by an 8 AM email.
 
 ADR (Aug 2026): the app is single-owner, multi-visitor by design. All
 visitor state (cards, PINs, activations) is per-browser localStorage;
