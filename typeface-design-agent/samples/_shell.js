@@ -725,3 +725,27 @@ document.addEventListener('DOMContentLoaded', initTourChrome);
   fetch('https://abacus.jasoncameron.dev/hit/vb-tfda-2026/s-'+page).catch(function(){});
   fetch('https://typeface-design-agent-vb.netlify.app/api/visit?page='+page).catch(function(){});
 }catch(e){}})();
+
+/* Event-level interaction tracking (additive; same self-exclusion; no existing
+   handlers touched). Each meaningful click logs as page "e:<label>@<page>" to the
+   same visit endpoint via sendBeacon (fire-and-forget, deduped within 1.5s). */
+(function(){try{
+  if(localStorage.getItem('vb-self'))return;
+  if(location.protocol==='file:'||/localhost|127\.0\.0\.1/.test(location.hostname))return;
+  var page=(location.pathname.split('/').pop()||'index').replace(/\.html$/,'');
+  var last='',lastT=0;
+  function send(label){
+    var now=Date.now();
+    if(label===last&&now-lastT<1500)return;
+    last=label;lastT=now;
+    var u='https://typeface-design-agent-vb.netlify.app/api/visit?page='+encodeURIComponent(('e:'+label+'@'+page).slice(0,60));
+    if(navigator.sendBeacon){navigator.sendBeacon(u);}else{fetch(u).catch(function(){});}
+  }
+  document.addEventListener('click',function(ev){
+    var el=ev.target&&ev.target.closest&&ev.target.closest('button, a, [data-fix], [data-pick], [role="tab"], summary');
+    if(!el)return;
+    var label=el.id||el.getAttribute('data-fix')||el.getAttribute('data-pick')||(el.className&&String(el.className).split(' ')[0])||'el';
+    var txt=(el.textContent||'').trim().slice(0,20);
+    send(label+(txt?':'+txt:''));
+  },true);
+}catch(e){}})();
