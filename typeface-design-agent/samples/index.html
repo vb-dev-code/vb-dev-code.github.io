@@ -2,6 +2,6 @@
 <meta name="robots" content="noindex, nofollow">
 <meta http-equiv="refresh" content="0; url=00-home.html?welcome=1">
 <title>Typeface Design Agent — prototype</title>
-<script>location.replace('00-home.html?welcome=1');</script></head>
+<script>try{if(new URLSearchParams(location.search).has('self')){localStorage.setItem('vb-self','1');}}catch(e){}location.replace('00-home.html?welcome=1');</script></head>
 <body><script>(function(){try{var q=new URLSearchParams(location.search);if(q.has("self"))localStorage.setItem("vb-self","1");if(localStorage.getItem("vb-self"))return;if(location.protocol==="file:"||/localhost|127\.0\.0\.1/.test(location.hostname))return;var page=(location.pathname.split("/").pop()||"index").replace(/\.html$/,"");fetch("https://abacus.jasoncameron.dev/hit/vb-tfda-2026/s-"+page).catch(function(){});fetch("https://typeface-design-agent-vb.netlify.app/api/visit?page="+page).catch(function(){})}catch(e){}})();</script>
 </body></html>
