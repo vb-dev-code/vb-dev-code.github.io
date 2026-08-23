@@ -166,7 +166,7 @@
     <div class="field">
       <button id="resetBtn" class="small">Reset all data</button>
     </div>
-    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. This site has no server and its operator never sees your card. · v2026-08-12l</p>
+    <p class="hint">Access is provided by SCCLD and LAPL to cardholders. Everything stays in this browser — credentials are only ever sent to the library gateways themselves. This site has no server and its operator never sees your card. · v2026-08-22m</p>
   </details>
 </main>
 
@@ -233,6 +233,17 @@ const PUBS = [
       url: "https://login.lapl.idm.oclc.org/login?url=https://www.pressreader.com",
       gateway: { action: "https://login.lapl.idm.oclc.org/login", url: "r0$https://www.pressreader.com" }
     }
+  },
+  // Washington Post via SCCLD's PressReader. The native LAPL WaPo pass (the
+  // "wapo" tile above) died with the e-card; PressReader carries WaPo's
+  // replica edition, so this restores a one-tap WaPo tile sourced from the
+  // working SCCLD card. Deep-links to WaPo's PressReader title through the
+  // same rpa gateway; if the proxy drops the path it still lands on
+  // PressReader, one search from WaPo. Not the native washingtonpost.com app.
+  {
+    id: "wapo-pr", name: "Washington Post", eyebrow: "in PressReader", kind: "always",
+    url: "https://rpa.sccl.org/login?url=https://www.pressreader.com/usa/the-washington-post-597",
+    gateway: { action: "https://rpa.sccl.org/login", url: "r0$https://www.pressreader.com/usa/the-washington-post-597" }
   },
   // "santaclara" is SCCLD's OverDrive slug (verified via thunder.api
   // .overdrive.com); "sccl" is not a library Libby knows.
