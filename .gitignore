@@ -6,3 +6,4 @@ node_modules/
 # see tools/check-site.mjs for how it's read and why a missing file fails loudly.
 tools/banned-patterns.json
 docs/
+.code-graph/
