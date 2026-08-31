@@ -96,8 +96,9 @@ a:focus-visible, .card:focus-visible {
 .hero .lede {
   font-size: clamp(1.02rem, 2.2vw, 1.17rem);
   color: var(--muted);
-  max-width: var(--measure);
+  max-width: 42rem;
   margin: 0;
+  text-wrap: pretty;
 }
 
 /* ─── grid ───────────────────────────────────────────────────────────── */
