@@ -628,6 +628,7 @@ a { color: inherit; }
   font-size: 10px; line-height: 16px; text-align: center; font-weight: 700;
 }
 .tf-format[aria-pressed="true"] .thumb { border-style: solid; border-color: var(--tf-brand-ring); }
+.tf-format--master::after { display: none; } /* master is derived-from, not a 6th selectable format — no selection check */
 .tf-format .thumb {
   width: 100%; aspect-ratio: 4/3; border-radius: var(--tf-r-sm);
   background: var(--tf-surface-3); border: 1px dashed var(--tf-line-strong);
