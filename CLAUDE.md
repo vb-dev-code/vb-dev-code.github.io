@@ -92,6 +92,14 @@ access (https://sccld.org/resources/newsstand/). Three layers:
    zero-touch via `renew/tenants/<name>.env` (their card, gitignored) +
    `state/profile-<name>` (their seeded NYT session) — local-renew.sh loops
    over tenants after the owner's run; tenant runs never write status.json.
+   Machine moves (2026-10-15): the seeded session does NOT survive a Mac
+   migration. Chrome encrypts cookies with the per-Mac keychain key "Chrome
+   Safe Storage"; the new Mac mini minted a fresh one at migration (Oct 12
+   22:28), so the copied profile's NYT-S cookie was unreadable and Oct 14–15
+   runs logged SUCCESS (redeem clicked, logged out, NYT robot-block page)
+   while redeeming nothing — no confirmation email. Re-seeded 2026-10-15 9:21,
+   email 9:24. After any new machine: re-seed state/profile (and any
+   state/profile-<name>) before trusting the schedule, and verify by email.
 
 WSJ zero-touch (2026-08-13, IN TEST): same seeded-session approach as NYT.
 A seeded WSJ/Dow Jones session in `state/profile` is recognized (0 account

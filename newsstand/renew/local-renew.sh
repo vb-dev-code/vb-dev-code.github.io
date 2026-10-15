@@ -19,9 +19,12 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 # the same browser or the profile won't even open.
 export CHROMIUM_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-# Sync first so the status.json commit below lands on an up-to-date main
-# (CI commits status.json too).
-git -C ../.. pull --rebase --quiet || echo "git pull failed — continuing with local tree"
+# Sync first so the status.json commit below lands on an up-to-date main.
+# --autostash: a run where NYT failed leaves status.json uncommitted, and a plain
+# rebase pull then refuses every later day (that silently froze the app's status
+# from 2026-08-15 to 2026-10-15). Nothing else writes status.json, so it can't conflict.
+git -C ../.. pull --rebase --autostash --quiet || echo "git pull failed — continuing with local tree"
+run_start_ms=$(( $(date +%s) * 1000 ))
 
 # WSJ runs alongside NYT: same seeded profile also holds the WSJ/Dow Jones
 # session. WSJ redemption completion via automation is unproven — verify by
@@ -43,16 +46,33 @@ for envfile in tenants/*.env(N); do
     || echo "tenant $name renew FAILED (re-seed state/profile-$name if it's the NYT login)"
 done
 
+# Publish whenever NYT renewed in THIS run, even if WSJ failed: renew.mjs exits
+# nonzero unless every pub succeeded, and gating on that kept the app's status
+# unpublished for two months while NYT renewed fine. The app shows per-pub facts,
+# so a wsj ok:false entry riding along is accurate.
+nyt_ok=0
+node -e '
+  const s = JSON.parse(require("fs").readFileSync("../status.json", "utf8"));
+  const n = (s.renewed || {}).nyt;
+  process.exit(n && n.ok === true && n.ts >= Number(process.argv[1]) ? 0 : 1);
+' "$run_start_ms" && nyt_ok=1
+
+if (( nyt_ok )); then
+  ( cd ../..
+    git add newsstand/status.json
+    if ! git diff --cached --quiet; then
+      git commit --quiet -m "Record local NYT renewal in status.json" \
+        && git push --quiet \
+        && echo "status.json pushed" \
+        || echo "commit/push failed — status.json updated locally only"
+    fi )
+fi
+
 if (( own_ok == 0 )); then
-  cd ../..
-  git add newsstand/status.json
-  if ! git diff --cached --quiet; then
-    git commit --quiet -m "Record local NYT renewal in status.json" \
-      && git push --quiet \
-      && echo "status.json pushed" \
-      || echo "commit/push failed — status.json updated locally only"
-  fi
   echo "=== renew OK ==="
+elif (( nyt_ok )); then
+  echo "=== NYT OK; another pub FAILED (see above) ==="
+  exit 1
 else
   echo "=== renew FAILED (see above; if this is the NYT login, re-seed the profile with a headed run) ==="
   exit 1
