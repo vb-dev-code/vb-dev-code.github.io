@@ -117,6 +117,15 @@ than NYT's (PerimeterX walls customercenter.wsj.com against automation), so
 the "processing" screen may bot-hold. Verify each cycle by the email; if it
 stops arriving, WSJ has fallen back to manual — drop it from `--pubs`.
 Observed WSJ pass label: "PUBLIC LIBRARIES AMENITY", Digital Light Package.
+PROVEN 2026-10-15 (expired pass, automated, headless): after re-seeding the
+WSJ session on the new Mac mini, partner.wsj.com showed a "Create Account"
+pass form (Terms of Use checkbox + REGISTER, plus a marketing-offers box).
+renew.mjs now ticks ONLY the Terms box (owner-authorized 2026-10-15; the WSJ
+inputs are hidden zero-size behind drawn boxes, hence the el.click() fallback)
+and clicks Register → "Redemption Successful", confirmation number, and the
+"Welcome to The Wall Street Journal" email at 9:36. The email stays the
+renewal signal: on an already-active pass the run can still log SUCCESS off
+"welcome back" without redeeming anything (nuance below).
 Do NOT hammer WSJ redemption (multiple runs in a short window risks the
 account) — one attempt per natural cycle.
 CRITICAL NUANCE (2026-08-13): the automated "SUCCESS" is NOT proof of a

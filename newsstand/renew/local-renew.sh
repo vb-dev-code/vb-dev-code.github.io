@@ -27,9 +27,9 @@ git -C ../.. pull --rebase --autostash --quiet || echo "git pull failed — cont
 run_start_ms=$(( $(date +%s) * 1000 ))
 
 # WSJ runs alongside NYT: same seeded profile also holds the WSJ/Dow Jones
-# session. WSJ redemption completion via automation is unproven — verify by
-# the "Welcome to The Wall Street Journal" email; if it stops arriving, WSJ
-# has fallen back to manual and should be dropped from this list.
+# session. Automated WSJ redemption of an expired pass was proven 2026-10-15
+# (Terms + Register step in renew.mjs) — keep verifying by the "Welcome to The
+# Wall Street Journal" email; if it stops arriving, re-seed the WSJ session.
 node renew.mjs --pubs nyt,wsj --headless --status ../status.json --shots shots
 own_ok=$?
 

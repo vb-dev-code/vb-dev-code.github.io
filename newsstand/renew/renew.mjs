@@ -55,6 +55,11 @@ const DEFAULT_PUBS = {
     // browser (WSJ bot protection is heavier than NYT's — PerimeterX walls
     // customercenter); verify each cycle by the email.
     requireSuccessText: true,
+    // 2026-10-15: with a live session the pass page is a "Create Account" form
+    // (Terms of Use checkbox + REGISTER) instead of an auto-redeem. The owner
+    // authorized ticking the Terms box and clicking Register each cycle; the
+    // marketing-offers box is never touched.
+    acceptTermsAndRegister: true,
   },
 };
 
@@ -158,6 +163,30 @@ async function fillSecret(loc, value, log, what) {
   catch (e) { log(`could not fill ${what} — ${String(e.message).split("\n")[0].replace(value, "***")}`); return false; }
 }
 
+// Tick ONLY the checkbox whose label names the Terms of Use. Returns how it
+// was confirmed, or null if no such checkbox could be ticked. The WSJ form's
+// other box (updates and special offers) never matches /terms of use/.
+async function tickTermsOfUse(page) {
+  const candidates = [
+    page.getByRole("checkbox", { name: /terms of use/i }),
+    page.getByLabel(/terms of use/i),
+    page.locator('label:has-text("Terms of Use") input[type="checkbox"]'),
+  ];
+  for (const c of candidates) {
+    const box = c.first();
+    if (!(await box.count().catch(() => 0))) continue;
+    if (await box.isChecked().catch(() => false)) return "already ticked";
+    await box.check({ force: true, timeout: 5000 }).catch(() => {});
+    if (await box.isChecked().catch(() => false)) return "ticked";
+    // Styled forms hide the real input at zero size behind a drawn box, which
+    // Playwright can't click; the input's own click() toggles it and fires the
+    // same events a click on its label would.
+    await box.evaluate((el) => el.click()).catch(() => {});
+    if (await box.isChecked().catch(() => false)) return "ticked (hidden input)";
+  }
+  return null;
+}
+
 function onHost(page, hosts) {
   try {
     const host = new URL(page.url()).hostname;
@@ -173,7 +202,7 @@ async function walk(page, id, pub, log) {
   const account = pub.accountEnv
     ? { user: process.env[pub.accountEnv[0]], pass: process.env[pub.accountEnv[1]] }
     : {};
-  let libraryLogins = 0, accountFills = 0, redeemClicks = 0;
+  let libraryLogins = 0, accountFills = 0, redeemClicks = 0, registerClicks = 0;
   let lastAction = "", lastUrl = "", stuck = 0;
   // Patience: when the flow needs a human (bot challenge, unrecognized page,
   // slow-rendering login), a headed run waits — the README promises manual
@@ -217,6 +246,23 @@ async function walk(page, id, pub, log) {
         if (await patient(`${new URL(page.url()).hostname} is processing the redemption`)) { step--; continue; }
         log("redemption stayed on the processing screen — likely bot-held; check for the confirmation email");
         break;
+      }
+
+      // WSJ pass activation form (see acceptTermsAndRegister): Terms of Use
+      // box + REGISTER. Register is only clicked once the Terms box is
+      // confirmed ticked, and at most twice per run.
+      if (onPub && pub.acceptTermsAndRegister && registerClicks < 2) {
+        const register = page.getByRole("button", { name: /^\s*register\s*$/i }).first();
+        if (await register.isVisible().catch(() => false)) {
+          if (repeats("register") > 1) { log("Register click isn't advancing the page — stopping"); break; }
+          const ticked = await tickTermsOfUse(page);
+          if (!ticked) { log("pass form found but the Terms of Use checkbox could not be ticked — stopping"); break; }
+          registerClicks++;
+          log(`Terms of Use ${ticked}; clicking Register on ${page.url()}`);
+          await register.click().catch(() => {});
+          await page.waitForTimeout(5000);
+          continue;
+        }
       }
 
       // Publication account login (email first, password possibly on the
