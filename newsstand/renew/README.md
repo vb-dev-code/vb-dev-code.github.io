@@ -134,12 +134,21 @@ library leg (never blocked) plus the redeem click.
    Log into NYT in that window, then quit that Chrome instance. The
    session now lives in `state/profile`, and the scheduled runs use real
    Chrome too (`CHROMIUM_PATH` in `local-renew.sh`) so they can open it.
-2. **Schedule**: `local-renew.sh` wraps the headless run and, on success,
-   commits `newsstand/status.json` and pushes, so the phone app learns
-   about the renewal. It's driven by a launchd agent at
-   `~/Library/LaunchAgents/com.newsstand.local-renew.plist` (daily at 8 AM;
-   load with `launchctl bootstrap gui/$UID <plist>`). Logs land in
+2. **Schedule**: `local-renew.sh` wraps the headless NYT run and, on success,
+   publishes `newsstand/status.json` (`publish-status.mjs`: commit + push),
+   so the phone app learns about the renewal. It's driven by a launchd agent
+   at `~/Library/LaunchAgents/com.newsstand.local-renew.plist` (daily at
+   8 AM; load with `launchctl bootstrap gui/$UID <plist>`). Logs land in
    `logs/local-renew.log`.
+
+   WSJ runs on its own clock (`wsj-scheduler.mjs`, launchd agent
+   `com.newsstand.wsj-renew`, every 15 minutes): its 3-day pass can't be
+   renewed while live, so it renews 72h + 5 min after the last actual
+   renewal ("Redemption Successful"), rechecking with backoff while the pass
+   is still live. `node wsj-scheduler.mjs --check` shows when it's next due;
+   the schedule lives in `state/wsj-schedule.json` (delete it to force a
+   check on the next tick). Failures raise a macOS notification. Both jobs
+   share `state/profile`; `file-lock.mjs` keeps them from opening it at once.
 3. **If it starts failing at NYT login**, the session expired — re-seed
    with step 1. If it fails *after* login (redeem page blocked in
    headless), edit `local-renew.sh` to drop `--headless`; a headed window

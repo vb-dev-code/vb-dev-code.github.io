@@ -128,6 +128,41 @@ renewal signal: on an already-active pass the run can still log SUCCESS off
 "welcome back" without redeeming anything (nuance below).
 Do NOT hammer WSJ redemption (multiple runs in a short window risks the
 account) — one attempt per natural cycle.
+DUE-TIME SCHEDULE (2026-10-17): WSJ left the daily 8:00 run (local-renew.sh
+is NYT-only). A live pass can't be renewed, so a fixed daily run found it live
+on the expiry morning and left a ~22h gap. `renew/wsj-scheduler.mjs` (launchd
+`com.newsstand.wsj-renew`, StartInterval 900) is silent until
+`state/wsj-schedule.json`'s nextDue = last ACTUAL renewal + 72h05m, then runs
+`renew.mjs --pubs wsj --outcome …`. Outcomes: "renewed" (the "Redemption
+Successful" page), "active" ("already have a subscription"; not written to
+status.json, backoff 15m→4h), "submitted" (form sent, no confirmation
+recognized within 90 s — notify, recheck in 15 min; a live pass then anchors
+that run, so a WSJ wording change can't lose the anchor), "failed" (notify,
+backoff 1h→24h). Only renewed, or submitted+live, re-anchors. After the form
+is submitted the walker only waits — no further clicks or fills. `--check`
+prints the schedule. status.json now records actual
+renewals only (Oct 16–17 "welcome back" visits had been logged as renewals).
+Publishing moved to `publish-status.mjs` (status lock shared with every
+status.json write, refuses invalid/conflicted JSON and a repo that's mid-rebase
+or mid-merge, commits against HEAD, always pushes a stranded commit; on failure
+leaves `state/publish-pending`, which the scheduler retries every 30 min, and
+notifies once per outage). `file-lock.mjs` uses the kernel's flock via
+open(O_EXLOCK) (macOS; Node lacks the constant, so 0x20): released by the
+kernel when the holder dies, so no stale-lock logic, pid trust or heartbeats —
+an earlier pid-file design failed review three ways. Locks: the profile,
+status.json, and the scheduler itself. The WSJ form is submitted at most once
+per run (a slow submit leaves Register showing; a second click would hit
+"already have a subscription" and lose the anchor). Three codex (Astra) review
+rounds found 11 + 11 + 5 issues, all fixed before deploy (round-3 fixes are
+covered by tests but weren't re-reviewed). The publisher never aborts a rebase
+(one in progress may be the owner's). Tests: `newsstand/renew/test/` — run each with `node test/<name>.mjs`
+from newsstand/renew (unit-test, lock-test, submit-test, publish-test against a
+real local git remote, e2e against a mock gateway + mock partner.wsj.com; e2e
+takes ~4 min). The mock flow never delivers Playwright's mouse click on
+Register (cause unknown; the real site took it on Oct 15), so e2e exercises the
+click() fallback; submit-test covers the mouse-click path. Watch the first
+unattended cycle: due Sun Oct 18 9:41 AM; confirm by the "Welcome to The Wall
+Street Journal" email.
 CRITICAL NUANCE (2026-08-13): the automated "SUCCESS" is NOT proof of a
 renewal. When the pass is already ACTIVE, partner.wsj.com shows "Welcome
 Back, Varun — Looks like you already have a subscription" (screenshot

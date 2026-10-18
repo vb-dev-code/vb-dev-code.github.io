@@ -7,6 +7,7 @@ import { chromium } from "playwright";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { acquireLock } from "./file-lock.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -60,6 +61,14 @@ const DEFAULT_PUBS = {
     // authorized ticking the Terms box and clicking Register each cycle; the
     // marketing-offers box is never touched.
     acceptTermsAndRegister: true,
+    // 2026-10-17: a live pass answers "Welcome Back — Looks like you already
+    // have a subscription", which SUCCESS_TEXT matches though nothing was
+    // renewed (Oct 16–17 runs logged those as renewals). Only the
+    // "Redemption Successful" page counts as a renewal; the WSJ scheduler
+    // anchors its next 72h attempt on it, so a false "renewed" would leave
+    // the pass expired for days.
+    renewedText: "redemption successful",
+    alreadyActiveText: "already have a subscription",
   },
 };
 
@@ -101,6 +110,9 @@ const wanted = opt("pubs", Object.keys(pubs).join(",")).split(",").map((s) => s.
 const headless = flag("headless");
 const stepTimeout = Number(opt("timeout", "20000"));
 const statusPath = opt("status", "");
+// --outcome writes {id: {outcome: "renewed"|"active"|"failed", ts}} for callers
+// that need more than the exit code (the WSJ scheduler).
+const outcomePath = opt("outcome", "");
 const shotsDir = opt("shots", "");
 // --profile selects the browser profile, enabling tenant renewals: each
 // household member gets their own seeded profile (their NYT session) and
@@ -187,6 +199,38 @@ async function tickTermsOfUse(page) {
   return null;
 }
 
+// Click Register, then confirm a request actually left the page: a main-frame
+// navigation or any non-GET request (a script-driven submit, to any host). Only
+// when the click sent nothing at all — seen in the mock-site test on 2026-10-17,
+// where the mouse click reached no handler while the button's own click()
+// submitted; the real WSJ form took the mouse click on Oct 15 — submit through
+// click(). Requests count from before the click until 6 s after it returns (the
+// click itself may wait up to 10 s for the button), and "sent" rather than
+// "navigated" is the test: a slow but working submit must never get a second
+// one. Returns "click", "dom" or null.
+async function submitRegister(page, register, log) {
+  let sent = false;
+  const watch = (r) => {
+    try { if (r.method() !== "GET" || (r.isNavigationRequest() && r.frame() === page.mainFrame())) sent = true; } catch {}
+  };
+  const settle = async () => {
+    const until = Date.now() + 6000;
+    while (!sent && Date.now() < until) await new Promise((r) => setTimeout(r, 250));
+  };
+  page.on("request", watch);
+  try {
+    await register.click({ timeout: 10000 }).catch(() => {});
+    await settle();
+    if (sent || !(await register.isVisible().catch(() => false))) return "click"; // sent, or the form moved on
+    log("Register click sent no request — submitting with the button's own click()");
+    await register.evaluate((b) => b.click()).catch(() => {});
+    await settle();
+    return sent ? "dom" : null;
+  } finally {
+    page.off("request", watch);
+  }
+}
+
 function onHost(page, hosts) {
   try {
     const host = new URL(page.url()).hostname;
@@ -198,11 +242,19 @@ function onHost(page, hosts) {
 // library card/PIN form, then on the publication's site complete its own
 // email/password login and any final redeem click. Login attempts are capped
 // so a wrong credential can't hammer either login and risk a lockout.
+// Returns "renewed", "active" (pass already live, nothing renewed), "submitted"
+// (pass form sent, no confirmation recognized) or null.
 async function walk(page, id, pub, log) {
   const account = pub.accountEnv
     ? { user: process.env[pub.accountEnv[0]], pass: process.env[pub.accountEnv[1]] }
     : {};
-  let libraryLogins = 0, accountFills = 0, redeemClicks = 0, registerClicks = 0;
+  let libraryLogins = 0, accountFills = 0, redeemClicks = 0;
+  let registerSent = null, registerSentAt = 0; // "click" | "dom" once the pass form has been submitted
+  const waitAfterSubmit = async () => {
+    if (Date.now() - registerSentAt < 90000) { await page.waitForTimeout(3000).catch(() => {}); return true; }
+    log("no confirmation recognized within 90 s of submitting the pass form");
+    return false;
+  };
   let lastAction = "", lastUrl = "", stuck = 0;
   // Patience: when the flow needs a human (bot challenge, unrecognized page,
   // slow-rendering login), a headed run waits — the README promises manual
@@ -238,7 +290,29 @@ async function walk(page, id, pub, log) {
     const onPub = onHost(page, pub.successHosts);
     if (onPub || onHost(page, pub.authHosts)) {
       const body = (await page.locator("body").innerText().catch(() => "")) || "";
-      if (onPub && SUCCESS_TEXT.test(body)) { log(`SUCCESS — ${new URL(page.url()).hostname} confirms access`); return true; }
+      const renewedRe = pub.renewedText && new RegExp(pub.renewedText, "i");
+      const activeRe = pub.alreadyActiveText && new RegExp(pub.alreadyActiveText, "i");
+      // The pub's own markers count on their own: WSJ's confirmation needn't
+      // also carry SUCCESS_TEXT's wording.
+      if (onPub && (SUCCESS_TEXT.test(body) || renewedRe?.test(body) || activeRe?.test(body))) {
+        const host = new URL(page.url()).hostname;
+        if (activeRe?.test(body)) {
+          // The pass form only appears for an expired pass, so "already have a
+          // subscription" right after submitting it means the submission took.
+          if (registerSent) { log(`SUCCESS — ${host} reports the pass live right after the registration`); return "renewed"; }
+          log(`ALREADY ACTIVE — ${host} says the pass is still live; nothing was renewed`);
+          return "active";
+        }
+        if (!renewedRe || renewedRe.test(body)) {
+          log(`SUCCESS — ${host} confirms access`);
+          return "renewed";
+        }
+        // Success-like wording without the renewal marker: give a slow render a
+        // moment, then refuse to call it a renewal.
+        if (await patient(`${host} looks done but doesn't say "${pub.renewedText}"`)) { step--; continue; }
+        log(`page never said "${pub.renewedText}" — not counting it as a renewal`);
+        break;
+      }
 
       // Auto-redeem interstitial (WSJ): the transaction is processing —
       // wait for it to resolve into a confirmation rather than moving on.
@@ -248,18 +322,27 @@ async function walk(page, id, pub, log) {
         break;
       }
 
+      // Once the pass form is in, only wait for WSJ's answer: any further click
+      // or fill (a second Register, the generic login step on a form with an
+      // email field) could submit it again. A slow confirmation gets 90 s; no
+      // recognizable one ends the walk as "submitted", which the scheduler
+      // verifies with a check shortly after.
+      if (registerSent) { if (await waitAfterSubmit()) { step--; continue; } break; }
+
       // WSJ pass activation form (see acceptTermsAndRegister): Terms of Use
       // box + REGISTER. Register is only clicked once the Terms box is
-      // confirmed ticked, and at most twice per run.
-      if (onPub && pub.acceptTermsAndRegister && registerClicks < 2) {
+      // confirmed ticked, and the form is submitted at most once per run: a
+      // slow submit leaves Register showing for a while, and a second click
+      // would land on "already have a subscription" and hide the renewal.
+      if (onPub && pub.acceptTermsAndRegister) {
         const register = page.getByRole("button", { name: /^\s*register\s*$/i }).first();
         if (await register.isVisible().catch(() => false)) {
-          if (repeats("register") > 1) { log("Register click isn't advancing the page — stopping"); break; }
           const ticked = await tickTermsOfUse(page);
           if (!ticked) { log("pass form found but the Terms of Use checkbox could not be ticked — stopping"); break; }
-          registerClicks++;
           log(`Terms of Use ${ticked}; clicking Register on ${page.url()}`);
-          await register.click().catch(() => {});
+          registerSent = await submitRegister(page, register, log);
+          registerSentAt = Date.now();
+          if (!registerSent) { log("Register sent no request either way — stopping"); break; }
           await page.waitForTimeout(5000);
           continue;
         }
@@ -312,7 +395,7 @@ async function walk(page, id, pub, log) {
           // timing, 2026-08-12). Give the request a beat, then call it.
           await page.waitForTimeout(5000);
           log("SUCCESS — redeem clicked on the redemption page (confirmation may not render; transaction verified out-of-band 2026-08-12)");
-          return true;
+          return "renewed";
         }
         continue;
       }
@@ -335,11 +418,14 @@ async function walk(page, id, pub, log) {
       // proves nothing for them (see the nyt note above).
       if (!pub.requireSuccessText && libraryLogins + accountFills + redeemClicks > 0) {
         log(`SUCCESS — landed on ${new URL(page.url()).hostname} after ${libraryLogins} library login(s), ${accountFills} account fill(s), ${redeemClicks} redeem click(s)`);
-        return true;
+        return "renewed";
       }
       log(`on ${new URL(page.url()).hostname} but nothing was activated this run — waiting for a recognizable step`);
       continue;
     }
+
+    // Off the publication's hosts after the pass form went in: still only wait.
+    if (registerSent) { if (await waitAfterSubmit()) { step--; continue; } break; }
 
     const pinField = await firstVisible(page, PIN_SELECTORS, { editable: true });
     if (pinField) {
@@ -381,31 +467,44 @@ async function walk(page, id, pub, log) {
     log(`no known next step on ${page.url()} — stopping`);
     break;
   }
+  if (registerSent) {
+    log("SUBMITTED — the pass form went in but no confirmation was recognized; the scheduler will check whether the pass went live");
+    return "submitted";
+  }
   log("FAILED — did not reach confirmed access. Re-run without --headless to watch/finish manually.");
-  return false;
+  return null;
 }
 
-async function renew(context, id, pub) {
+const bounded = (promise, ms) => Promise.race([promise.catch(() => {}), new Promise((r) => setTimeout(r, ms))]);
+
+// `record` gets the outcome before any cleanup: a screenshot or page close that
+// stalls (one hung for minutes in testing, 2026-10-17) must not lose a renewal
+// that already happened.
+async function renew(context, id, pub, record) {
   const page = await context.newPage();
   const log = (msg) => console.log(`[${id}] ${msg}`);
+  let outcome = null;
   try {
     log(`opening ${pub.activationUrl}`);
     await page.goto(pub.activationUrl, { waitUntil: "domcontentloaded", timeout: stepTimeout * 2 });
-    return await walk(page, id, pub, log);
+    outcome = await walk(page, id, pub, log);
   } catch (e) {
     log(`FAILED — ${e.message}`);
-    return false;
-  } finally {
-    if (shotsDir) {
-      for (const p of context.pages()) {
-        await p.screenshot({ path: join(shotsDir, `${id}-${context.pages().indexOf(p)}.png`), fullPage: false }).catch(() => {});
-      }
-    }
-    for (const p of context.pages()) await p.close().catch(() => {});
   }
+  record(outcome);
+  if (shotsDir) {
+    for (const p of context.pages()) {
+      await p.screenshot({ path: join(shotsDir, `${id}-${context.pages().indexOf(p)}.png`), fullPage: false, timeout: 15000 }).catch(() => {});
+    }
+  }
+  for (const p of context.pages()) await bounded(p.close(), 10000);
+  return outcome;
 }
 
 // ---------------------------------------------------------------------------
+// One browser per profile: the daily NYT run and the WSJ scheduler share
+// state/profile, and a second Chrome on an open profile fails to launch.
+await acquireLock(profileDir, { log: (msg) => console.log(msg) });
 const context = await chromium.launchPersistentContext(profileDir, {
   headless,
   executablePath: process.env.CHROMIUM_PATH || undefined,
@@ -418,17 +517,28 @@ const context = await chromium.launchPersistentContext(profileDir, {
 });
 
 const results = {};
+const outcomes = {};
 let ok = true;
 for (const id of wanted) {
   const pub = pubs[id];
   if (!pub) { console.error(`unknown publication "${id}" — known: ${Object.keys(pubs).join(", ")}`); ok = false; continue; }
-  const success = await renew(context, id, pub);
-  results[id] = { ok: success, ts: Date.now() };
-  ok = success && ok;
+  const outcome = await renew(context, id, pub, (o) => {
+    const ts = Date.now();
+    outcomes[id] = { outcome: o ?? "failed", ts };
+    if (outcomePath) writeFileSync(outcomePath, JSON.stringify(outcomes, null, 2) + "\n");
+    // status.json records renewals: an already-live pass keeps its entry, the
+    // time it was last actually renewed, and an unconfirmed submission waits
+    // for the scheduler's check.
+    if (o !== "active" && o !== "submitted") results[id] = { ok: o === "renewed", ts };
+  });
+  ok = (outcome === "renewed" || outcome === "active") && ok;
 }
-await context.close();
+await bounded(context.close(), 30000);
 
-if (statusPath) {
+if (statusPath && Object.keys(results).length) {
+  // Same lock publish-status.mjs holds while committing, so this write can't
+  // land in the middle of a publish (an autostash would drop it).
+  const release = await acquireLock(join(HERE, "state", "status-json"), { waitMs: 5 * 60e3, log: (msg) => console.log(msg) });
   let status = { renewed: {} };
   if (existsSync(statusPath)) {
     try { status = JSON.parse(readFileSync(statusPath, "utf8")); } catch {}
@@ -436,6 +546,7 @@ if (statusPath) {
   status.renewed = { ...(status.renewed ?? {}), ...results };
   status.updated = Date.now();
   writeFileSync(statusPath, JSON.stringify(status, null, 2) + "\n");
+  release();
   console.log(`status written to ${statusPath}`);
 }
 
