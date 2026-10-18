@@ -160,9 +160,11 @@ from newsstand/renew (unit-test, lock-test, submit-test, publish-test against a
 real local git remote, e2e against a mock gateway + mock partner.wsj.com; e2e
 takes ~4 min). The mock flow never delivers Playwright's mouse click on
 Register (cause unknown; the real site took it on Oct 15), so e2e exercises the
-click() fallback; submit-test covers the mouse-click path. Watch the first
-unattended cycle: due Sun Oct 18 9:41 AM; confirm by the "Welcome to The Wall
-Street Journal" email.
+click() fallback; submit-test covers the mouse-click path. First unattended
+cycle VERIFIED 2026-10-18: due 9:41, ran 9:48 (next 15-min tick), real mouse
+click on Register worked (no fallback), "Redemption Successful", Welcome email
+9:48, status.json pushed, next due Oct 21 9:53. The old pass was already
+expired at 9:48, so it lasts ≤72h12m; exact length still unknown.
 CRITICAL NUANCE (2026-08-13): the automated "SUCCESS" is NOT proof of a
 renewal. When the pass is already ACTIVE, partner.wsj.com shows "Welcome
 Back, Varun — Looks like you already have a subscription" (screenshot
