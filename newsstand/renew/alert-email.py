@@ -19,7 +19,23 @@ from email.mime.text import MIMEText
 from email.utils import formatdate
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TO = os.environ.get("NEWSSTAND_ALERT_TO", "varunb007@gmail.com")
+
+
+def env_value(key):
+    """From the environment, else renew/.env (gitignored; this repo is public)."""
+    if os.environ.get(key):
+        return os.environ[key].strip()
+    try:
+        for line in open(os.path.join(HERE, ".env")):
+            k, _, v = line.strip().partition("=")
+            if k == key and v:
+                return v.strip().strip('"').strip("'")
+    except OSError:
+        pass
+    sys.exit(f"{key} not set (add it to renew/.env)")
+
+
+TO = env_value("NEWSSTAND_ALERT_TO")
 PW_FILE = os.path.expanduser("~/.config/interview-sheet-skill/gmail_app_password")
 APP_URL = "https://varunb.me/newsstand/"
 
