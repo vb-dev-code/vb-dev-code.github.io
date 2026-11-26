@@ -56,5 +56,6 @@ if (( own_ok == 0 )); then
   echo "=== renew OK ==="
 else
   echo "=== renew FAILED (see above; if this is the NYT login, re-seed the profile with a headed run) ==="
+  osascript -e 'display notification "NYT renewal failed — see renew/logs/local-renew.log (no NYT-S cookie = re-seed state/profile)." with title "Newsstand"' || true
   exit 1
 fi

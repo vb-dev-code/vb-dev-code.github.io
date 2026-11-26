@@ -100,6 +100,12 @@ access (https://sccld.org/resources/newsstand/). Three layers:
    while redeeming nothing — no confirmation email. Re-seeded 2026-10-15 9:21,
    email 9:24. After any new machine: re-seed state/profile (and any
    state/profile-<name>) before trusting the schedule, and verify by email.
+   Session drop (2026-11-24): with no machine move, NYT-S vanished from the
+   profile at the Nov 24 8:00 run (nyt-a re-minted 8:00:11); Nov 24–26 logged
+   SUCCESS, no email, pass lapsed. Guard since then: the nyt pub has
+   `sessionCookie` (NYT-S) — with it missing or expired, the run FAILS before
+   the redeem click (exit 1, macOS notification from local-renew.sh) instead
+   of a no-op "SUCCESS". Fix = re-seed. The email is still the final word.
 
 WSJ zero-touch (2026-08-13, IN TEST): same seeded-session approach as NYT.
 A seeded WSJ/Dow Jones session in `state/profile` is recognized (0 account

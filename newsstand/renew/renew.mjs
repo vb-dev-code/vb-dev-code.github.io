@@ -36,6 +36,12 @@ const DEFAULT_PUBS = {
     // so a redeem click on the redemption page itself counts as success.
     requireSuccessText: true,
     redeemUrlPattern: "nytimes\\.com/subscription/redeem",
+    // A redeem click only redeems for a logged-in account. Logged out, the
+    // click is a no-op that still matched redeemUrlPattern, so runs logged
+    // SUCCESS with no NYT-S cookie in the profile (Oct 14–15 after the Mac
+    // migration; Nov 24–26 after the session was dropped). The cookie is the
+    // positive signal that the click can do anything.
+    sessionCookie: { url: "https://www.nytimes.com", name: "NYT-S" },
   },
   wsj: {
     name: "The Wall Street Journal",
@@ -244,6 +250,13 @@ function onHost(page, hosts) {
 // so a wrong credential can't hammer either login and risk a lockout.
 // Returns "renewed", "active" (pass already live, nothing renewed), "submitted"
 // (pass form sent, no confirmation recognized) or null.
+// True only for a present, unexpired cookie (expires -1 = session cookie).
+async function hasSessionCookie(page, { url, name }) {
+  const now = Date.now() / 1000;
+  const cookies = await page.context().cookies(url).catch(() => []);
+  return cookies.some((c) => c.name === name && c.value && (c.expires === -1 || c.expires > now));
+}
+
 async function walk(page, id, pub, log) {
   const account = pub.accountEnv
     ? { user: process.env[pub.accountEnv[0]], pass: process.env[pub.accountEnv[1]] }
@@ -387,6 +400,10 @@ async function walk(page, id, pub, log) {
         if (repeats("redeem") > 1) { log("redeem click isn't advancing the page — stopping"); break; }
         redeemClicks++;
         const onRedeemPage = pub.redeemUrlPattern && new RegExp(pub.redeemUrlPattern, "i").test(page.url());
+        if (onRedeemPage && pub.sessionCookie && !(await hasSessionCookie(page, pub.sessionCookie))) {
+          log(`FAILED — no ${pub.sessionCookie.name} session cookie: the profile is logged out of ${id}, so a redeem click would redeem nothing. Re-seed state/profile (see README).`);
+          return null;
+        }
         log(`clicking redeem/continue on ${page.url()}`);
         await target.click().catch(() => {});
         if (onRedeemPage) {
