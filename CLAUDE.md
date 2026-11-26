@@ -106,6 +106,14 @@ access (https://sccld.org/resources/newsstand/). Three layers:
    `sessionCookie` (NYT-S) — with it missing or expired, the run FAILS before
    the redeem click (exit 1, macOS notification from local-renew.sh) instead
    of a no-op "SUCCESS". Fix = re-seed. The email is still the final word.
+   Failure alert email (2026-11-26, owner-requested): a failed owner run
+   also runs `renew/alert-email.py nyt` → Gmail SMTP to the owner with the
+   failure reason, a "Renew now in Newsstand" link, an NYT sign-in link, and
+   the path of `renew/reseed-nyt.command` (double-click at the Mac: real
+   Chrome on state/profile, log in, Cmd-Q; it then checks for NYT-S). Uses
+   the interview-sheet skill's App Password file in place
+   (~/.config/interview-sheet-skill/gmail_app_password) — if that is revoked,
+   alerts stop; the log says "alert email FAILED to send".
 
 WSJ zero-touch (2026-08-13, IN TEST): same seeded-session approach as NYT.
 A seeded WSJ/Dow Jones session in `state/profile` is recognized (0 account
